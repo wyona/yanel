@@ -97,15 +97,26 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
                 ViewableV2 viewable = (ViewableV2)possibleResource;
                 if (viewable.exists()) {
                     return possibleResource;
+                } else {
+                    // TODO: Logging...
                 }
+            } else {
+                // TODO: Logging...
             }
+        } else {
+            // TODO: Logging...
         }
         return null;
     }
-    
+
+    /**
+     *
+     */
     public synchronized String[] getLanguages(Resource resource) throws TranslationException {
+        //log.debug("Get languages for resource '" + resource.getPath() + "'...");
         Page page = getPage(resource);
         if (page == null) {
+            //log.debug("No page for resource: " + resource.getPath());
             try {
                 String[] realmLanguages = resource.getRealm().getLanguages();
                 ArrayList existingLanguages = new ArrayList();
@@ -113,7 +124,10 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
                     String possibleLanguage = realmLanguages[i];
                     Resource possibleResource = getResource(resource, possibleLanguage);
                     if (possibleResource != null) {
+                        //log.debug("Resource exists for language '" + possibleLanguage + "'.");
                         existingLanguages.add(possibleLanguage);
+                    } else {
+                        log.warn("Resource '" + resource.getPath() + "' does not exist for language '" + possibleLanguage + "'.");
                     }
                 }
                 return (String[])existingLanguages.toArray(new String[existingLanguages.size()]);
@@ -121,6 +135,8 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
                 log.error(e, e);
                 throw new TranslationException(e.getMessage(), e);
             }
+        } else {
+            //log.debug("Page exists: " + page); 
         }
         String[] languages = new String[page.size()];
         // return languages in the order of the realm languages:
@@ -134,8 +150,12 @@ public abstract class AbstractPathTranslationManager extends DefaultTranslationM
         }
         return languages;
     }
-    
+ 
+    /**
+     * Get translation of a resource for a particular language
+     */
     public synchronized Resource getTranslation(Resource resource, String language) throws TranslationException {
+        //log.debug("Try to find translation for resource '" + resource.getPath() + "' and language '" + language + "'...");
         Page page = getPage(resource);
         if (page != null && page.containsKey(language)) {
             LanguageVersion target = (LanguageVersion)page.get(language);
