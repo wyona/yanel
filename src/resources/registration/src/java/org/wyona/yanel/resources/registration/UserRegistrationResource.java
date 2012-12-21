@@ -409,6 +409,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * @param doc XML document containing response to client
      * @param email E-Mail of user which will be used as username/alias
      */
     private void processRegistrationRequest(Document doc, String email) throws Exception {
@@ -455,6 +456,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
+            log.warn("One or more inputs are not valid...");
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
         }
     }
@@ -572,6 +574,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Generate document which is used for response
+     * @return XML document containing response
      */
     protected Document generateResponseDocument() throws Exception {
         Document doc = getEmptyDocument();
@@ -607,7 +610,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Check whether submitted fields are valid
-     * @param doc DOM document to generate response
+     * @param doc XML document containing response to client
      * @param email E-Mail of user which will be used as username/alias
      * @return user registration information if all fields are valid, otherwise return null (and add errors to DOM document)
      */
