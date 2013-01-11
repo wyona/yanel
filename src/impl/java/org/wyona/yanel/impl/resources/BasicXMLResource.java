@@ -553,6 +553,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     /**
      * Gets the XML content which will be fed into the processing pipeline.
+     * @param viewId View ID
      * @return xml stream
      * @throws Exception
      */
