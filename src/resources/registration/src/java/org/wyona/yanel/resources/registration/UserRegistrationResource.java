@@ -47,6 +47,12 @@ public class UserRegistrationResource extends BasicXMLResource {
     private static final long  DEFAULT_TOTAL_VALID_HRS = 24L;
 
     private static final String FROM_ADDRESS_PROP_NAME = "fromEmail";
+
+    private static final String ONE_OR_MORE_INPUTS_NOT_VALID = "one-or-more-inputs-not-valid";
+
+    private static final String EMAIL = "email";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -84,6 +90,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Check whether firstname is valid
+     * @param firstname Firstname
      */
     private boolean isFirstnameValid(String firstname) {
         if (firstname != null && firstname.length() > 0) {
@@ -227,7 +234,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         } catch(Exception e) {
             log.error(e, e);
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
-            element.setAttribute("email", userRegBean.getEmail());
+            element.setAttribute(EMAIL, userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
         }
     }
@@ -324,15 +331,15 @@ public class UserRegistrationResource extends BasicXMLResource {
         genderElem.setTextContent(urb.getGender());
         rootElem.appendChild(genderElem);
 
-        Element lastnameElem = doc.createElementNS(NAMESPACE, "lastname");
+        Element lastnameElem = doc.createElementNS(NAMESPACE, LASTNAME);
         lastnameElem.setTextContent(urb.getLastname());
         rootElem.appendChild(lastnameElem);
 
-        Element firstnameElem = doc.createElementNS(NAMESPACE, "firstname");
+        Element firstnameElem = doc.createElementNS(NAMESPACE, FIRSTNAME);
         firstnameElem.setTextContent(urb.getFirstname());
         rootElem.appendChild(firstnameElem);
 
-        Element emailElem = doc.createElementNS(NAMESPACE, "email");
+        Element emailElem = doc.createElementNS(NAMESPACE, EMAIL);
         emailElem.setTextContent(urb.getEmail());
         rootElem.appendChild(emailElem);
 
@@ -415,6 +422,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     private void processRegistrationRequest(Document doc, String email) throws Exception {
         Element rootElement = doc.getDocumentElement();
 
+        addSubmittedValuesToResponse(doc);
         UserRegistrationBean userRegBean = areSubmittedValuesValid(doc, email);
         if (userRegBean != null) {
             boolean emailConfigurationRequired = true;
@@ -433,7 +441,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     sendConfirmationLinkEmail(doc, userRegBean);
                 } catch(ValidationException e) {
                     log.error(e, e);
-                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
                     invalidE.appendChild(doc.createTextNode("Validation errors: " + e.getMessage())); 
 
                     ValidationError[] ves = e.getValidationErrors();
@@ -443,13 +451,14 @@ public class UserRegistrationResource extends BasicXMLResource {
                             validationErrorEl.setAttributeNS(NAMESPACE, "key", ves[i].getKey());
                             validationErrorEl.setAttributeNS(NAMESPACE, "value", ves[i].getValue());
                             validationErrorEl.setAttributeNS(NAMESPACE, "code", ves[i].getErrorCode());
+                            log.warn("Validation error: '" + ves[i].getKey() + "', '" + ves[i].getValue()+ "', '" + ves[i].getErrorCode() + "')");
                         }
                     }
 
                     return;
                 } catch(Exception e) {
                     log.error(e, e);
-                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+                    Element invalidE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
                     invalidE.appendChild(doc.createTextNode(e.getMessage())); 
                     return;
                 }
@@ -457,7 +466,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
             log.warn("One or more inputs are not valid...");
-            rootElement.appendChild(doc.createElementNS(NAMESPACE, "one-or-more-inputs-not-valid"));
+            rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
         }
     }
 
@@ -484,11 +493,11 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 Element rootElement = doc.getDocumentElement();
                 // TODO: Add gender/salutation
-                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EMAIL));
                 emailE.appendChild(doc.createTextNode(urBean.getEmail()));
-                Element firstnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                Element firstnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, FIRSTNAME));
                 firstnameE.appendChild(doc.createTextNode(urBean.getFirstname()));
-                Element lastnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                Element lastnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, LASTNAME));
                 lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
 
                 return true;
@@ -521,9 +530,9 @@ public class UserRegistrationResource extends BasicXMLResource {
         // TODO: Get creation date to determine expire date!
         String uuid = (String) xpath.evaluate("/ur:registration-request/@uuid", doc, XPathConstants.STRING);
         String gender = (String) xpath.evaluate("/ur:registration-request/ur:gender", doc, XPathConstants.STRING);
-        String firstname = (String) xpath.evaluate("/ur:registration-request/ur:firstname", doc, XPathConstants.STRING);
-        String lastname = (String) xpath.evaluate("/ur:registration-request/ur:lastname", doc, XPathConstants.STRING);
-        String email = (String) xpath.evaluate("/ur:registration-request/ur:email", doc, XPathConstants.STRING);
+        String firstname = (String) xpath.evaluate("/ur:registration-request/ur:" + FIRSTNAME, doc, XPathConstants.STRING);
+        String lastname = (String) xpath.evaluate("/ur:registration-request/ur:" + LASTNAME, doc, XPathConstants.STRING);
+        String email = (String) xpath.evaluate("/ur:registration-request/ur:" + EMAIL, doc, XPathConstants.STRING);
         String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
 
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
@@ -579,11 +588,11 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected Document generateResponseDocument() throws Exception {
         Document doc = getEmptyDocument();
         Element rootElement = doc.getDocumentElement();
-        String email = getEnvironment().getRequest().getParameter("email");
+        String email = getEnvironment().getRequest().getParameter(EMAIL);
         String uuid = getEnvironment().getRequest().getParameter("uuid");
-        if (email != null) {
+        if (email != null) { // INFO: Somebody tries to register (Please note that the email can also be empty in case somebody forgets to enter an email, but the query string parameter 'email' will exist anyway)
             processRegistrationRequest(doc, email);
-        } else if (uuid != null) {
+        } else if (uuid != null) { // INFO: Somebody tries to activate registration
             if(activateRegistration(uuid, doc)) {
                 rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
             } else {
@@ -628,7 +637,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email-in-use"));
                     inputsValid = false;
                 }
-                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "email"));
+                Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EMAIL));
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
 
@@ -649,22 +658,22 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check firstname
-            String firstname = getEnvironment().getRequest().getParameter("firstname");
+            String firstname = getEnvironment().getRequest().getParameter(FIRSTNAME);
             if (!isFirstnameValid(firstname)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "firstname"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, FIRSTNAME));
                 fnE.appendChild(doc.createTextNode("" + firstname)); 
             }
 
         // INFO: Check lastname
-            String lastname = getEnvironment().getRequest().getParameter("lastname");
+            String lastname = getEnvironment().getRequest().getParameter(LASTNAME);
             if (!isLastnameValid(lastname)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "lastname"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, LASTNAME));
                 fnE.appendChild(doc.createTextNode("" + lastname)); 
             }
 
@@ -779,6 +788,26 @@ public class UserRegistrationResource extends BasicXMLResource {
         int DEFAULT_MAX_PWD_LENGTH = 15;
         log.warn("No maximum password length configured, hence use default value: " + DEFAULT_MAX_PWD_LENGTH);
         return DEFAULT_MAX_PWD_LENGTH;
+    }
+
+    /**
+     * Add all submitted input parameters to response document such that they can be used for further processing (if necessary)
+     * @param doc XML document containing response to client
+     */
+    private void addSubmittedValuesToResponse(Document doc) throws Exception {
+        Element submittedElem = (Element) doc.getDocumentElement().appendChild(doc.createElement("submitted-inputs"));
+
+        Element emailElem = doc.createElementNS(NAMESPACE, EMAIL);
+        emailElem.setTextContent(getEnvironment().getRequest().getParameter(EMAIL));
+        submittedElem.appendChild(emailElem);
+
+        Element lastnameElem = doc.createElementNS(NAMESPACE, LASTNAME);
+        lastnameElem.setTextContent(getEnvironment().getRequest().getParameter(LASTNAME));
+        submittedElem.appendChild(lastnameElem);
+
+        Element firstnameElem = doc.createElementNS(NAMESPACE, FIRSTNAME);
+        firstnameElem.setTextContent(getEnvironment().getRequest().getParameter(FIRSTNAME));
+        submittedElem.appendChild(firstnameElem);
     }
 }
 
