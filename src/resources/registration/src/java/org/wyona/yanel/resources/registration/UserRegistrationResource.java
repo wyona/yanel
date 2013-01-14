@@ -793,8 +793,9 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Add all submitted input parameters to response document such that they can be used for further processing (if necessary)
      * @param doc XML document containing response to client
+     * @return DOM element containing submitted inputs
      */
-    private void addSubmittedValuesToResponse(Document doc) throws Exception {
+    protected Element addSubmittedValuesToResponse(Document doc) throws Exception {
         Element submittedElem = (Element) doc.getDocumentElement().appendChild(doc.createElement("submitted-inputs"));
 
         Element emailElem = doc.createElementNS(NAMESPACE, EMAIL);
@@ -808,6 +809,8 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element firstnameElem = doc.createElementNS(NAMESPACE, FIRSTNAME);
         firstnameElem.setTextContent(getEnvironment().getRequest().getParameter(FIRSTNAME));
         submittedElem.appendChild(firstnameElem);
+
+        return submittedElem;
     }
 }
 
