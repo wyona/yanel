@@ -32,6 +32,7 @@ public interface ViewableV2 {
 
     /**
      * View of this resource
+     * @param viewId A resource can have multiple views (e.g. PDF, XML, HTML, ...). Hence each view can be addressed by an ID.
      */
     public View getView(String viewId) throws Exception;
     
