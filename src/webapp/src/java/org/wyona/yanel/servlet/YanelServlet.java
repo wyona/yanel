@@ -265,10 +265,23 @@ public class YanelServlet extends HttpServlet {
                             try {
                             	// Get and filter scheduler config
                             	InputStream istream = realms[i].getRepository().getNode(schedulerJobsPath).getInputStream();
+                                log.debug("Filter scheduler configuration of realm '" + realms[i].getID() + "' by target environment '" + yanelInstance.getTargetEnvironment() + "'...");
                             	istream = ConfigurationUtil.filterEnvironment(istream, yanelInstance.getTargetEnvironment());
-                            	                            	
-                            	// Run scheduler util
-                                org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, XMLHelper.readDocument(istream), realms[i]);
+                                Document filteredConfiguration = XMLHelper.readDocument(istream);
+
+                                // INFO: Debug filtered scheduler configuration
+                                if (log.isDebugEnabled()) {
+                                    org.wyona.yarep.core.Node filteredConfigDebugNode = null;
+                                    if (realms[i].getRepository().existsNode(schedulerJobsPath + ".DEBUG")) {
+                                        filteredConfigDebugNode = realms[i].getRepository().getNode(schedulerJobsPath + ".DEBUG");
+                                    } else {
+                                        filteredConfigDebugNode = org.wyona.yarep.util.YarepUtil.addNodes(realms[i].getRepository(), schedulerJobsPath + ".DEBUG", org.wyona.yarep.core.NodeType.RESOURCE);
+                                    }
+                                    XMLHelper.writeDocument(filteredConfiguration, filteredConfigDebugNode.getOutputStream());
+                                }
+
+                            	// INFO: Run scheduler util
+                                org.wyona.yanel.impl.scheduler.QuartzSchedulerUtil.schedule(scheduler, filteredConfiguration, realms[i]);
                             } catch(Exception e) {
                                 log.error(e, e); // INFO: Log error, but otherwise ignore and keep going ...
                             }
