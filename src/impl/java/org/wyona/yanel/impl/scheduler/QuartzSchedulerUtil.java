@@ -66,6 +66,7 @@ public class QuartzSchedulerUtil {
             //jobDetail.setDescription(jobDesc);
             JobDetail jobDetail = org.quartz.JobBuilder.newJob(jobClass).withIdentity(jobName, groupName).withDescription(jobDesc).build();
             jobDetail.getJobDataMap().put("realm", realm);
+            jobDetail.getJobDataMap().put("job-config", doc);
 
             Element triggerElement = (Element) jobE.getElementsByTagName("trigger").item(0);
 
