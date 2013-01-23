@@ -70,6 +70,7 @@ public class ConfigurationUtil {
      * Filter elements by target environment
      * @param configElement The config element.
      * @param targetEnvironment The target environment.
+     * @return filtered configuration
      */
     public static Configuration filterEnvironment(MutableConfiguration configElement, String targetEnvironment) throws ConfigurationException {
         if(targetEnvironment == null) {
@@ -109,6 +110,7 @@ public class ConfigurationUtil {
                         }
                         targetEnvMatched = true;
                     } else {
+                        log.debug("Remove element '" + child.getName() + "' with target environment attribute '" + env + "' but which did not match target environment '" + targetEnvironment + "' of system.");
                         configElement.removeChild(child);
                     }
                 } catch(ConfigurationException e) {
