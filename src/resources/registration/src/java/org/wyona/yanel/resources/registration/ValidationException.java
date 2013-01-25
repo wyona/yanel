@@ -40,8 +40,15 @@ public class ValidationException extends Exception {
     @Override
     public String getMessage() {
         if (ves != null && ves.size() > 0) {
-            ValidationError ve = (ValidationError) ves.get(0);
-            return "'" + ve.getKey() + "', '" + ve.getValue() + "', '" + ve.getErrorCode() + "'";
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < ves.size(); i++) {
+                ValidationError ve = (ValidationError) ves.get(i);
+                sb.append("(Validation error: '" + ve.getKey() + "', '" + ve.getValue() + "', '" + ve.getErrorCode() + "')");
+                if (i < ves.size() - 1) {
+                    sb.append(" ");
+                }
+            }
+            return sb.toString();
         } else {
             return "No validation errors!";
         }
