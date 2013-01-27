@@ -50,17 +50,16 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     private static final String ONE_OR_MORE_INPUTS_NOT_VALID = "one-or-more-inputs-not-valid";
 
-    // TBD: Make the following "variables" protected such that classes deriving this class can use them?!
-    private static final String EMAIL = "email";
-    private static final String FIRSTNAME = "firstname";
-    private static final String LASTNAME = "lastname";
-    private static final String STREET = "street";
-    private static final String CITY = "location";
-    private static final String ZIP = "zip";
-    private static final String GENDER = "gender";
-    private static final String SALUTATION = "salutation";
-    private static final String PHONE = "phone";
-    private static final String COMPANY = "company";
+    protected static final String EMAIL = "email";
+    protected static final String FIRSTNAME = "firstname";
+    protected static final String LASTNAME = "lastname";
+    protected static final String STREET = "street";
+    protected static final String CITY = "location";
+    protected static final String ZIP = "zip";
+    protected static final String GENDER = "gender";
+    protected static final String SALUTATION = "salutation";
+    protected static final String PHONE = "phone";
+    protected static final String COMPANY = "company";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
