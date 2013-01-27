@@ -50,9 +50,17 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     private static final String ONE_OR_MORE_INPUTS_NOT_VALID = "one-or-more-inputs-not-valid";
 
+    // TBD: Make the following "variables" protected such that classes deriving this class can use them?!
     private static final String EMAIL = "email";
     private static final String FIRSTNAME = "firstname";
     private static final String LASTNAME = "lastname";
+    private static final String STREET = "street";
+    private static final String CITY = "location";
+    private static final String ZIP = "zip";
+    private static final String GENDER = "gender";
+    private static final String SALUTATION = "salutation";
+    private static final String PHONE = "phone";
+    private static final String COMPANY = "company";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -275,7 +283,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         long customerID = new java.util.Date().getTime();
         // TODO: Use encrypted password
         User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
-        // TODO: user.setProperty("gender", gender);
+        // TODO: user.setProperty(GENDER, gender);
         user.setLanguage(getContentLanguage());
         user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
        return user;
@@ -327,7 +335,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 */
         rootElem.appendChild(passwordElem);
 
-        Element genderElem = doc.createElementNS(NAMESPACE, "gender");
+        Element genderElem = doc.createElementNS(NAMESPACE, GENDER);
         genderElem.setTextContent(urb.getGender());
         rootElem.appendChild(genderElem);
 
@@ -492,11 +500,15 @@ public class UserRegistrationResource extends BasicXMLResource {
                 }
 
                 Element rootElement = doc.getDocumentElement();
+
                 // TODO: Add gender/salutation
+
                 Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EMAIL));
                 emailE.appendChild(doc.createTextNode(urBean.getEmail()));
+
                 Element firstnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, FIRSTNAME));
                 firstnameE.appendChild(doc.createTextNode(urBean.getFirstname()));
+
                 Element lastnameE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, LASTNAME));
                 lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
 
@@ -529,7 +541,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         // TODO: Get creation date to determine expire date!
         String uuid = (String) xpath.evaluate("/ur:registration-request/@uuid", doc, XPathConstants.STRING);
-        String gender = (String) xpath.evaluate("/ur:registration-request/ur:gender", doc, XPathConstants.STRING);
+        String gender = (String) xpath.evaluate("/ur:registration-request/ur:" + GENDER, doc, XPathConstants.STRING);
         String firstname = (String) xpath.evaluate("/ur:registration-request/ur:" + FIRSTNAME, doc, XPathConstants.STRING);
         String lastname = (String) xpath.evaluate("/ur:registration-request/ur:" + LASTNAME, doc, XPathConstants.STRING);
         String email = (String) xpath.evaluate("/ur:registration-request/ur:" + EMAIL, doc, XPathConstants.STRING);
@@ -678,19 +690,19 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check gender (mandatory)
-            String gender = isGenderValid(getEnvironment().getRequest().getParameter("salutation"));
+            String gender = isGenderValid(getEnvironment().getRequest().getParameter(SALUTATION));
             if (gender == null) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
                 inputsValid = false;
             } else {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, GENDER));
                 fnE.appendChild(doc.createTextNode("" + gender)); 
             }
 
         // INFO: Check company (optional)
-            String company = isCompanyValid(getEnvironment().getRequest().getParameter("company"));
+            String company = isCompanyValid(getEnvironment().getRequest().getParameter(COMPANY));
             if (company != null && company.length() > 0) {
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "company"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, COMPANY));
                 fnE.appendChild(doc.createTextNode("" + company)); 
             }
 
@@ -702,17 +714,17 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check street
-        String street = getEnvironment().getRequest().getParameter("street");
+        String street = getEnvironment().getRequest().getParameter(STREET);
         if (!isStreetValid(street)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
             inputsValid = false;
         } else {
-            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street"));
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, STREET));
             fnE.appendChild(doc.createTextNode("" + street)); 
         }
 
         // INFO: Check zip
-        String zip = getEnvironment().getRequest().getParameter("zip");
+        String zip = getEnvironment().getRequest().getParameter(ZIP);
         if (!isZipNotEmpty(zip)) {
             log.warn("ZIP '" + zip + "' is not valid!");
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip-not-valid"));
@@ -725,7 +737,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 if (!zip.equals(formattedZip)) {
                     log.warn("Submitted zip code '" + zip + "' has been modified: " + formattedZip);
                 }
-                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "zip"));
+                Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, ZIP));
                 fnE.appendChild(doc.createTextNode(formattedZip)); 
             } else {
                 log.warn("Format of ZIP '" + zip + "' is not valid!");
@@ -735,7 +747,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         }
 
         // INFO: Check city
-            String city = getEnvironment().getRequest().getParameter("location");
+            String city = getEnvironment().getRequest().getParameter(CITY);
             if (!isCityValid(city)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
                 inputsValid = false;
@@ -745,12 +757,12 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check phone
-        String phone = getEnvironment().getRequest().getParameter("phone");
+        String phone = getEnvironment().getRequest().getParameter(PHONE);
         if (!isPhoneValid(phone)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
             inputsValid = false;
         } else {
-            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone"));
+            Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, PHONE));
             fnE.appendChild(doc.createTextNode("" + phone)); 
         }
 
@@ -809,6 +821,30 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element firstnameElem = doc.createElementNS(NAMESPACE, FIRSTNAME);
         firstnameElem.setTextContent(getEnvironment().getRequest().getParameter(FIRSTNAME));
         submittedElem.appendChild(firstnameElem);
+
+        Element streetElem = doc.createElementNS(NAMESPACE, STREET);
+        streetElem.setTextContent(getEnvironment().getRequest().getParameter(STREET));
+        submittedElem.appendChild(streetElem);
+
+        Element cityElem = doc.createElementNS(NAMESPACE, CITY);
+        cityElem.setTextContent(getEnvironment().getRequest().getParameter(CITY));
+        submittedElem.appendChild(cityElem);
+
+        Element zipElem = doc.createElementNS(NAMESPACE, ZIP);
+        zipElem.setTextContent(getEnvironment().getRequest().getParameter(ZIP));
+        submittedElem.appendChild(zipElem);
+
+        Element companyElem = doc.createElementNS(NAMESPACE, COMPANY);
+        companyElem.setTextContent(getEnvironment().getRequest().getParameter(COMPANY));
+        submittedElem.appendChild(companyElem);
+
+        Element phoneElem = doc.createElementNS(NAMESPACE, PHONE);
+        phoneElem.setTextContent(getEnvironment().getRequest().getParameter(PHONE));
+        submittedElem.appendChild(phoneElem);
+
+        Element genderElem = doc.createElementNS(NAMESPACE, GENDER);
+        genderElem.setTextContent(getEnvironment().getRequest().getParameter(SALUTATION));
+        submittedElem.appendChild(genderElem);
 
         return submittedElem;
     }
