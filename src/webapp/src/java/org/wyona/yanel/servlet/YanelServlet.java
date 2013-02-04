@@ -2911,15 +2911,19 @@ public class YanelServlet extends HttpServlet {
         String mobileDevice = (String) session.getAttribute(MOBILE_KEY);
         if (detectMobilePerRequest || mobileDevice == null) {
             String userAgent = request.getHeader("User-Agent");
+            if (userAgent == null) {
+                // log.warn("No user agent available!");
+                return;
+            }
             //log.debug("User agent: " + userAgent);
 
             // INFO: In order to get the screen size/resolution please see for example http://www.coderanch.com/t/229905/JME/Mobile/Getting-Screen-size-requesting-mobile, whereas the below does not seem to work!
             //log.debug("User agent screen: " + request.getHeader("UA-Pixels")); // INFO: UA-Pixels, UA-Color, UA-OS, UA-CPU
 
-            // TODO: Lower case!
+            // TBD: Use lower case for comparing device names...whereas please note that we already set the device name inside the session and hence this might be used somewhere and hence create backwards compatibility issues!
             session.setAttribute(YanelServlet.MOBILE_KEY, "false"); // INFO: First assume user agent is not a mobile device...
             for (int i = 0; i < mobileDevices.length; i++) {
-                if (userAgent != null && userAgent.indexOf(mobileDevices[i]) > 0) { // TODO: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
+                if (matchesMobileDevice(userAgent, mobileDevices[i])) {
                     session.setAttribute(YanelServlet.MOBILE_KEY, mobileDevices[i]);
                     //log.debug("This seems to be a mobile device: " + mobileDevices[i]);
                     break;
@@ -2932,6 +2936,32 @@ public class YanelServlet extends HttpServlet {
 */
         } else {
             //log.debug("Mobile device detection already done.");
+        }
+    }
+
+    /**
+     * Check whether user agent matches mobile device
+     * @param userAgent User agent, e.g. 'Mozilla/5.0 (Linux; U; Android 2.2.1; en-us; Nexus One Build/FRG83) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
+     * @param mobileDevice Mobile device name, e.g. 'iPhone'. One can also specify a combination of words, e.g. 'Android AND Mobile'
+     */
+    private boolean matchesMobileDevice(String userAgent, String mobileDevice) {
+        // TBD: Use http://wurfl.sourceforge.net/njava/, http://www.cloudfour.com/comparative-speed-of-wurfl-and-device-atlas/, http://www.id.uzh.ch/zinfo/mobileview.html
+        if (mobileDevice.indexOf("AND") > 0) {
+            String[] tokens = org.springframework.util.StringUtils.delimitedListToStringArray(mobileDevice, "AND");
+            for (int i = 0; i < tokens.length; i++) {
+                String token = tokens[i].trim();
+                //log.debug("Try to match '" + token + "'...");
+                if (userAgent.indexOf(token) < 0) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            if (userAgent.indexOf(mobileDevice) > 0) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
