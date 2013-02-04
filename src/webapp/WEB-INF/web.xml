@@ -82,10 +82,10 @@
       <!--<param-value>true</param-value>-->
     </init-param>
 
-    <!-- List of mobile devices -->
+    <!-- List of mobile devices (INFO: One can also specify a combination of words, e.g. 'Android AND Fennec' -->
     <init-param>
       <param-name>mobile-devices</param-name>
-      <param-value>iPhone,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Android,Symbian,iemobile,IEMobile</param-value>
+      <param-value>iPhone,Android,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Symbian,iemobile,IEMobile</param-value>
     </init-param>
 
     <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
