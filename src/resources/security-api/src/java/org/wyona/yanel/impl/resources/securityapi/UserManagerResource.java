@@ -41,11 +41,14 @@ public class UserManagerResource extends BasicXMLResource {
     private final String SYNC_PROP_NAME = "last-successful-synchronization";
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/security/1.0";
-    
+
+    /**
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
+     */
     @Override
     protected InputStream getContentXML(String viewId) {
         if (log.isDebugEnabled()) {
-            log.debug("requested viewId: " + viewId);
+            log.debug("Requested view ID: " + viewId);
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
@@ -132,14 +135,17 @@ public class UserManagerResource extends BasicXMLResource {
                 String path = getParameterAsString("path");
                 String recursivelyText = getParameterAsString("deep");
                 boolean recursively = "1".equals(recursivelyText);
+                log.info("Try to delete policy '" + path + "' (Recursively: " + recursively + ")...");
+
                 deletePolicy(path, recursively);
+
+                // TODO: Check whether policy has been deleted sucessfully and depending on the result return a different response, but be aware that it's not clear what success means when recursively is set to true!
                 sb.append("<policy-deleted path=\"" + path + "\" recursively=\"" + recursively + "\"/>");
 /* TODO: Use DOM instead StringBuilder
                 Element policyDeletedElement = (Element) rootElement.appendChild(responseDoc.createElement("policy-deleted"));
                 policyDeletedElement.setAttribute("path", path);
                 policyDeletedElement.setAttribute("recursively", "" + recursively);
 */
-                log.warn("Policy '" + path + "' has been deleted (Recursively: " + recursively + ").");
             } else {
                 log.warn("No such usecase implemented: " + usecase);
                 sb.append("<no-such-yanel-usecase-implemented>" + usecase + "</no-such-yanel-usecase-implemented>");
@@ -420,6 +426,8 @@ public class UserManagerResource extends BasicXMLResource {
                         }
                     }
                 }
+            } else {
+                log.warn("No such node exists: " + path);
             }
         } else {
             log.info("Only delete this particular policy: " + path);
