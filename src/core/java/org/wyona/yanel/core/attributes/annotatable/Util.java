@@ -26,7 +26,7 @@ public class Util {
                 annotations.add(aArray[i]);
             }
         } else {
-           log.warn("No annotations yet: " + path);
+           log.info("No annotations yet: " + path);
         }
         return annotations;
     }
