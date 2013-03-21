@@ -50,7 +50,7 @@
       <dependency groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.moxy" version="2.3.2"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-core" version="1.1.0-r9c69b7ef70ffe4438c83939e117d6d6f3bbdec65"/>
+      <dependency groupId="yarep" artifactId="yarep-core" version="1.2.0-rd189dff5ac04af6e4c859e8f5cd5b914dcc16ab1"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.1.0-ra94054a686299746e6aeb0859aa7f624f14bc7aa"/>
@@ -93,7 +93,7 @@
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
       <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.1.0-r9c69b7ef70ffe4438c83939e117d6d6f3bbdec65"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.2.0-rd189dff5ac04af6e4c859e8f5cd5b914dcc16ab1"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
