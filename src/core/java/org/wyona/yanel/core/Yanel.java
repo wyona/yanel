@@ -354,7 +354,7 @@ public class Yanel {
            System.setProperty("javax.net.ssl.trustStore", truststoreSrc);
            System.setProperty("javax.net.ssl.keyStorePassword", truststorePwd);
        } else {
-           log.warn("SSL trust-store not configured within configuration: " + configFile);
+           log.warn("SSL trust-store not configured in configuration: " + configFile);
        }
     }
 }
