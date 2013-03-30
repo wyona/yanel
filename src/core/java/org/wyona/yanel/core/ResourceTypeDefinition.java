@@ -49,7 +49,8 @@ public class ResourceTypeDefinition {
     }
 
     /**
-     *
+     * Load resource type definition from input stream
+     * @param in InputStream containing resource type definition
      */
     public ResourceTypeDefinition(java.io.InputStream in) {
         // TODO: Set configURL
@@ -63,7 +64,7 @@ public class ResourceTypeDefinition {
             classname = config.getAttribute("class", null);
             description = config.getChild("description").getValue();
         } catch(Exception e) {
-            log.error(e);
+            log.error(e, e);
         }
     }
 
