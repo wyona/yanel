@@ -581,6 +581,7 @@ public class RealmDefaultImpl implements Realm {
             try {
                 String customPolicyManagerFactoryImplClassName = repoConfigElement.getAttribute("class");
                 pmFactory = (PolicyManagerFactory) Class.forName(customPolicyManagerFactoryImplClassName).newInstance();
+                log.warn("TODO: Add realm ID '" + getID() + "' to custom configuration...");
                 policyManager = pmFactory.newPolicyManager(ConfigurationUtil.getCustomConfiguration(repoConfigElement, "policy-manager-config", "http://www.wyona.org/security/1.0"), new RealmConfigPathResolver(this));
             } catch (ConfigurationException e) {
                 pmFactory = yanel.getPolicyManagerFactory("PolicyManagerFactory");
