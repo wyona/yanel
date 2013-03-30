@@ -51,7 +51,6 @@ public class PDFResource extends Resource implements ViewableV2 {
      *
      */
     public PDFResource() {
-
     }
 
     /**
@@ -62,7 +61,7 @@ public class PDFResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
         if (!exists()) {
@@ -75,8 +74,9 @@ public class PDFResource extends Resource implements ViewableV2 {
         defaultView.setResponse(false); // This resource writes directly into the response output stream (because of memory it's better to stream large documents)
 
         try {
-            String yanelPath = getDataPath();
             Repository repo = getRealm().getRepository();
+/*
+            String yanelPath = getDataPath();
             InputStream docSource = null;
             if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
                 SourceResolver resolver = new SourceResolver(this);
@@ -85,6 +85,7 @@ public class PDFResource extends Resource implements ViewableV2 {
             } else {
                 docSource = repo.getNode(yanelPath).getInputStream();
             }
+*/
 
             // Step 1: Construct a FopFactory
             // (reuse if you plan to render multiple documents!)
@@ -109,7 +110,8 @@ public class PDFResource extends Resource implements ViewableV2 {
 
             org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
-            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(docSource));
+            Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(getSourceDocument()));
+            //Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(docSource));
 
             Result res = new SAXResult(fop.getDefaultHandler());
 
@@ -183,5 +185,22 @@ public class PDFResource extends Resource implements ViewableV2 {
      */
     public String getMimeType(String viewId) {
         return "application/pdf";
+    }
+
+    /**
+     * Get source document
+     */
+    private InputStream getSourceDocument() throws Exception {
+            String yanelPath = getDataPath();
+            Repository repo = getRealm().getRepository();
+            InputStream docSource = null;
+            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
+                SourceResolver resolver = new SourceResolver(this);
+                Source source = resolver.resolve(yanelPath, null);
+                docSource = ((StreamSource) source).getInputStream();
+            } else {
+                docSource = repo.getNode(yanelPath).getInputStream();
+            }
+        return docSource;
     }
 }
