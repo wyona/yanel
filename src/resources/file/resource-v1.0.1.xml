@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="file"
+  namespace="http://www.wyona.org/yanel/resource/1.0.1"
+  class="org.wyona.yanel.impl.resources.node.NodeResourceV101"
+  >
+<description>
+Generic node resource
+</description>
+
+<rtd>
+  <property name="mime-type"/>
+  <property name="encoding"/>
+
+  <!-- If no src property is specified, then the request path will be used -->
+  <property name="src"/>
+  <!-- For example (IMPORTANT: Do not forget the leading slash!)
+    <yanel:property name="src" value="/index.html"/>
+  -->
+</rtd>
+</resource>
