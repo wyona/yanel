@@ -36,7 +36,6 @@ import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -93,49 +92,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         if (!exists()) {
             throw new ResourceNotFoundException("No such repository node: " + getRepoPath());
         }
-
         View view = new View();
-
-        String range = getEnvironment().getRequest().getHeader("Range");
-        if (range != null) {
-            if(!range.equals("bytes=0-")) {
-                log.warn("Specific range requested for node '" + getRepoPath()+ "': " + range);
-                String[] ranges = range.split("=")[1].split("-");
-                int from = Integer.parseInt(ranges[0]);
-                int to = Integer.parseInt(ranges[1]);
-                int len = to - from + 1;
-                view.setResponse(false); // INFO: In this case we write directly into the response...
-                HttpServletResponse response = getEnvironment().getResponse();
-                response.setStatus(206);
-                response.setHeader("Accept-Ranges", "bytes");
-                String responseRange = String.format("bytes %d-%d/%d", from, to, getSize());
-                response.setHeader("Connection", "close");
-                response.setHeader("Content-Range", responseRange);
-                log.debug("Content-Range:" + responseRange);
-                response.setDateHeader("Last-Modified", new Date().getTime());
-                response.setContentLength(len);
-                log.debug("Content length: " + len);
-
-                OutputStream os = response.getOutputStream();
-                //OutputStream os = response.getOutputStream("video/mp4");
-                InputStream is = new java.io.BufferedInputStream(getNode().getInputStream());
-
-                byte[] buf = new byte[4096];
-                is.skip(from);
-                while( len != 0) {
-                    int read = is.read(buf, 0, len >= buf.length ? buf.length : len);
-                    if( read != -1) {
-                        os.write(buf, 0, read);
-                        len -= read;
-                    }
-                }
-                return view;
-            } else {
-                //log.debug("Range requested for node '" + getRepoPath()+ "': " + range);
-            }
-        } else {
-            //log.debug("No range requested for node: " + getRepoPath());
-        }
 
         view.setInputStream(getNode().getInputStream());
         view.setMimeType(getMimeType(viewId));
@@ -544,14 +501,6 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "video/quicktime";
         } else if (suffix.equals("mp3")) {
             return "audio/mpeg";
-        } else if (suffix.equals("mp4")) {
-            return "video/mp4";
-        } else if (suffix.equals("m4v")) {
-            return "video/mp4";
-        } else if (suffix.equals("ogv")) {
-            return "video/ogg";
-        } else if (suffix.equals("webm")) {
-            return "video/webm";
         } else if (suffix.equals("wav")) {
             return "audio/x-wav";
         } else if (suffix.equals("svg")) {
