@@ -501,6 +501,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
             return "video/quicktime";
         } else if (suffix.equals("mp3")) {
             return "audio/mpeg";
+        } else if (suffix.equals("mp4")) {
+            return "video/mp4";
+        } else if (suffix.equals("m4v")) {
+            return "video/mp4";
+        } else if (suffix.equals("ogv")) {
+            return "video/ogg";
+        } else if (suffix.equals("webm")) {
+            return "video/webm";
         } else if (suffix.equals("wav")) {
             return "audio/x-wav";
         } else if (suffix.equals("svg")) {
