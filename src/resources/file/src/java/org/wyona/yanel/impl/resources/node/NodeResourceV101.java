@@ -117,7 +117,6 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
                 log.debug("Content length: " + len);
 
                 OutputStream os = response.getOutputStream();
-                //OutputStream os = response.getOutputStream("video/mp4");
                 InputStream is = new java.io.BufferedInputStream(getNode().getInputStream());
 
                 byte[] buf = new byte[4096];
