@@ -16,7 +16,7 @@
     <change version="2012072700">consolidate resources into same directory</change>
     <change version="2012071600">scheduler jobs overview added</change>
     <change version="2012011800">generic user registration added</change>
-    <change version="2011081600">jelly controller adapter added in order to support CUD version 3 (see contributions/resources/creatable-modifiable-deletable-v3)</change>
+    <change version="2011081600">jelly controller adapter (org.wyona.yanel.impl.resources.jellyadapterofcmdv3) added in order to support CUD version 3 (see source at https://github.com/wyona/yanel-contributions/tree/master/resources/creatable-modifiable-deletable-v3)</change>
     <change version="2011032500">personalized content resource type (using boost) added</change>
     <change version="2011031600">workflow dashboard resource type added</change>
     <change version="2011031000">comment resource type added</change>
