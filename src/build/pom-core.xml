@@ -90,7 +90,7 @@
     <dependency>
       <groupId>wyona-org-yanel</groupId>
       <artifactId>yanel-resource-creatable-modifiable-deletable-v3</artifactId>
-      <version>1.0.0-ra0ae30104db2d5407928fd1f41e94a7a1f66ac8e</version>
+      <version>1.0.1-r7c074f5d6f27233fa1e3ef2f4451e608caed583f</version>
     </dependency>
   </dependencies>
 </project>
