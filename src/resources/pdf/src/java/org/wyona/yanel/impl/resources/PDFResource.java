@@ -159,7 +159,7 @@ public class PDFResource extends Resource implements ViewableV2 {
         if(xsltPath != null) {
             return new StreamSource(repo.getInputStream(new Path(xsltPath)));
         }
-        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "xslt" + File.separator + "xml2fo.xsl");
         if (xsltFile.isFile()) {
             log.warn("No custom XSLT configured hence fallback to default: " + xsltFile);
             return new StreamSource(xsltFile);
