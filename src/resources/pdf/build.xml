@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="yanel-pdf-resource" default="compile">
+<project name="yanel-pdf-resource" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 
 <!--
