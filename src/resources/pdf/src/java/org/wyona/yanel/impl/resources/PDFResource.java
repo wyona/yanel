@@ -25,7 +25,7 @@ import org.wyona.yanel.core.source.SourceResolver;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yanel.core.util.WildcardReplacerHelper;
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.MimeConstants;
@@ -41,11 +41,11 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- *
+ * Generate PDF using FOP
  */
 public class PDFResource extends Resource implements ViewableV2 {
 
-    private static Category log = Category.getInstance(PDFResource.class);
+    private static Logger log = Logger.getLogger(PDFResource.class);
 
     /**
      *
@@ -75,17 +75,6 @@ public class PDFResource extends Resource implements ViewableV2 {
 
         try {
             Repository repo = getRealm().getRepository();
-/*
-            String yanelPath = getDataPath();
-            InputStream docSource = null;
-            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
-                SourceResolver resolver = new SourceResolver(this);
-                Source source = resolver.resolve(yanelPath, null);
-                docSource = ((StreamSource) source).getInputStream();
-            } else {
-                docSource = repo.getNode(yanelPath).getInputStream();
-            }
-*/
 
             // Step 1: Construct a FopFactory
             // (reuse if you plan to render multiple documents!)
@@ -106,20 +95,24 @@ public class PDFResource extends Resource implements ViewableV2 {
             //java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             //driver.setOutputStream(baos);
 
-            Transformer transformer = TransformerFactory.newInstance().newTransformer(getXSLTStreamSource(getPath(),repo));
 
             org.xml.sax.XMLReader xmlReader = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
             xmlReader.setEntityResolver(new org.apache.xml.resolver.tools.CatalogResolver());
             Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(getSourceDocument()));
-            //Source src = new SAXSource(xmlReader, new org.xml.sax.InputSource(docSource));
 
             Result res = new SAXResult(fop.getDefaultHandler());
 
-            transformer.transform(src,res);
+            StreamSource xsltStreamSource = getXSLTStreamSource(getPath(),repo);
+            if (xsltStreamSource != null) {
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(xsltStreamSource);
+                transformer.transform(src,res);
 
-            // TODO: For some strange reason the stream seems to be truncated after a certain length ...!
-            //log.debug("Result Size"+ baos.size());
-            //defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+                // TODO: For some strange reason the stream seems to be truncated after a certain length ...!
+                //log.debug("Result Size"+ baos.size());
+                //defaultView.setInputStream(new java.io.ByteArrayInputStream(baos.toByteArray()));
+            } else {
+                log.error("No XSLT!");
+            }
         } catch(Exception e) {
             log.error(e, e);
         }
@@ -137,7 +130,7 @@ public class PDFResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Check if data actually exists within repository
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
     public boolean exists() throws Exception {
         String yanelPath = getDataPath();
@@ -158,25 +151,32 @@ public class PDFResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * @param path Path of requested resource
+     * @param repo Repository containing optional XSLT
      */
     private StreamSource getXSLTStreamSource(String path, Repository repo) throws Exception {
         String xsltPath = getXSLTPath(path);
-        if(xsltPath != null) 
+        if(xsltPath != null) {
             return new StreamSource(repo.getInputStream(new Path(xsltPath)));
-        File xsltFile = org.wyona.commons.io.FileUtil.file( rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
-        if( log.isDebugEnabled() )
-            log.debug("XSLT file: " + xsltFile);
-        return new StreamSource(xsltFile);
+        }
+        File xsltFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "xml2fo.xsl");
+        if (xsltFile.isFile()) {
+            log.warn("No custom XSLT configured hence fallback to default: " + xsltFile);
+            return new StreamSource(xsltFile);
+        } else {
+            log.warn("No such XSLT: " + xsltFile);
+            return null;
+        }
     }
 
     /**
-     *
+     * @param path Path of requested resource
+     * @return custom XSLT path when configured inside resource configuration
      */
     private String getXSLTPath(String path) throws Exception {
         String xsltPath = getResourceConfigProperty("xslt");
         if (xsltPath != null) return xsltPath;
-        log.info("No XSLT Path within: " + path);
+        log.warn("No XSLT Path configured for requested PDF resource: " + path);
         return null;
     }
 
@@ -189,18 +189,19 @@ public class PDFResource extends Resource implements ViewableV2 {
 
     /**
      * Get source document
+     * @return XML as input stream
      */
-    private InputStream getSourceDocument() throws Exception {
-            String yanelPath = getDataPath();
-            Repository repo = getRealm().getRepository();
-            InputStream docSource = null;
-            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
-                SourceResolver resolver = new SourceResolver(this);
-                Source source = resolver.resolve(yanelPath, null);
-                docSource = ((StreamSource) source).getInputStream();
-            } else {
-                docSource = repo.getNode(yanelPath).getInputStream();
-            }
+    protected InputStream getSourceDocument() throws Exception {
+        String yanelPath = getDataPath();
+        Repository repo = getRealm().getRepository();
+        InputStream docSource = null;
+        if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:")) {
+            SourceResolver resolver = new SourceResolver(this);
+            Source source = resolver.resolve(yanelPath, null);
+            docSource = ((StreamSource) source).getInputStream();
+        } else {
+            docSource = repo.getNode(yanelPath).getInputStream();
+        }
         return docSource;
     }
 }
