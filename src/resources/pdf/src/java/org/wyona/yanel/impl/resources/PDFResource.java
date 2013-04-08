@@ -143,10 +143,10 @@ public class PDFResource extends Resource implements ViewableV2 {
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getSize()
      */
     public long getSize() throws Exception {
-        log.warn("Not implemented yet!");
+        log.warn("Not implemented, because we generate/stream the PDF on the fly and hence do not know the final size ahead!");
         return -1;
     }
 
