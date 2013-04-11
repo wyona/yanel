@@ -138,7 +138,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     return viewDescriptors[i];
                 }
             }
-            log.warn("No view descriptor found for view id (Resource path: " + getPath() + "): " + viewId);
+            log.warn("No view descriptor found for view id '" + viewId + "' (Resource path: " + getPath() + ")");
             return null;
         } else {
             log.warn("No view descriptors set inside resource configuration (Resource path: " + getPath() + ")!");
