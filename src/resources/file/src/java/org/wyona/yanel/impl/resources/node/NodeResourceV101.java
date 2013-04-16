@@ -97,7 +97,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         View view = new View();
 
         String range = getEnvironment().getRequest().getHeader("Range");
-        if (range != null) {
+        if (range != null) { // INFO: Also see http://stackoverflow.com/questions/12768812/video-streaming-to-ipad-does-not-work-with-tapestry5, http://balusc.blogspot.ch/2009/02/fileservlet-supporting-resume-and.html
             if(!range.equals("bytes=0-")) {
                 log.warn("Specific range requested for node '" + getRepoPath()+ "': " + range);
                 String[] ranges = range.split("=")[1].split("-");
@@ -546,7 +546,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         } else if (suffix.equals("mp4")) {
             return "video/mp4";
         } else if (suffix.equals("m4v")) {
-            return "video/mp4";
+            return "video/x-m4v";
         } else if (suffix.equals("ogv")) {
             return "video/ogg";
         } else if (suffix.equals("webm")) {
