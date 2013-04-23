@@ -13,6 +13,7 @@ public class TrackingInformationV1 {
     private String pageType;
     private String requestAction;
     private HashMap<String, String> hm = new HashMap();
+    private boolean doNotTrack = false;
 
     /**
      * Get tags
@@ -70,5 +71,21 @@ public class TrackingInformationV1 {
      */
     public void addCustomField(String key, String value) {
         hm.put(key, value);;
+    }
+
+    /**
+     * Check whether resource associated with this tracking information should be tracked
+     * @return true when resource associated should not be tracked, false otherwise
+     */
+    public boolean doNotTrack() {
+        return doNotTrack;
+    }
+
+    /**
+     * Set flag whether resource associated with this tracking information should not be tracked
+     * @param doNotTrack When set to true, then resource associated should not be tracked
+     */
+    public void setDoNotTrack(boolean doNotTrack) {
+        this.doNotTrack = doNotTrack;
     }
 }
