@@ -2259,18 +2259,24 @@ public class YanelServlet extends HttpServlet {
                 }
 
                 // Check if InputStream is empty
-                if (bytesRead != -1) {
-                    java.io.OutputStream os = response.getOutputStream();
-                    os.write(buffer, 0, bytesRead);
-                    while ((bytesRead = is.read(buffer)) != -1) {
+                try {
+                    if (bytesRead != -1) {
+                        java.io.OutputStream os = response.getOutputStream();
                         os.write(buffer, 0, bytesRead);
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
+                        }
+                        os.close();
+                    } else {
+                        log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
                     }
-                    os.close();
-                } else {
-                    log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
+                } catch(Exception e) {
+                    log.error(e, e);
+                    throw new ServletException(e);
+                } finally {
+                    //log.debug("Close InputStream in any case!");
+                    is.close(); // INFO: Make sure to close InputStream, because otherwise we get bugged with open files
                 }
-
-                is.close();
                 return response;
             } else {
                 String message = "Returned InputStream of request '" + request.getRequestURI() + "' is null!";
@@ -2699,6 +2705,10 @@ public class YanelServlet extends HttpServlet {
 
             String accessLogMessage;
             if (trackInfo != null) {
+                if (trackInfo.doNotTrack()) {
+                    logDoNotTrack.debug("Do not track: " + resource.getPath() + " (Remote address: " + request.getRemoteAddr() + ")");
+                    return;
+                }
                 String[] trackingTags = trackInfo.getTags();
                 if (trackingTags != null && trackingTags.length > 0) { // INFO: Either/Or, but not both. If you want both, then make sure that that your resource adds its annotations to the tracking information.
                     accessLogMessage = AccessLog.getLogMessage(getRequestURLQS(request, null, false), request, response, realm.getUserTrackingDomain(), trackingTags, ACCESS_LOG_TAG_SEPARATOR);
@@ -3111,7 +3121,13 @@ public class YanelServlet extends HttpServlet {
      * @param resource Resource/controller which might has the trackable interface implemented
      */
     private boolean isTrackable(Resource resource) {
-        return ResourceAttributeHelper.hasAttributeImplemented(resource, "Trackable", "1");
+        boolean isTrackable = ResourceAttributeHelper.hasAttributeImplemented(resource, "Trackable", "1");
+        if (isTrackable) {
+            return true;
+        } else {
+            //logDoNotTrack.debug("Resource '" + resource.getPath() + "' has trackable interface not implemented.");
+            return false;
+        }
     }
 
     /**
