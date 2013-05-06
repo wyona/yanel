@@ -6,12 +6,12 @@
   class="org.wyona.yanel.impl.resources.node.NodeResourceV101"
   >
 <description>
-Generic node resource
+Generic node resource, whereas also range requests are supported
 </description>
 
 <rtd>
-  <property name="mime-type"/>
-  <property name="encoding"/>
+  <property name="mime-type"/> <!-- optional -->
+  <property name="encoding"/> <!-- optional -->
 
   <!-- If no src property is specified, then the request path will be used -->
   <property name="src"/>

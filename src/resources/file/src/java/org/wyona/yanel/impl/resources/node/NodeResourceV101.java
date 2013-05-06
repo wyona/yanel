@@ -80,7 +80,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         View view = new View();
 
         view.setInputStream(getNode().getRevision(revisionName).getInputStream());
-        view.setMimeType(getMimeType(viewId));
+        view.setMimeType(getMimeType());
         view.setEncoding(getResourceConfigProperty("encoding"));
 
         return view;
@@ -95,11 +95,13 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         }
 
         View view = new View();
+        view.setMimeType(getMimeType());
+        view.setEncoding(getResourceConfigProperty("encoding"));
 
         String range = getEnvironment().getRequest().getHeader("Range");
         if (range != null) { // INFO: Also see http://stackoverflow.com/questions/12768812/video-streaming-to-ipad-does-not-work-with-tapestry5, http://balusc.blogspot.ch/2009/02/fileservlet-supporting-resume-and.html
             if(!range.equals("bytes=0-")) {
-                log.warn("Specific range requested for node '" + getRepoPath()+ "': " + range);
+                log.warn("DEBUG: Specific range requested for node '" + getRepoPath() + "': " + range);
                 String[] ranges = range.split("=")[1].split("-");
                 int from = Integer.parseInt(ranges[0]);
                 int to = Integer.parseInt(ranges[1]);
@@ -119,13 +121,23 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
                 OutputStream os = response.getOutputStream();
                 InputStream is = new java.io.BufferedInputStream(getNode().getInputStream());
 
-                byte[] buf = new byte[4096];
-                is.skip(from);
-                while( len != 0) {
-                    int read = is.read(buf, 0, len >= buf.length ? buf.length : len);
-                    if( read != -1) {
-                        os.write(buf, 0, read);
-                        len -= read;
+                try {
+                    byte[] buf = new byte[4096];
+                    is.skip(from);
+                    while( len != 0) {
+                        int read = is.read(buf, 0, len >= buf.length ? buf.length : len);
+                        if( read != -1) {
+                            os.write(buf, 0, read);
+                            len -= read;
+                        }
+                    }
+                } catch(Exception e) {
+                    log.error("Exception '" + e.getMessage() + "' while handling request '" + getRepoPath() + "' (Range: " + range + "), whereas see stack trace for details...");
+                    log.error(e, e);
+                } finally {
+                    if (is != null) {
+                        is.close();
+                        log.warn("DEBUG: Making sure to close input stream of '" + getNode().getPath() + "' (Range: " + range + ").");
                     }
                 }
                 return view;
@@ -137,8 +149,6 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         }
 
         view.setInputStream(getNode().getInputStream());
-        view.setMimeType(getMimeType(viewId));
-        view.setEncoding(getResourceConfigProperty("encoding"));
 
         return view;
     }
@@ -146,7 +156,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
     /**
      * Get mime type
      */
-    public String getMimeType(String viewId) throws Exception {
+    private String getMimeType() throws Exception {
         // TODO: Also check mime type of data repository node
 
         String mimeType = getResourceConfigProperty("mime-type");
@@ -470,7 +480,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
         buf.append("</navigation>");
 
         buf.append("<resource name=\"" + name + "\">");
-        buf.append("<edit mime-type=\"" + this.getMimeType(null) + "\">");
+        buf.append("<edit mime-type=\"" + this.getMimeType() + "\">");
         buf.append("<checkout url=\"?yanel.resource.usecase=checkout\" method=\"GET\"/>");
         buf.append("<checkin  url=\"?yanel.resource.usecase=checkin\"  method=\"PUT\"/>");
         buf.append("<release-lock url=\"?yanel.resource.usecase=release-lock\" method=\"GET\"/>");
