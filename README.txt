@@ -55,7 +55,7 @@
     3.2) Run within Jetty: "yanel start-jetty" to start Jetty
     3.3) Run from the Command Line: "yanel cmdl /from-scratch-realm/de/index.html"
 
-    4) Browse to http://127.0.0.1:8080/yanel/
+    4) Browse to http://127.0.0.1:8080/yanel/ (or https://127.0.0.1:8080/yanel/ when Yanel has been setup with SSL)
 
     5) Run tests
     5.1) Run junit and html unit tests: "build test"
