@@ -13,7 +13,7 @@
   </xsl:template>
   
   <xsl:template match="Connector[@port = $http-port]">
-    <!-- Replace current SSL port with SSL port configured within (local.)build.properties  -->
+    <!-- Replace current SSL port with SSL port configured inside (local.)build.properties  -->
     <xsl:copy> 
       <xsl:copy-of select="@*"/>
       <xsl:attribute name="redirectPort"><xsl:value-of select="$ssl-port"/></xsl:attribute>
@@ -35,6 +35,7 @@
         <xsl:attribute name="scheme">https</xsl:attribute>
         <xsl:attribute name="sslProtocol">TLS</xsl:attribute>
         <xsl:attribute name="clientAuth">false</xsl:attribute>
+        <xsl:attribute name="SSLEnabled">true</xsl:attribute>
 
 <!-- UTF-8 Support -->
 <!--
