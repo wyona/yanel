@@ -170,6 +170,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 Element urlEl = doc.createElementNS(NAMESPACE, "url");
                 urlEl.appendChild(doc.createTextNode(he.getURL()));
                 urlEl.setAttribute("epoch-time", "" + he.getTime());
+                urlEl.setAttribute("date", new java.util.Date(he.getTime()).toString());
                 if (clickstreamEl.hasChildNodes()) {
                     clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
                 } else {
