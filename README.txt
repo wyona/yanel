@@ -22,10 +22,12 @@
     Quick Start
     -----------
 
-    1) Build Yanel by running (whereas build will be without SSL, but please use configure further down to setup Yanel with SSL)
+    1) Build Yanel by running
 
         UNIX: ./build.sh quick-start
         Windows: build.bat quick-start
+
+       whereas by default the build will be without SSL. Please use the script 'configure' described further down to setup Yanel with SSL.
 
     2) Start Yanel by running
 
@@ -40,7 +42,7 @@
 
     0) Clean a previous build by running "build clean-all"
 
-    1) Configure Yanel by running "configure"
+    1) Configure Yanel by running "configure" (whereas by default the build will support SSL)
  
        After "configure" has finished, you may want to review the contents of 
        the file './src/build/local.build.properties' to better understand the parameters
