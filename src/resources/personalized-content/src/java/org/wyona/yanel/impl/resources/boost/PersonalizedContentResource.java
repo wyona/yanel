@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 import com.wyona.boost.client.BoostService;
 import com.wyona.boost.client.ServiceException;
 import com.wyona.boost.client.BoostServiceConfig;
+import com.wyona.boost.client.HistoryEntry;
 
 import org.wyona.yarep.core.Node;
 
@@ -160,13 +161,15 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         // INFO: Get clickstream
         try {
-            Iterable<String> clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
+            Iterable<HistoryEntry> clickStream = getClickstream(service, cookieVal, boost_domain, api_key);
 
             // INFO: Add clickstream to user profile
             Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
-            for(String url : clickStream) {
+            for(HistoryEntry he : clickStream) {
+                log.warn("DEBUG: URL of history entry: " + he.getURL());
                 Element urlEl = doc.createElementNS(NAMESPACE, "url");
-                urlEl.appendChild(doc.createTextNode(url));
+                urlEl.appendChild(doc.createTextNode(he.getURL()));
+                urlEl.setAttribute("epoch-time", "" + he.getTime());
                 if (clickstreamEl.hasChildNodes()) {
                     clickstreamEl.insertBefore(urlEl, clickstreamEl.getFirstChild());
                 } else {
@@ -198,7 +201,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * @param apiKey Key to access Boost API
      * @return list of URLs which were requested by user with a given cookie
      */
-    private Iterable<String> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+    private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
         BoostService boost = new BoostService(bsc);
         return boost.getClickStream(cookie);
