@@ -51,6 +51,9 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   <meta name="DC.Creator" content="TODO"/>
   <meta name="DC.Language" content="TODO"/>
 
+<!--
+  <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico"/>
+-->
   <link rel="shortcut icon" href="{$yarep.back2realm}favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="{$yarep.back2realm}css/global.css" type="text/css"/>
   <base target="_top"/>
@@ -122,6 +125,25 @@ WARNING: This content has been generated dynamically. All changes will be lost.
   </td>
 </tr>
 </table>
+
+<!-- Piwik -->
+<script type="text/javascript"> 
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://piwik.wyona.com/piwik//";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+
+</script>
+<noscript><p><img src="http://piwik.wyona.com/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Code -->
+
+
 
 </body>
 </html>
