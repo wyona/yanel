@@ -30,6 +30,9 @@
   </xsl:choose>
     <link rel="neutron-introspection" type="application/neutron+xml" href="introspection-homepage.xml"/>
   
+<!--
+  <link rel="shortcut icon" href="http://www.yanel.org/favicon.ico"/>
+-->
   <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
   <link rel="stylesheet" href="css/global.css" type="text/css"/>
   <base target="_top"/>
@@ -130,6 +133,22 @@ English (5.0 MB)
 <xsl:copy-of select="/yh:homepage/yh:footer/xhtml:body/node()"/>
 
 </div>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://piwik.wyona.com/piwik//";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
+    g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+
+</script>
+<noscript><p><img src="http://piwik.wyona.com/piwik/piwik.php?idsite=1" style="border:0" alt="" /></p></noscript>
+<!-- End Piwik Code -->
 </body>
 </html>
 </xsl:template>
