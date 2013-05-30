@@ -2775,6 +2775,9 @@ public class YanelServlet extends HttpServlet {
 
             String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
             if (remoteIPAddr != null) { // INFO: We do not need to check realm.isProxySet() additionally, because some deployments are using a proxy without having set the Yanel proxy configuration, hence it is sufficient to just check whether an X-FORWARDED-FOR header is set
+                if (remoteIPAddr.indexOf("unknown") >= 0) {
+                    log.warn("TODO: Clean remote IP address: " + remoteIPAddr);
+                }
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
             } else {
                 if (log.isDebugEnabled()) {
