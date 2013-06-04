@@ -22,19 +22,24 @@
     Quick Start
     -----------
 
-    1) Build Yanel by running
+    0) The build and start scripts described below will ask you about JAVA_HOME, but you might want to set it first
+
+        Mac OS X: export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+        Windows: See for example http://www.atlassian.com/software/jira/docs/v3.9/java.html
+
+    1) Build/Compile Yanel by running
 
         UNIX: ./build.sh quick-start
         Windows: build.bat quick-start
 
        whereas by default the build will be without SSL. Please use the script 'configure' described further down to setup Yanel with SSL.
 
-    2) Start Yanel by running
+    2) Start Yanel/Tomcat by running
 
         UNIX: ./yanel.sh start
         Windows: yanel.bat start
 
-    3) Browse to http://127.0.0.1:8080/yanel/
+    3) Use your favorite web browser to request and start using Yanel http://127.0.0.1:8080/yanel/
 
 
     Getting Started at Length
