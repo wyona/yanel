@@ -56,7 +56,7 @@
       <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.1.0-ra94054a686299746e6aeb0859aa7f624f14bc7aa"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="1.5.0"/>
+      <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="2.7.0"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="javax.activation" artifactId="activation" version="1.1"/>
