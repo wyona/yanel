@@ -2297,19 +2297,24 @@ public class YanelServlet extends HttpServlet {
     public void destroy() {
         super.destroy();
 
+        log.warn("DEBUG: Destroy Yanel instance...");
         yanelInstance.destroy();
-
-        log.warn("Yanel instance destroyed.");
 
         if (scheduler != null) {
             try {
                 log.info("Shutdown scheduler ...");
+                log.warn("DEBUG: Shutdown scheduler ...");
                 scheduler.shutdown();
                 //scheduler.shutdown(true); // INFO: true means to wait until all jobs have completed
             } catch(Exception e) {
                 log.error(e, e);
             }
+        } else {
+            log.warn("No scheduler instance exists, probably because it is disabled: " + yanelInstance.isSchedulerEnabled());
         }
+
+        log.warn("DEBUG: Shutdown ehcache...");
+        net.sf.ehcache.CacheManager.create().shutdown();
 
         File shutdownLogFile = new File(System.getProperty("java.io.tmpdir"), "shutdown.log");
         log.warn("Trying to shutdown log4j loggers... (if shutdown successful, then loggers won't be available anymore. Hence see shutdown log file '" + shutdownLogFile.getAbsolutePath() + "' for final messages)");
