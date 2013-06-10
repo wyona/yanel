@@ -60,7 +60,9 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
+
 import org.wyona.yarep.core.Node;
+import org.wyona.yarep.core.NoSuchNodeException;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
 
@@ -288,6 +290,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         if (path == null) {
             path = getPath();
         }
+        if (path.indexOf("http://") == 0) {
+            throw new NoSuchNodeException(path, getRealm().getRepository());
+        }
         return getRealm().getRepository().getNode(path);
     }
 
@@ -303,10 +308,16 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV3#getRevisions(boolean)
      */
     public java.util.Iterator<RevisionInformation> getRevisions(boolean reverse) throws Exception {
-        if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(getRepoNode(), "org.wyona.yarep.core.attributes.VersionableV1")) {
-            org.wyona.yarep.core.attributes.VersionableV1 versionableNode = (org.wyona.yarep.core.attributes.VersionableV1) getRepoNode();
-            return new org.wyona.yanel.core.attributes.versionable.RevisionInformationIterator(versionableNode.getRevisions(reverse));
-        } else {
+        try {
+            Node node = getRepoNode();
+            if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(node, "org.wyona.yarep.core.attributes.VersionableV1")) {
+                org.wyona.yarep.core.attributes.VersionableV1 versionableNode = (org.wyona.yarep.core.attributes.VersionableV1) getRepoNode();
+                return new org.wyona.yanel.core.attributes.versionable.RevisionInformationIterator(versionableNode.getRevisions(reverse));
+            } else {
+                return null;
+            }
+        } catch(NoSuchNodeException e) {
+            log.error(e, e);
             return null;
         }
     }
