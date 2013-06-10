@@ -317,8 +317,13 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 return null;
             }
         } catch(NoSuchNodeException e) {
-            log.error(e, e);
-            return null;
+            String path = getResourceConfigProperty("yanel-path");
+            if (path != null && path.indexOf("http://") == 0) {
+                log.warn("No revisions available for external URL: " + path);
+                return null;
+            } else {
+                throw e;
+            }
         }
     }
 
