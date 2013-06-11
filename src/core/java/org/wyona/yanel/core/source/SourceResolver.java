@@ -74,8 +74,9 @@ public class SourceResolver implements URIResolver {
             } catch (TransformerException e) {
                 throw new SourceException(e.getMessage(), e);
             }
+        } else {
+            throw new SourceException("No resolver could be loaded for scheme '" + uriScheme + "'!");
         }
-        throw new SourceException("No resolver could be loaded for scheme: " + uriScheme);
     }
     
     /**
@@ -96,6 +97,9 @@ public class SourceResolver implements URIResolver {
                 //resolver = new RepositoryResolver(this.resource);
             } else if (scheme.equals("http")) {
                 resolver = new HttpResolver(this.resource);
+                this.resolvers.put(scheme, resolver);
+            } else if (scheme.equals("https")) {
+                resolver = new HttpResolver(this.resource); // TBD/TODO: Can we use the HttpResolver for https?!
                 this.resolvers.put(scheme, resolver);
             } else if (scheme.equals("rthtdocs")) {
                 resolver = new RTHtdocsResolver(this.resource);
