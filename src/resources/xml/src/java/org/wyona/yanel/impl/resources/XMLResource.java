@@ -75,8 +75,12 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
     private Boolean annotationRead = false;
     private Set<String> annotations  = new HashSet<String>();
-    
 
+    private static final String YANEL_PATH_PROPERTY_NAME = "yanel-path";
+
+    /**
+     *
+     */
     public View getView(String viewId) throws Exception {
         return getView(viewId, null);
     }
@@ -86,13 +90,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public View getView(String viewId, String revisionName) throws Exception {
         Repository repo = getRealm().getRepository();
-        String yanelPath = getResourceConfigProperty("yanel-path");
+        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
         return getXMLView(viewId, xmlInputStream);
     }
 
     /**
      * Get initial content as XML
+     * @param yanelPath Path from resource configuration, which might contain a protocol, e.g. 'http' or 'yanelresource'
      */
     private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
 
@@ -265,9 +270,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public long getLastModified() throws Exception {
         long lastModified;
-        String yanelPath = getResourceConfigProperty("yanel-path");
+        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
-            log.warn("Get last modified for parameter yanel-path not implemented yet!");
+            log.warn("Get last modified for parameter yanel-path '" + yanelPath + "' is not implemented yet!");
             lastModified = -1;
         } else {
             Node node = getRealm().getRepository().getNode(getPath());
@@ -282,11 +287,11 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     *
+     * Get repository node
      */
     public Node getRepoNode() throws Exception {
         // TODO: yanel-path is not a repo path actually, but rather another resource! See getContentXML()
-        String path = getResourceConfigProperty("yanel-path");
+        String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (path == null) {
             path = getPath();
         }
@@ -317,7 +322,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 return null;
             }
         } catch(NoSuchNodeException e) {
-            String path = getResourceConfigProperty("yanel-path");
+            String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
             if (path != null && path.indexOf("http://") == 0) {
                 log.warn("No revisions available for external URL: " + path);
                 return null;
@@ -413,7 +418,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#isCheckedOut()
      */
     public boolean isCheckedOut() throws Exception {
-        String yanelPath = getResourceConfigProperty("yanel-path");
+        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
             log.warn("Check whether checked-out for parameter yanel-path '" + yanelPath + "' not implemented yet!");
             return false;
@@ -794,7 +799,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return;
         }
 
-        String yanelPath = getResourceConfigProperty("yanel-path");
+        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
             log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
         } else {
