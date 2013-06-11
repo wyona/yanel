@@ -104,7 +104,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
         if (yanelPath != null) {
             if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
-            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:")) {
+            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:") || yanelPath.startsWith("https:")) {
                 log.debug("Protocol/Scheme used: " + yanelPath);
                 // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
                 try {
