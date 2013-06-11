@@ -103,11 +103,18 @@ public abstract class Resource {
     public String getResourceTypeNamespace() {
         return rtd.getResourceTypeNamespace();
     }
-    
+
+    /**
+     * Get path this resource is associated with
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Set path this resource is associated with
+     * @param path Path this resource is associated with
+     */
     public void setPath(String path) {
         this.path = path;
     }
