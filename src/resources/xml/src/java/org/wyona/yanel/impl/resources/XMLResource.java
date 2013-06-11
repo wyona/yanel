@@ -79,8 +79,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     private static final String YANEL_PATH_PROPERTY_NAME = "yanel-path";
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
      */
+    @Override
     public View getView(String viewId) throws Exception {
         return getView(viewId, null);
     }
@@ -290,13 +291,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Get repository node
      */
     public Node getRepoNode() throws Exception {
-        // TODO: yanel-path is not a repo path actually, but rather another resource! See getContentXML()
+        // INFO: yanel-path is normally not just another repository path, but rather another resource! See getContentXML()
         String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (path == null) {
             path = getPath();
-        }
-        if (path.indexOf("http://") == 0) {
-            throw new NoSuchNodeException(path, getRealm().getRepository());
+        } else {
+            if (path.indexOf("http://") == 0) {
+                throw new NoSuchNodeException(path, getRealm().getRepository());
+            }
         }
         return getRealm().getRepository().getNode(path);
     }
