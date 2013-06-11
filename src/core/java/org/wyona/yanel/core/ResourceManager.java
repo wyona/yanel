@@ -95,6 +95,8 @@ public class ResourceManager {
     }
 
     /**
+     * @param realm Realm the returned resource is associated with
+     * @param path Path the returned resource is associated with
      * @param rtd not <samp>null</samp>
      */
     private Resource getResource(Environment environment, Realm realm, String path, ResourceTypeDefinition rtd, ResourceConfiguration rc) throws Exception {
