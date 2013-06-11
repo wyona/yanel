@@ -38,6 +38,7 @@ public interface ViewableV2 {
     
     /**
      * Allows to check if a view of this resource exists
+     * @return true if resource exists and false otherwise
      */
     public boolean exists() throws Exception;
     
