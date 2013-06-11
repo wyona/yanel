@@ -22,7 +22,8 @@ public class HttpResolver implements URIResolver {
 
     private static Category log = Category.getInstance(HttpResolver.class);
 
-    private static final String SCHEME = "http";
+    private static final String HTTP_SCHEME = "http";
+    private static final String HTTPS_SCHEME = "https";
     
     //private Resource resource;
     
@@ -30,11 +31,18 @@ public class HttpResolver implements URIResolver {
         //this.resource = resource;
     }
 
+    /**
+     * @see javax.xml.transform.URIResolver#resolve(String, String)
+     */
     public Source resolve(String href, String base) throws SourceException {
-        String prefix = SCHEME + ":";
+        String httpPrefix = HTTP_SCHEME + ":";
+        String httpsPrefix = HTTPS_SCHEME + ":";
         
-        // only accept 'http:' URIs
-        if (href == null || !href.startsWith(prefix)){
+        // INFO: Only accept URIs which start either with 'http:' or 'https:'
+        if (href != null && (href.startsWith(httpPrefix) || href.startsWith(httpsPrefix))){
+            // INFO: href seems to start with the correct scheme
+        } else {
+            log.error("Href '" + href + "' does neither start with prefix '" + httpPrefix + "' nor with '" + httpsPrefix + "'!");
             return null;
         }
 
