@@ -29,14 +29,14 @@
 
     1) Build/Compile Yanel by running
 
-        UNIX: ./build.sh quick-start
+        Linux/MacOSX/UNIX: ./build.sh quick-start
         Windows: build.bat quick-start
 
        whereas by default the build will be without SSL. Please use the script 'configure' described further down to setup Yanel with SSL.
 
     2) Start Yanel/Tomcat by running
 
-        UNIX: ./yanel.sh start
+        Linux/MacOSX/UNIX: ./yanel.sh start
         Windows: yanel.bat start
 
     3) Use your favorite web browser to request and start using Yanel http://127.0.0.1:8080/yanel/
@@ -70,7 +70,7 @@
     Building Yanel without GWT
     --------------------------
 
-    Building GWT can take quite a while, hence one can build Yanel without GWT by using the option '-Dgwt.compile.skip=true', e.g on Linux/UNIX run
+    Building GWT can take quite a while, hence one can build Yanel without GWT by using the option '-Dgwt.compile.skip=true', e.g on Linux/MacOSX/UNIX run
 
     ./build.sh quick-start -Dgwt.compile.skip=true
 
