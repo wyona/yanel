@@ -91,6 +91,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
     private static final String FIRST_NAME = "firstname";
+    private static final String LAST_NAME = "lastname";
 
     // Email validation
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
@@ -175,6 +176,9 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             ContactBean contact = new ContactBean(getEnvironment().getRequest());
             if(contact.getFirstName() != null) {
                 trackInfo.addCustomField(FIRST_NAME, contact.getFirstName());
+            }
+            if(contact.getLastName() != null) {
+                trackInfo.addCustomField(LAST_NAME, contact.getLastName());
             }
         } else {
             log.warn("Tracking information bean is null! Check life cycle of resource!");
@@ -444,7 +448,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             appendChild(rootEl, FIRST_NAME, contact.getFirstName());
         }
         if(contact.getLastName() != null) {
-            appendChild(rootEl, "lastname", contact.getLastName());
+            appendChild(rootEl, LAST_NAME, contact.getLastName());
         }
         if(contact.getAddress() != null) {
             appendChild(rootEl, "address", contact.getAddress());
