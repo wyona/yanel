@@ -2732,6 +2732,7 @@ public class YanelServlet extends HttpServlet {
                     accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ra", requestAction);
                 }
 
+                // TODO: What if a custom field is overwriting a regular field?! I would suggest that we log a warning and ignore this custom field.
                 HashMap<String, String> customFields = trackInfo.getCustomFields();
                 if (customFields != null) {
                     for (java.util.Map.Entry field : customFields.entrySet()) {
