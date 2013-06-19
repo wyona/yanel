@@ -90,6 +90,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private static final String SMTP_PORT = "smtpPort";
     private static final String TO = "to";
     private static final String SUBJECT = "subject";
+    private static final String FIRST_NAME = "firstname";
 
     // Email validation
     private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
@@ -101,9 +102,9 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private Map<String, String> params = new HashMap<String, String>();
 
     /**
-     * Get content XML for a given request.
-     * @return The content XML data.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
+    @Override
     protected InputStream getContentXML(String viewId) throws Exception {
         // Set up tracking info
         if(trackInfo != null) {
@@ -170,6 +171,11 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             }
             trackInfo.addCustomField("e-mail", email);
             trackInfo.setRequestAction("submit");
+
+            ContactBean contact = new ContactBean(getEnvironment().getRequest());
+            if(contact.getFirstName() != null) {
+                trackInfo.addCustomField(FIRST_NAME, contact.getFirstName());
+            }
         } else {
             log.warn("Tracking information bean is null! Check life cycle of resource!");
         }
@@ -435,7 +441,7 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
             appendChild(rootEl, "company", contact.getCompany());
         }
         if(contact.getFirstName() != null) {
-            appendChild(rootEl, "firstname", contact.getFirstName());
+            appendChild(rootEl, FIRST_NAME, contact.getFirstName());
         }
         if(contact.getLastName() != null) {
             appendChild(rootEl, "lastname", contact.getLastName());
