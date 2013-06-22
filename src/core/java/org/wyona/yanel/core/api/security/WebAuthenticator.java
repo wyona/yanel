@@ -26,7 +26,9 @@ public interface WebAuthenticator {
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException;
 
     /**
-     *
+     * Custom XHTML Form for authentication
+     * @param xsltLoginScreenDefault Path of default XSLT
+     * @param message Information or error message
      */
      public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException;
 }
