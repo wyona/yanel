@@ -45,7 +45,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#init(Document, URIResolver)
      */
     public void init(Document configuration, URIResolver resolver) throws Exception {
-        log.warn("TODO: Finish implementation!");
+        log.warn("TODO: Read configuration parameters from realm configuration!");
         loginURL = "https://127.0.0.1:9090/cas-server-webapp-3.5.2/login";
         validateURL = "https://127.0.0.1:9090/cas-server-webapp-3.5.2/serviceValidate";
     }
@@ -55,25 +55,57 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
         log.warn("TODO: Finish implementation!");
+/*
+<form id="loginForm" method="GET" action="loginURL?gateway=true&cas=1286868900410">
+<label for="usernameInput">Username</label>
+<input type="text" id="username" name="username" value=""/><br/>
+<label for="passwordInput">Password:</label>
+<input type="password" id="password" name="password" value=""/>
+<input id="loginFormSubmit" type="submit" value="Login" name="loginFormSubmit"/>
+<input type="hidden" name="ignoreTGT" value="true"/>
+<input type="hidden" name="service" value="ORIGINAL_REQUEST"/>
+</form>
+*/
     }
 
     /**
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(HttpServletRequest, HttpServletResponse, Map, String, String, String, String)
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException {
-        log.warn("TODO: Finish implementation!");
         String casTicket = request.getParameter("ticket");
         if (casTicket != null) {
             String username = validate(casTicket);
             if (username != null) {
-                // TODO: Add username to session and hence consider user authenticated
+                log.warn("TODO: Add username to session and hence consider user authenticated");
                 return null; // TODO: Redirect to original request
             } else {
                 log.warn("Validation of ticket '" + casTicket + "' failed!");
-                return null; // TODO: Redirect user to CAS login page
+/*
+                try {
+                    // TODO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
+                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), "Ticket validation failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
+*/
+                log.info("Redirecting to '" + loginURL + "'...");
+                response.setHeader("Location", loginURL);
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                return response;
             }
         } else {
-            return null; // TODO: Redirect user to CAS login page
+/*
+            try {
+                // TODO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
+                getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), "Not authenticated yet.", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+*/
+            log.info("Redirecting to '" + loginURL + "'...");
+            response.setHeader("Location", loginURL);
+            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            return response;
         }
     }
 
