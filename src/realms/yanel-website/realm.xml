@@ -13,6 +13,13 @@
   <ac-policies>config/ac-policies-repository2.xml</ac-policies>
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
+<!-- INFO: CAS web authenticator example
+  <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
+    <login>https://127.0.0.1:9090/cas-server-webapp-3.5.2/login</login>
+    <validate>https://127.0.0.1:9090/cas-server-webapp-3.5.2/serviceValidate</validate>
+  </web-authenticator>
+-->
+
   <default-language>en</default-language>
 
   <languages>
