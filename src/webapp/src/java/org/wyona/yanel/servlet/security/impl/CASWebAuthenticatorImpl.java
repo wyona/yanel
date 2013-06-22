@@ -88,7 +88,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     log.error(e, e);
                 }
 */
-                String redirectURL = loginURL + "?service=" + encode(request.getRequestURL().toString()); // TODO: Maybe ticket needs to be removed. What about rest of query string?!
+                String redirectURL = loginURL + "?service=" + encode(request); // TODO: Maybe ticket needs to be removed from query string?!
                 log.info("Redirecting to '" + redirectURL + "'...");
                 response.setHeader("Location", redirectURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -103,7 +103,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 log.error(e, e);
             }
 */
-            String redirectURL = loginURL + "?service=" + encode(request.getRequestURL().toString()); // TODO: What about query string?!
+            String redirectURL = loginURL + "?service=" + encode(request);
             log.info("Redirecting to '" + redirectURL + "'...");
             response.setHeader("Location", redirectURL);
             response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -122,11 +122,15 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Encode URL ('?' will '%3F' and ':' is '3%A' and '/' is '2%F'
-     * @param url Not encoded URL
+     * Encode URL of original request ('?' will become '%3F' and ':' will become '3%A' and '/' will become '2%F')
+     * @param request Original request
      * @return encoded URL
      */
-    private String encode(String url) {
+    private String encode(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        if (request.getQueryString() != null) {
+            url = url +"?" + request.getQueryString();
+        }
         return java.net.URLEncoder.encode(url);
     }
 }
