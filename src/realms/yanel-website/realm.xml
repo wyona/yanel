@@ -15,8 +15,8 @@
 
 <!-- INFO: CAS web authenticator example
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
-    <login>https://127.0.0.1:9090/cas-server-webapp-3.5.2/login</login>
-    <validate>https://127.0.0.1:9090/cas-server-webapp-3.5.2/serviceValidate</validate>
+    <login>https://127.0.0.1:9443/cas-server-webapp-3.5.2/login</login>
+    <validate>https://127.0.0.1:9443/cas-server-webapp-3.5.2/serviceValidate</validate>
   </web-authenticator>
 -->
 
