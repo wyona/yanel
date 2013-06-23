@@ -46,8 +46,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     public void init(Document configuration, URIResolver resolver) throws Exception {
         log.warn("TODO: Read configuration parameters from realm configuration!");
-        loginURL = "https://127.0.0.1:9090/cas-server-webapp-3.5.2/login";
-        validateURL = "https://127.0.0.1:9090/cas-server-webapp-3.5.2/serviceValidate";
+        loginURL = "https://127.0.0.1:9443/cas-server-webapp-3.5.2/login";
+        validateURL = "https://127.0.0.1:9443/cas-server-webapp-3.5.2/serviceValidate";
     }
 
     /**
