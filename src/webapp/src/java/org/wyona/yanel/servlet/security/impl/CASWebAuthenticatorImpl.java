@@ -89,7 +89,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 }
 */
                 String redirectURL = loginURL + "?service=" + encode(request); // TODO: Maybe ticket needs to be removed from query string?!
-                log.info("Redirecting to '" + redirectURL + "'...");
+                log.warn("Redirecting to '" + redirectURL + "'...");
                 response.setHeader("Location", redirectURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
@@ -113,7 +113,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Validate CAS ticket
-     * @param ticket CAS ticket
+     * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
      * @return username associated with ticket when ticket is valid, return null otherwise
      */
     private String validate(String ticket) {
@@ -128,8 +128,18 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     private String encode(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
-        if (request.getQueryString() != null) {
-            url = url +"?" + request.getQueryString();
+        String qs = request.getQueryString();
+        if (qs != null) {
+            boolean justTicket = false;
+            if (qs.indexOf("&ticket") >= 0) {
+                log.warn("Remove CAS ticket from query string...");
+                qs = qs.substring(0, qs.indexOf("&ticket"));
+            } else if (qs.indexOf("ticket") == 0) {
+                justTicket = true;
+            }
+            if (!justTicket) {
+                url = url +"?" + qs;
+            }
         }
         return java.net.URLEncoder.encode(url);
     }
