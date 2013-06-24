@@ -79,7 +79,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException {
         String casTicket = request.getParameter("ticket");
         if (casTicket != null) {
-            String username = validate(casTicket);
+            String username = validate(casTicket, request);
             if (username != null) {
                 log.warn("TODO: Add username to session and hence consider user authenticated");
                 return null; // TODO: Redirect to original request
@@ -119,14 +119,15 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Validate CAS ticket
      * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
+     * @param request TODO
      * @return username associated with ticket when ticket is valid, return null otherwise
      */
-    private String validate(String ticket) {
-        log.warn("TODO: Validate ticket '" + ticket + "' at '" + validateURL + "'...");
+    private String validate(String ticket, HttpServletRequest request) {
         try {
-            URL url = new URL(validateURL + "?ticket=" + ticket);
-            DefaultHttpClient httpClient = getHttpClient(new URL(validateURL));
-            HttpGet httpGet = new HttpGet(validateURL);
+            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request);
+            log.warn("TODO: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
+            DefaultHttpClient httpClient = getHttpClient(new URL(url));
+            HttpGet httpGet = new HttpGet(url);
             HttpResponse response = httpClient.execute(httpGet);
             int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
             if (statusCode == 200) {
