@@ -23,6 +23,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.URIResolver;
 
 import java.io.IOException;
+import java.net.URL;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -118,6 +123,22 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     private String validate(String ticket) {
         log.warn("TODO: Validate ticket '" + ticket + "' at '" + validateURL + "'...");
+        try {
+            URL url = new URL(validateURL + "?ticket=" + ticket);
+            DefaultHttpClient httpClient = getHttpClient(new URL(validateURL));
+            HttpGet httpGet = new HttpGet(validateURL);
+            HttpResponse response = httpClient.execute(httpGet);
+            int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
+            if (statusCode == 200) {
+                Document doc = org.wyona.commons.xml.XMLHelper.readDocument(response.getEntity().getContent());
+                org.wyona.commons.xml.XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/validate.xml"));
+            } else {
+                log.warn("Validation failed. Returned status code: " + statusCode);
+                return null;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
         return null;
     }
 
@@ -142,5 +163,41 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             }
         }
         return java.net.URLEncoder.encode(url);
+    }
+
+    /**
+     * Get http client using SSL
+     */
+    private DefaultHttpClient getHttpClient(URL url) throws Exception {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        if (url.getProtocol().equals("https")) {
+            log.warn("DEBUG: Connect via SSL: " + url);
+            int port = 443;
+            if (url.getPort() > 0) {
+                port = url.getPort();
+            }
+            httpClient.getConnectionManager().getSchemeRegistry().register(new org.apache.http.conn.scheme.Scheme("https", port, getSSLFactory()));
+        } else {
+            log.warn("Unsecure connection: " + url);
+        }
+
+        return httpClient;
+    }
+
+    /**
+     * Get SSL factory     */
+    private org.apache.http.conn.ssl.SSLSocketFactory getSSLFactory() throws Exception {
+        // TODO: Make SSLSocketFactory configurable...
+
+        // INFO: Just trust the certificate without checking/comparing a list of trusted certificates
+        org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(new org.apache.http.conn.ssl.TrustStrategy() {
+            public boolean isTrusted(final java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+                return true;
+            }
+        }, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+        //org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(getSSLContext(), new org.apache.http.conn.ssl.StrictHostnameVerifier());
+
+        return factory;
     }
 }
