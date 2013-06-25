@@ -144,7 +144,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
             if (statusCode == 200) {
                 Document doc = XMLHelper.readDocument(response.getEntity().getContent());
-                XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/validate.xml"));
+                //XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/debug-cas-response.xml"));
 
                 // INFO: /cas:serviceResponse/cas:authenticationSuccess/cas:user
                 String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
