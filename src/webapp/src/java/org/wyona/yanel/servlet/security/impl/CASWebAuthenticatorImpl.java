@@ -33,6 +33,9 @@ import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
 
 import org.apache.log4j.Logger;
 
@@ -81,8 +84,17 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         if (casTicket != null) {
             String username = validate(casTicket, request);
             if (username != null) {
-                log.warn("TODO: Add username to session and hence consider user authenticated");
-                return null; // TODO: Redirect to original request
+                try {
+                    org.wyona.yanel.core.map.Realm realm = map.getRealm(request.getServletPath());
+                    org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
+                    org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                } catch(Exception e) {
+                    log.error(e, e);
+                    return null;
+                }
+                response.setHeader("Location", getOriginalRequestURL(request)); // TODO: Including query string!
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                return response;
             } else {
                 log.warn("Validation of ticket '" + casTicket + "' failed!");
 /*
@@ -131,8 +143,24 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             HttpResponse response = httpClient.execute(httpGet);
             int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
             if (statusCode == 200) {
-                Document doc = org.wyona.commons.xml.XMLHelper.readDocument(response.getEntity().getContent());
-                org.wyona.commons.xml.XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/validate.xml"));
+                Document doc = XMLHelper.readDocument(response.getEntity().getContent());
+                XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/validate.xml"));
+
+                // INFO: /cas:serviceResponse/cas:authenticationSuccess/cas:user
+                String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
+                Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+                if (successEls != null && successEls.length == 1) {
+                    Element[] userEls = XMLHelper.getChildElements(successEls[0], "user", CAS_NAMESPACE);
+                    if (userEls != null && userEls.length == 1) {
+                        return userEls[0].getTextContent();
+                    } else {
+                        log.warn("No such element 'cas:user'!");
+                        return null;
+                    }
+                } else {
+                    log.warn("No such element 'cas:authenticationSuccess'!");
+                    return null;
+                }
             } else {
                 log.warn("Validation failed. Returned status code: " + statusCode);
                 return null;
@@ -164,6 +192,30 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             }
         }
         return java.net.URLEncoder.encode(url);
+    }
+
+    /**
+     * Get orginal request URL without ticket (and/or service) as query string parameters
+     * @param request Request containing ticket (and/or service) as query string parameters
+     * @return URL without ticket (and/or service) as query string parameters
+     */
+    private String getOriginalRequestURL(HttpServletRequest request) {
+        String url = request.getRequestURL().toString();
+        String qs = request.getQueryString();
+        if (qs != null) {
+            boolean justTicket = false;
+            if (qs.indexOf("&ticket") >= 0) {
+                log.warn("Remove CAS ticket from query string...");
+                qs = qs.substring(0, qs.indexOf("&ticket"));
+            } else if (qs.indexOf("ticket") == 0) {
+                justTicket = true;
+            }
+            if (!justTicket) {
+                url = url +"?" + qs;
+            }
+        }
+        log.warn("DEBUG: Original request URL: " + url);
+        return url;
     }
 
     /**
