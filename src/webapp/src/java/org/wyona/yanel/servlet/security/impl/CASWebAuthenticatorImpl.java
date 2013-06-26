@@ -88,11 +88,12 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     org.wyona.yanel.core.map.Realm realm = map.getRealm(request.getServletPath());
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                    // TODO: Add cas ticket to session, because some resources might have to forward the ticket to third-party services.
                 } catch(Exception e) {
                     log.error(e, e);
                     return null;
                 }
-                response.setHeader("Location", getOriginalRequestURL(request)); // TODO: Including query string!
+                response.setHeader("Location", getOriginalRequestURL(request));
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
             } else {
