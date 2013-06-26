@@ -2271,6 +2271,7 @@ public class YanelServlet extends HttpServlet {
                         log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
                     }
                 } catch(Exception e) {
+                    log.error("Writing into response failed for request '" + request.getRequestURL() + "' (Client: " + getClientAddressOfUser(request) + ")"); // INFO: For example in the case of ClientAbortException
                     log.error(e, e);
                     throw new ServletException(e);
                 } finally {
@@ -2779,18 +2780,7 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "" + HttpServletResponse.SC_OK);
             }
 
-            String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteIPAddr != null) { // INFO: We do not need to check realm.isProxySet() additionally, because some deployments are using a proxy without having set the Yanel proxy configuration, hence it is sufficient to just check whether an X-FORWARDED-FOR header is set
-                if (remoteIPAddr.indexOf("unknown") >= 0) {
-                    log.warn("TODO: Clean remote IP address: " + remoteIPAddr);
-                }
-                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", remoteIPAddr);
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP or if no proxy is used
-                }
-                accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", request.getRemoteAddr()); // INFO: For performance reasons we do not use getRemoteHost(), but rather just log the IP address.
-            }
+            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", getClientAddressOfUser(request));
 
             logAccess.info(accessLogMessage);
 
@@ -3178,5 +3168,24 @@ public class YanelServlet extends HttpServlet {
             log.debug("Resource is null because access was probably denied: " + servletPath);
         }
         return tags;
+    }
+
+    /**
+     * Get client address of user
+     * @param request Client request
+     */
+    private String getClientAddressOfUser(HttpServletRequest request) {
+        String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
+        if (remoteIPAddr != null) { // INFO: We do not need to check realm.isProxySet() additionally, because some deployments are using a proxy without having set the Yanel proxy configuration, hence it is sufficient to just check whether an X-FORWARDED-FOR header is set
+            if (remoteIPAddr.indexOf("unknown") >= 0) {
+                log.warn("TODO: Clean remote IP address: " + remoteIPAddr);
+            }
+            return remoteIPAddr;
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP or if no proxy is used
+            }
+            return request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
+        }
     }
 }
