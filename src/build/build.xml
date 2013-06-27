@@ -228,19 +228,21 @@
     <if>
      <equals arg1="${isWindows}" arg2="true" />
      <then>
-       <echo message="*      Tomcat:      yanel start"/>
+       <echo message="*                  yanel start"/>
      </then>
     </if>
     <if>
      <equals arg1="${isUnix}" arg2="true" />
      <then>
-       <echo  message="*      Tomcat:    ./yanel.sh start"/>
+       <echo  message="*                 ./yanel.sh start"/>
      </then>
     </if>
     <echo message="*"/>
-    <echo message="*                   and browse to "/>
+    <echo message="* in order to start Tomcat/Yanel and browse to "/>
     <echo message="*"/>
-    <echo message="*                   http://127.0.0.1:8080/${servlet.context.prefix}/"/>
+    <echo message="*                  http://127.0.0.1:8080/${servlet.context.prefix}/"/>
+    <echo message="*"/>
+    <echo message="* or with SSL enabled to https://127.0.0.1:8443/${servlet.context.prefix}/"/>
     <echo message="*"/>
 <!--
     <echo message="*      Jetty:       yanel start-jetty"/> 
