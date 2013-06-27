@@ -49,13 +49,16 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     private String loginURL;
     private String validateURL;
 
+    private final static String CONF_NAMESPACE = "http://www.wyona.org/yanel/cas/1.0.0";
+
     /**
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#init(Document, URIResolver)
      */
     public void init(Document configuration, URIResolver resolver) throws Exception {
-        log.warn("TODO: Read configuration parameters from realm configuration!");
-        loginURL = "https://127.0.0.1:9443/cas-server-webapp-3.5.2/login";
-        validateURL = "https://127.0.0.1:9443/cas-server-webapp-3.5.2/serviceValidate";
+        log.info("Read configuration parameters from realm configuration '" + configuration.getDocumentElement().getTagName() + "'!");
+
+        loginURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "login").item(0)).getTextContent();
+        validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
     }
 
     /**
