@@ -15,8 +15,9 @@
 
 <!-- INFO: CAS web authenticator example
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
-    <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:9443/cas-server-webapp-3.5.2/login</cas:login>
-    <cas:validate xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:9443/cas-server-webapp-3.5.2/serviceValidate</cas:validate>
+    <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/login</cas:login>
+    <cas:validate xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/serviceValidate</cas:validate>
+    <cas:logout xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/logout</cas:logout>
   </web-authenticator>
 -->
 
