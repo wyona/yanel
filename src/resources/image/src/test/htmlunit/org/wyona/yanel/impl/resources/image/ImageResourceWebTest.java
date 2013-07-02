@@ -19,7 +19,7 @@ import org.wyona.yanel.htmlunit.AbstractHtmlUnitTest;
 
 /**
  * Please add a test to ensure your functionality.
- * how to write tests see: http://yanel.wyona.org/en/documentation/testing-framework.html
+ * how to write tests see: http://www.yanel.org/en/documentation/testing-framework.html
  */
 public class ImageResourceWebTest extends AbstractHtmlUnitTest {
 
