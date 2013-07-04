@@ -1556,50 +1556,8 @@ public class YanelServlet extends HttpServlet {
                 //}
             }
 
-            HttpSession session = request.getSession(true);
-            // TODO: should we logout only from the current realm, or from all realms?
-            // -> logout only from the current realm
-            Realm realm = map.getRealm(request.getServletPath());
-            IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
-            if (identityMap != null && identityMap.containsKey(realm.getID())) {
-                log.info("Logout from realm: " + realm.getID());
-                identityMap.remove(realm.getID());
-            }
-
-            String clientSupportedAuthScheme = getClientAuthenticationScheme(request);
-            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
-                String neutronVersions = getClientSupportedNeutronVersions(request);
-                // TODO: Reply according to which neutron versions the client supports
-
-                // TODO: send some XML content, e.g. <logout-successful/>
-                response.setContentType("text/plain; charset=" + DEFAULT_ENCODING);
-                response.setStatus(HttpServletResponse.SC_OK);
-                PrintWriter writer = response.getWriter();
-                writer.print("Neutron Logout Successful!");
-                return true;
-            }
-
-            if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
-            URL url = new URL(getRequestURLQS(request, null, false).toString());
-            // TODO (see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=8488): Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
-            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
-
-/* INFO: The refresh tag also does not seem to force the client to reload the page itself (tested with Firefox 3)
-            response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-            response.setStatus(HttpServletResponse.SC_OK);
-            PrintWriter writer = response.getWriter();
-            writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"0;url=" + urlWithoutLogoutQS + "\"/></head><body></body></html>");
-*/
-
-            // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
-            // TODO: Check if url still has a query string (see above)
-            urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new Date().getTime();
-            log.debug("Redirect to original request: " + urlWithoutLogoutQS);
- 
-            response.setHeader("Location", urlWithoutLogoutQS.toString());
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
-
-            return true;
+	    WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
+            return wa.doLogout(request, response, map);
         } catch (Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage(), e);
@@ -2596,20 +2554,6 @@ public class YanelServlet extends HttpServlet {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Get Neutron versions which are supported by client
-     */
-    private String getClientSupportedNeutronVersions(HttpServletRequest request) {
-        return request.getHeader("Neutron");
-    }
-
-    /**
-     * Get client authentication scheme
-     */
-    private String getClientAuthenticationScheme(HttpServletRequest request) {
-        return request.getHeader("WWW-Authenticate");
     }
 
     /**
