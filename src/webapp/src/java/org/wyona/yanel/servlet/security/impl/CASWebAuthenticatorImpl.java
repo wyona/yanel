@@ -44,10 +44,14 @@ import org.apache.log4j.Logger;
  */
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
+    public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
+
     private static Logger log = Logger.getLogger(CASWebAuthenticatorImpl.class);
 
     private String loginURL;
+    private boolean redirectToLoginURL = true;
     private String validateURL;
+    private String logoutURL;
 
     private final static String CONF_NAMESPACE = "http://www.wyona.org/yanel/cas/1.0.0";
 
@@ -57,26 +61,20 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public void init(Document configuration, URIResolver resolver) throws Exception {
         log.info("Read configuration parameters from realm configuration '" + configuration.getDocumentElement().getTagName() + "'!");
 
-        loginURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "login").item(0)).getTextContent();
+        Element loginURLElement = (Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "login").item(0);
+        loginURL = loginURLElement.getTextContent();
+        redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
+
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
+        logoutURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "logout").item(0)).getTextContent();
     }
 
     /**
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#getXHTMLAuthenticationForm(HttpServletRequest, HttpServletResponse, Realm, String, String, String, String, String, Map)
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
-        log.warn("TODO: Finish implementation!");
-/*
-<form id="loginForm" method="GET" action="loginURL?gateway=true&cas=1286868900410">
-<label for="usernameInput">Username</label>
-<input type="text" id="username" name="username" value=""/><br/>
-<label for="passwordInput">Password:</label>
-<input type="password" id="password" name="password" value=""/>
-<input id="loginFormSubmit" type="submit" value="Login" name="loginFormSubmit"/>
-<input type="hidden" name="ignoreTGT" value="true"/>
-<input type="hidden" name="service" value="ORIGINAL_REQUEST"/>
-</form>
-*/
+        // TODO: Add loginURL
+        new DefaultWebAuthenticatorImpl().getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
     }
 
     /**
@@ -89,9 +87,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             if (username != null) {
                 try {
                     org.wyona.yanel.core.map.Realm realm = map.getRealm(request.getServletPath());
+                    log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
-                    // TODO: Add cas ticket to session, because some resources might have to forward the ticket to third-party services.
+                    // INFO: Add cas ticket to session, because some resources might have to forward the ticket to third-party services
+                    log.warn("DEBUG: Add CAS ticket '" + casTicket + "' to HTTP session...");
+                    request.getSession(true).setAttribute(CAS_TICKET_SESSION_NAME, casTicket);
+                    // TODO: What about service?!
                 } catch(Exception e) {
                     log.error(e, e);
                     return null;
@@ -101,33 +103,35 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return response;
             } else {
                 log.warn("Validation of ticket '" + casTicket + "' failed!");
-/*
-                try {
-                    // TODO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
-                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), "Ticket validation failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-                } catch(Exception e) {
-                    log.error(e, e);
+                if (!redirectToLoginURL) {
+                    try {
+                        // INFO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
+                        getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), "CAS ticket validation failed!", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
+                } else {
+                    String redirectURL = loginURL + "?service=" + encode(request); // TODO: Maybe ticket needs to be removed from query string?!
+                    log.warn("Redirecting to '" + redirectURL + "'...");
+                    response.setHeader("Location", redirectURL);
+                    response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 }
-*/
-                String redirectURL = loginURL + "?service=" + encode(request); // TODO: Maybe ticket needs to be removed from query string?!
-                log.warn("Redirecting to '" + redirectURL + "'...");
-                response.setHeader("Location", redirectURL);
-                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
             }
         } else {
-/*
-            try {
-                // TODO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
-                getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), "Not authenticated yet.", reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-            } catch(Exception e) {
-                log.error(e, e);
+            if (!redirectToLoginURL) {
+                try {
+                    log.warn("DEBUG: Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
+                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
+            } else {
+                String redirectURL = loginURL + "?service=" + encode(request);
+                log.info("Redirecting to '" + redirectURL + "'...");
+                response.setHeader("Location", redirectURL);
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             }
-*/
-            String redirectURL = loginURL + "?service=" + encode(request);
-            log.info("Redirecting to '" + redirectURL + "'...");
-            response.setHeader("Location", redirectURL);
-            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             return response;
         }
     }
@@ -135,13 +139,14 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Validate CAS ticket
      * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
-     * @param request TODO
+     * @param request Request which is used to generate service URL
      * @return username associated with ticket when ticket is valid, return null otherwise
      */
     private String validate(String ticket, HttpServletRequest request) {
         try {
-            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request);
-            log.warn("TODO: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
+            // TODO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2
+            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode("https://127.0.0.1:8443/yanel/");
+            log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
             DefaultHttpClient httpClient = getHttpClient(new URL(url));
             HttpGet httpGet = new HttpGet(url);
             HttpResponse response = httpClient.execute(httpGet);
@@ -242,7 +247,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Get SSL factory     */
+     * Get SSL factory
+     */
     private org.apache.http.conn.ssl.SSLSocketFactory getSSLFactory() throws Exception {
         // TODO: Make SSLSocketFactory configurable...
 
@@ -256,5 +262,18 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         //org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(getSSLContext(), new org.apache.http.conn.ssl.StrictHostnameVerifier());
 
         return factory;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doLogout(HttpServletRequest, HttpServletResponse, Map)
+     */
+    public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
+        boolean logoutFromYanel = new DefaultWebAuthenticatorImpl().doLogout(request, response, map);
+
+        log.warn("TODO: Use original request, but without logout query string, but with refresh query string: " + getOriginalRequestURL(request));
+        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode("http://127.0.0.1:8080/yanel/yanel-website/"));
+        response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+
+        return logoutFromYanel;
     }
 }
