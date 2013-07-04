@@ -2,11 +2,12 @@ package org.wyona.yanel.servlet.security.impl;
 
 import org.wyona.commons.io.MimeTypeUtil;
 
+import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.transformation.I18nTransformer3;
+import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
-import org.wyona.yanel.core.api.security.WebAuthenticator;
 
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.ExpiredIdentityException;
@@ -353,14 +354,15 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     *
+     * Generate response in order to ask for credentials
      */
     private HttpServletResponse getUnauthenticatedResponse(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws Exception {
         Realm realm = map.getRealm(request.getServletPath());
-            log.warn("No credentials specified yet!");
+            log.info("No credentials specified yet, hence ask for credentials...");
             // Check if this is a neutron request, a Sunbird/Calendar request or just a common GET request
             // Also see e-mail about recognizing a WebDAV request: http://lists.w3.org/Archives/Public/w3c-dist-auth/2006AprJun/0064.html
             if (challengeUsingNeutronAuth(request, response, realm, sslPort)) {
+                // TODO: Document this case.
             } else if (request.getRequestURI().endsWith(".ics")) {
                 log.warn("DEBUG: Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
@@ -803,5 +805,77 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             return language;
         }
         return null;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.security.WebAuthenticator#doLogout(HttpServletRequest, HttpServletResponse, Map)
+     */
+    public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
+        try {
+            HttpSession session = request.getSession(true);
+            // TODO: should we logout only from the current realm, or from all realms?
+            // -> logout only from the current realm
+            Realm realm = map.getRealm(request.getServletPath());
+            IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
+            if (identityMap != null && identityMap.containsKey(realm.getID())) {
+                log.info("Logout from realm: " + realm.getID());
+                identityMap.remove(realm.getID());
+            }
+
+            String clientSupportedAuthScheme = getClientAuthenticationScheme(request);
+            if (clientSupportedAuthScheme != null && clientSupportedAuthScheme.equals("Neutron-Auth")) {
+                String neutronVersions = getClientSupportedNeutronVersions(request);
+                // TODO: Reply according to which neutron versions the client supports
+
+                // TODO: send some XML content, e.g. <logout-successful/>
+                response.setContentType("text/plain; charset=" + YanelServlet.DEFAULT_ENCODING);
+                response.setStatus(HttpServletResponse.SC_OK);
+                PrintWriter writer = response.getWriter();
+                writer.print("Neutron Logout Successful!");
+                return true;
+            }
+
+            if (log.isDebugEnabled()) log.debug("Regular Logout Successful!");
+
+            URL url = new URL(getRequestURLQS(request, null, false, map).toString());
+            // TODO (see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=8488): Just remove logout part from query string! (http://127.0.0.1:8080/yanel/test/use-cases/index.xhtml?yanel.resource.usecase=checkout&yanel.usecase=logout)
+            String urlWithoutLogoutQS = url.toString().substring(0, url.toString().lastIndexOf("?"));
+
+/* INFO: The refresh tag also does not seem to force the client to reload the page itself (tested with Firefox 3)
+            response.setContentType("text/html; charset=" + YanelServlet.DEFAULT_ENCODING);
+            response.setStatus(HttpServletResponse.SC_OK);
+            PrintWriter writer = response.getWriter();
+            writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"0;url=" + urlWithoutLogoutQS + "\"/></head><body></body></html>");
+*/
+
+            // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
+            // TODO: Check if url still has a query string (see above)
+            urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new java.util.Date().getTime();
+            log.debug("Redirect to original request: " + urlWithoutLogoutQS);
+
+            response.setHeader("Location", urlWithoutLogoutQS.toString());
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+
+            return true;
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new Exception(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get client authentication scheme
+     * @param request TODO
+     */
+    private String getClientAuthenticationScheme(HttpServletRequest request) {
+        return request.getHeader("WWW-Authenticate");
+    }
+
+    /**
+     * Get Neutron versions which are supported by client
+     * @param request TODO
+     */
+    private String getClientSupportedNeutronVersions(HttpServletRequest request) {
+        return request.getHeader("Neutron");
     }
 }
