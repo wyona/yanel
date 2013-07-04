@@ -27,8 +27,14 @@ public interface WebAuthenticator {
 
     /**
      * Custom XHTML Form for authentication
+     * @param response Response into which custom XHTML form should be written
      * @param xsltLoginScreenDefault Path of default XSLT
      * @param message Information or error message
      */
-     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException;
+    public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException;
+
+    /**
+     * Custom logout
+     */
+    public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception;
 }
