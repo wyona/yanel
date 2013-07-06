@@ -18,11 +18,8 @@ Redirect resource, whereas redirects can also be configured user specific within
     <rd:user name="bob" href="bob/index.html"/>
     <rd:user name="alice" href="alice/index.html"/>
 
-    <rd:language code="de" device="web.xml:mobile-devices" href="de/index_m.html"/>
-    <rd:language code="de" if-logged-in="true" href="de/willkommen.html"/>
     <rd:language code="de" href="de/index.html"/>
-
-    <rd:language code="*" if-logged-in="true" href="en/welcome.html"/>
+    <rd:language code="en" href="en/welcome.html"/>
   </yanel:custom-config>
 -->
 </rtd>
