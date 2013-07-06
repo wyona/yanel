@@ -6,20 +6,24 @@
   class="org.wyona.yanel.impl.resources.redirect.RedirectResourceV101"
   >
 <description>
-Redirect resource, whereas redirects can also be configured user and device specific within custom config
+Redirect resource, whereas redirects can also be configured user and device specific inside custom config
 </description>
 
 <rtd>
   <!-- INFO: Default redirect -->
   <property name="href"/>
 
-<!-- INFO: The device attribute is optional and was introduced with version 1.0.1, whereas the value 'web.xml:mobile-devices' refers to the mobile device list inside WEB-INF/web.xml -->
+<!-- INFO: The 'device' and 'if-logged-in' attributes are optional and were introduced with version 1.0.1, whereas the value 'web.xml:mobile-devices' refers to the mobile device list inside WEB-INF/web.xml -->
 <!--
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
     <rd:user name="bob" href="bob/index.html"/>
     <rd:user name="alice" href="alice/index.html"/>
-    <rd:language code="de" device="web.xml:mobile-devices" href="mobile/de/index.html"/>
+
+    <rd:language code="de" device="web.xml:mobile-devices" href="de/index_m.html"/>
+    <rd:language code="de" if-logged-in="true" href="de/willkommen.html"/>
     <rd:language code="de" href="de/index.html"/>
+
+    <rd:language code="*" if-logged-in="true" href="en/welcome.html"/>
   </yanel:custom-config>
 -->
 
