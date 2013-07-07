@@ -78,11 +78,11 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
   <xsl:when test="boost:url">
 <p>Your clickstream contains the following URLs:</p>
 
-<ul>
+<table>
 <xsl:for-each select="boost:url">
-  <li><xsl:value-of select="."/></li>
+  <tr><td><xsl:value-of select="@date"/></td><td><xsl:value-of select="."/></td></tr>
 </xsl:for-each>
-</ul>
+</table>
   </xsl:when>
   <xsl:otherwise>
     <p>No interests detected yet.</p>
