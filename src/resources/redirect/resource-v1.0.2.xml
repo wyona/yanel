@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="redirect"
+  namespace="http://www.wyona.org/yanel/resource/1.0.2"
+  class="org.wyona.yanel.impl.resources.redirect.RedirectResourceV102"
+  >
+<description>
+Redirect resource, whereas redirects can also be based on user profile
+</description>
+
+<rtd>
+  <!-- INFO: Default redirect -->
+  <property name="href"/>
+
+<!-- INFO: The element 'use-user-profile' is optional and was introduced with version 1.0.2 -->
+<!--
+  <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+    <rd:personalized boost-service-url="http://localhost:9080/boost/api" boost-api-key="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
+
+    <rd:user name="bob" href="bob/index.html"/>
+    <rd:user name="alice" href="alice/index.html"/>
+
+    <rd:language code="de" device="web.xml:mobile-devices" href="de/index_m.html"/>
+    <rd:language code="de" if-logged-in="true" href="de/willkommen.html"/>
+    <rd:language code="de" href="de/index.html"/>
+
+    <rd:language code="*" if-logged-in="true" href="en/welcome.html"/>
+  </yanel:custom-config>
+-->
+</rtd>
+</resource>
