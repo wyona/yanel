@@ -16,7 +16,7 @@ Redirect resource, whereas redirects can also be based on user profile
 <!-- INFO: The element 'use-user-profile' is optional and was introduced with version 1.0.2 -->
 <!--
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
-    <rd:personalized boost-service-url="http://localhost:9080/boost/api" boost-api-key="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
+    <rd:personalized boost-service-url="http://localhost:9080/boost/api" boost-api-key="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5" href="@LANG/index.html"/>
 
     <rd:user name="bob" href="bob/index.html"/>
     <rd:user name="alice" href="alice/index.html"/>
