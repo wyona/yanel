@@ -17,22 +17,30 @@
 package org.wyona.yanel.impl.resources.redirect;
 
 import org.w3c.dom.Document;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.servlet.AccessLog;
 
 import org.wyona.security.core.api.Identity;
 import java.lang.Integer;
 import java.util.HashMap;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
 import org.apache.log4j.Logger;
+
+import com.wyona.boost.client.BoostService;
+import com.wyona.boost.client.ServiceException;
+import com.wyona.boost.client.BoostServiceConfig;
+import com.wyona.boost.client.HistoryEntry;
 
 /**
  * Controller to do redirects (supports personalized redirect)
@@ -42,6 +50,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     private static Logger log = Logger.getLogger(RedirectResourceV102.class);
     
     public static String IDENTITY_MAP_KEY = "identity-map";
+    private int TMP_REDIRECT_STATUS_CODE = 307;
 
     // Only a temporary variable needed during creation (roundtrip)
     private String defaultHrefSetByCreator;
@@ -58,16 +67,9 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
-        return getView(viewId, null);
-    }
-
-    /**
-     * Generates view
-     */
-    public View getView(String viewId, String revisionName) throws Exception {
         View view = new View();
         view.setResponse(false); // this resource writes the response itself
 
@@ -75,10 +77,10 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
         String defaultHref = getResourceConfigProperty("href");
 
-        if (defaultHref == null) throw new Exception("No default redirect has been set!");
+        if (defaultHref == null) throw new Exception("No default redirect has been set inside resource configuration!");
 
         // Default
-        response.setStatus(307);
+        response.setStatus(TMP_REDIRECT_STATUS_CODE);
         response.setHeader("Location", defaultHref);
 
         // Username
@@ -94,6 +96,28 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         if (customConfigDoc != null) {
             Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
 
+            // INFO: Personalization
+            Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
+            if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
+                String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
+                String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
+                log.warn("DEBUG: Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
+                Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
+                String cookieVal = cookie.getValue();
+                Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
+                String clickstreamLang = getLanguage(clickStream);
+                if (clickstreamLang != null) {
+                    log.warn("DEBUG: User language from click stream: " + clickstreamLang);
+                    response.setStatus(TMP_REDIRECT_STATUS_CODE);
+                    response.setHeader("Location", defaultHref); // TODO: Replace language in default href
+                    return view;
+                } else {
+                    log.warn("Not able to detect user language from click stream.");
+                }
+            } else {
+                log.debug("Personalization of redirect not configured.");
+            }
+
             // Localization
             Configuration[] languageRedirectConfigs = config.getChildren("language");
 
@@ -105,7 +129,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 try {
                     String lang = languageRedirectConfigs[i].getAttribute("code");
                     if (lang.equals(localizationLanguage) || lang.equals("*")) {
-                        response.setStatus(307);
+                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
                         String href = languageRedirectConfigs[i].getAttribute("href");
                         response.setHeader("Location", href);
 
@@ -145,7 +169,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 for (int i = 0; i < userRedirectConfigs.length; i++) {
                     try {
                         if (userRedirectConfigs[i].getAttribute("name") == currentUser || (currentUser).equals(userRedirectConfigs[i].getAttribute("name"))) {
-                            response.setStatus(307);
+                            response.setStatus(TMP_REDIRECT_STATUS_CODE);
                             response.setHeader("Location", userRedirectConfigs[i].getAttribute("href"));
                         }
                     } catch (Exception e) {
@@ -263,5 +287,30 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             log.warn("No HTTP session available (maybe because Yanel is used via the command line or some custom junit tests do not provide session handling)!");
             return false;
         }
+    }
+
+    /**
+     * Get clickstream for a given cookie (also see http://en.wikipedia.org/wiki/Clickstream)
+     * @param boostServiceUrl Boost service URL
+     * @param cookie Unique cookie id
+     * @param realm Domain name
+     * @param apiKey Key to access Boost API
+     * @return list of URLs which were requested by user with a given cookie
+     */
+    private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+        BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        BoostService boost = new BoostService(bsc);
+        return boost.getClickStream(cookie);
+    }
+
+    /**
+     * Get user language from clickstream
+     */
+    private String getLanguage(Iterable<HistoryEntry> clickStream) {
+        for(HistoryEntry he : clickStream) {
+            log.warn("DEBUG: " + he.getTime() + ", " + he.getURL());
+        }
+        //return "de";
+        return null;
     }
 }
