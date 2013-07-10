@@ -101,6 +101,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
                 String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
                 String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
+                String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
                 log.warn("DEBUG: Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
                 Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
                 String cookieVal = cookie.getValue();
@@ -109,7 +110,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 if (clickstreamLang != null) {
                     log.warn("DEBUG: User language from click stream: " + clickstreamLang);
                     response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                    response.setHeader("Location", defaultHref); // TODO: Replace language in default href
+                    response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
                     return view;
                 } else {
                     log.warn("Not able to detect user language from click stream.");
@@ -305,12 +306,62 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
     /**
      * Get user language from clickstream
+     * @param clickStream URLs which have been requested by user
      */
     private String getLanguage(Iterable<HistoryEntry> clickStream) {
+        HashMap usedLangs = new HashMap();
         for(HistoryEntry he : clickStream) {
-            log.warn("DEBUG: " + he.getTime() + ", " + he.getURL());
+            //log.debug("Previous request: " + new java.util.Date(he.getTime()).toString() + ", " + he.getURL());
+            String language = getLanguage(he.getURL());
+            if (language != null) {
+                if (usedLangs.containsKey(language)) {
+                    int count = ((Integer) usedLangs.get(language)).intValue();
+                    count++; // WARN: If we increase the count as an argument of the Integer below, then it somehow does not get increased!
+                    usedLangs.put(language, new Integer(count));
+                } else {
+                    //log.warn("DEBUG: Add language '" + language + "' to has map.");
+                    usedLangs.put(language, new Integer(1));
+                }
+            } else {
+                //log.warn("No language detected for requested URL '" + he.getURL() + "'!");
+            }
         }
-        //return "de";
+ 
+        int highestCount = 0;
+        String langWithHighestCount = null;
+        java.util.Iterator it = usedLangs.entrySet().iterator();
+        while (it.hasNext()) {
+            java.util.Map.Entry kv = (java.util.Map.Entry) it.next();
+            int count = ((Integer) kv.getValue()).intValue();
+            log.warn("DEBUG: " + kv.getKey() + ":" + kv.getValue());
+            if (count > highestCount) {
+                highestCount = count;
+                langWithHighestCount = (String) kv.getKey();
+            }
+        }
+        if (langWithHighestCount != null) {
+            return langWithHighestCount;
+        }
+        return null;
+    }
+
+    /**
+     * Get requested language
+     * @param url Requested URL, which might contain requested language either as prefix or suffix
+     */
+    private String getLanguage(String url) {
+        try {
+            String path = new java.net.URL(url).getPath();
+            if (path.length() >= 17 && path.charAt(13) == '/' && path.charAt(16) == '/') {
+                String lang = path.substring(14,16);
+                //log.debug("Language: " + lang + " (Path: " + path + ")");
+                return lang;
+            } else {
+                //log.debug("No language detected for path: " + path);
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
         return null;
     }
 }
