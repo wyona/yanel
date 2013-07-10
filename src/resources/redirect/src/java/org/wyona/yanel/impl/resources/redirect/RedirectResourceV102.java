@@ -102,7 +102,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
                 String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
                 String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
-                log.warn("DEBUG: Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
+                //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
                 Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
                 String cookieVal = cookie.getValue();
                 Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
