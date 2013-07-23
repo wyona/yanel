@@ -28,7 +28,13 @@ The following steps describe how to setup the CAS webapp independent of Yanel:
     </ul>
   </li>
   <li>In order to have <a href="http://jasig.275507.n4.nabble.com/logout-redirection-td2067916.html">logout redirect</a> working, one has to set inside <code>apache-tomcat-7.0.25/webapps/cas-server-webapp-3.5.2/WEB-INF/cas-servlet.xml</code> the attribute <code>followServiceRedirects</code> to <code>true</code> (please make sure to restart Tomcat)</li>
-  <li>In order to allow <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">CAS proxy tickets</a>, one has to TODO...</li>
+  <li>In order to allow <a href="https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough">CAS proxy tickets</a>, one has to add the <a href="ssl.html">certificate of Tomcat running Yanel</a> as trusted certificate to the Tomcat running CAS:
+    <ul>
+      <li>Export certificate from keystore (whereas use 'yanelPassword' as password): <code>keytool -export -alias Tomcat -keystore local/apache-tomcat-7.0.25/yanel.keystore -file yanel_cert</code></li>
+      <li>Create truststore: <code>keytool -import -alias Tomcat -keystore yanel.truststore -file yanel_cert -storepass 123456 -trustcacerts</code></li>
+      <li>Configure Tomcat running CAS webapp to use this truststore <code>JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/Users/michaelwechner/yanel.truststore -Djavax.net.ssl.trustStorePassword=yanelPassword"</code> inside <code>apache-tomcat-7.0.25/bin/catalina.sh</code> (please make sure to restart Tomcat)</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>Testing/using CAS together with Yanel</h2>
