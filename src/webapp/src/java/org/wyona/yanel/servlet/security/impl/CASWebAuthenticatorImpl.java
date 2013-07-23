@@ -45,12 +45,14 @@ import org.apache.log4j.Logger;
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
+    private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
 
     private static Logger log = Logger.getLogger(CASWebAuthenticatorImpl.class);
 
     private String loginURL;
     private boolean redirectToLoginURL = true;
     private String validateURL;
+    private String pgtURL;
     private String logoutURL;
 
     private final static String CONF_NAMESPACE = "http://www.wyona.org/yanel/cas/1.0.0";
@@ -66,6 +68,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
 
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
+        pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
         logoutURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "logout").item(0)).getTextContent();
     }
 
@@ -144,8 +147,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     private String validate(String ticket, HttpServletRequest request) {
         try {
-            // TODO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2
-            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode("https://127.0.0.1:8443/yanel/");
+            // TODO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
+
+            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
             DefaultHttpClient httpClient = getHttpClient(new URL(url));
             HttpGet httpGet = new HttpGet(url);
@@ -153,23 +157,18 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
             if (statusCode == 200) {
                 Document doc = XMLHelper.readDocument(response.getEntity().getContent());
+
+                // DEBUG: Since everything is over SSL, let's dump the response of CAS
                 //XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/debug-cas-response.xml"));
 
-                // INFO: /cas:serviceResponse/cas:authenticationSuccess/cas:user
-                String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
-                Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
-                if (successEls != null && successEls.length == 1) {
-                    Element[] userEls = XMLHelper.getChildElements(successEls[0], "user", CAS_NAMESPACE);
-                    if (userEls != null && userEls.length == 1) {
-                        return userEls[0].getTextContent();
-                    } else {
-                        log.warn("No such element 'cas:user'!");
-                        return null;
-                    }
+                String proxyGrantingTicket = getProxyGrantingTicket(doc);
+                if (proxyGrantingTicket != null) {
+                    log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
                 } else {
-                    log.warn("No such element 'cas:authenticationSuccess'!");
-                    return null;
+                    log.warn("No proxy granting ticket!");
                 }
+
+                return getUsername(doc);
             } else {
                 log.warn("Validation failed. Returned status code: " + statusCode);
                 return null;
@@ -270,10 +269,61 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
         boolean logoutFromYanel = new DefaultWebAuthenticatorImpl().doLogout(request, response, map);
 
-        log.warn("TODO: Use original request, but without logout query string, but with refresh query string: " + getOriginalRequestURL(request));
-        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode("http://127.0.0.1:8080/yanel/yanel-website/"));
+        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode(removeLogoutParam(getOriginalRequestURL(request))));
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 
         return logoutFromYanel;
+    }
+
+    /**
+     * Remove logout parameter 'yanel.usecase=logout' from query string
+     * @param url URL containing logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.usecase=logout
+     * @return url without logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html
+     */
+    private String removeLogoutParam(String url) {
+        log.warn("TODO: Use original request, but without logout query string, but with refresh query string: " + url);
+        return "http://127.0.0.1:8080/yanel/yanel-website/";
+    }
+
+    /**
+     * Get username from response document
+     * @param doc Document containing username (/cas:serviceResponse/cas:authenticationSuccess/cas:user)
+     * @return username, e.g. 'lenya'
+     */
+    private String getUsername(Document doc) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+        if (successEls != null && successEls.length == 1) {
+            Element[] userEls = XMLHelper.getChildElements(successEls[0], "user", CAS_NAMESPACE);
+            if (userEls != null && userEls.length == 1) {
+                return userEls[0].getTextContent();
+            } else {
+                log.warn("No such element 'cas:user'!");
+                return null;
+            }
+        } else {
+            log.warn("No such element 'cas:authenticationSuccess'!");
+            return null;
+        }
+    }
+
+    /**
+     * Get proxy granting ticket from response document
+     * @param doc Document containing proxy granting ticket (/cas:serviceResponse/cas:authenticationSuccess/cas:proxyGrantingTicket)
+     * @return proxy granting ticket, e.g. 'PGTIOU-1-PtV9B6QNdExmSKHfBp0n-cas01.example.org'
+     */
+    private String getProxyGrantingTicket(Document doc) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+        if (successEls != null && successEls.length == 1) {
+            Element[] pgtEls = XMLHelper.getChildElements(successEls[0], "proxyGrantingTicket", CAS_NAMESPACE);
+            if (pgtEls != null && pgtEls.length == 1) {
+                return pgtEls[0].getTextContent();
+            } else {
+                log.warn("No such element 'cas:proxyGrantingTicket'!");
+                return null;
+            }
+        } else {
+            log.warn("No such element 'cas:authenticationSuccess'!");
+            return null;
+        }
     }
 }
