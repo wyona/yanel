@@ -13,9 +13,9 @@
   <ac-policies>config/ac-policies-repository2.xml</ac-policies>
   <ac-identities>config/ac-identities-repository.xml</ac-identities>
 
-<!-- INFO: CAS web authenticator example (IMPORTANT: Please make sure to set 'followServiceRedirects' to 'true' inside cas-server-webapp-3.5.2/WEB-INF/cas-servlet.xml)
+<!-- INFO: CAS web authenticator example (Also see http://127.0.0.1:8080/yanel/yanel-website/en/documentation/security/sso-using-cas.html)
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
-    <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0" redirect="false">https://127.0.0.1:7443/cas-server-webapp-3.5.2/login</cas:login>
+    <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0" redirect="true">https://127.0.0.1:7443/cas-server-webapp-3.5.2/login</cas:login>
     <cas:validate xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/serviceValidate</cas:validate>
     <cas:logout xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/logout</cas:logout>
   </web-authenticator>
