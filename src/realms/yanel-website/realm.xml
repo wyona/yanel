@@ -17,7 +17,7 @@
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
     <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0" redirect="true">https://127.0.0.1:7443/cas-server-webapp-3.5.2/login</cas:login>
     <cas:validate xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/serviceValidate</cas:validate>
-    <cas:proxyCallback xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://localhost:8443/yanel/pgtCallback</cas:proxyCallback>
+    <cas:proxyCallback xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://localhost:8443/yanel/pgtCallbackByCAS</cas:proxyCallback>
     <cas:logout xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/logout</cas:logout>
   </web-authenticator>
 -->
