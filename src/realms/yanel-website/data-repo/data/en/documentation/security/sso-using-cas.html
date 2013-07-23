@@ -12,6 +12,10 @@ Yanel supports <a href="https://en.wikipedia.org/wiki/Single_sign-on">SSO</a> us
 
   <h2>Installing and running the CAS webapp</h2>
 
+<p>
+The following steps describe how to setup the CAS webapp independent of Yanel:
+</p>
+
 <ul>
   <li>Download the CAS webapp, e.g. <a href="http://downloads.jasig.org/cas/cas-server-3.5.2-release.tar.gz">http://downloads.jasig.org/cas/cas-server-3.5.2-release.tar.gz</a></li>
   <li>Install the CAS webapp, whereas see <code>cas-server-3.5.2/INSTALL.txt</code> or just copy <code>cas-server-3.5.2/modules/cas-server-webapp-3.5.2.war</code> into your Tomcat webapps directory, e.g. <code>apache-tomcat-7.0.25/webapps</code>, whereas this Tomcat can be another instance than the one which is running the Yanel webapp (if so, then just make sure that there are no port conflicts).</li>
@@ -25,5 +29,27 @@ Yanel supports <a href="https://en.wikipedia.org/wiki/Single_sign-on">SSO</a> us
   </li>
   <li>In order to have <a href="http://jasig.275507.n4.nabble.com/logout-redirection-td2067916.html">logout redirect</a> working, one has to set inside <code>apache-tomcat-7.0.25/webapps/cas-server-webapp-3.5.2/WEB-INF/cas-servlet.xml</code> the attribute <code>followServiceRedirects</code> to <code>true</code> (please make sure to restart Tomcat)</li>
 </ul>
+
+<h2>Testing/using CAS together with Yanel</h2>
+
+<ul>
+  <li>Shutdown Yanel</li>
+  <li>Uncomment the CAS web authenticator configuration inside <code>src/realms/yanel-website/realm.xml</code> and make sure that the various CAS URLs are correct</li>
+  <li>Make sure that Yanel itself has been setup with <a href="ssl.html">SSL</a>.</li>
+  <li>Startup Yanel and access https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.toolbar=on</li>
+  <li>You should be redirected to the CAS webapp login screen, where you can enter the following credentials
+    <ul>
+      <li>Username: lenya</li>
+      <li>Password: lenya</li>
+    </ul>
+  </li>
+  <li>You should be redirected back to Yanel and see the Yanel toolbar.</li>
+</ul>
+
+<h2>Using the Yanel login screen instead the CAS webapp login screen</h2>
+
+<p>
+In order to use the Yanel login screen set the attribute <code>redirect</code> to <code>false</code> inside the CAS web authenticator configuration, e.g. <code>src/realms/yanel-website/realm.xml</code>.
+</p>
 </body>
 </html>
