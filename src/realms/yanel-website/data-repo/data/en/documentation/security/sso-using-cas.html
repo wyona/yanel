@@ -33,6 +33,7 @@ The following steps describe how to setup the CAS webapp independent of Yanel:
       <li>Export certificate from keystore (whereas use 'yanelPassword' as password): <code>keytool -export -alias Tomcat -keystore local/apache-tomcat-7.0.25/yanel.keystore -file yanel_cert</code></li>
       <li>Create truststore: <code>keytool -import -alias Tomcat -keystore yanel.truststore -file yanel_cert -storepass 123456 -trustcacerts</code></li>
       <li>Configure Tomcat running CAS webapp to use this truststore <code>JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=/Users/michaelwechner/yanel.truststore -Djavax.net.ssl.trustStorePassword=yanelPassword"</code> inside <code>apache-tomcat-7.0.25/bin/catalina.sh</code> (please make sure to restart Tomcat)</li>
+      <li>Make sure that the hostname of the proxyCallback URL configured (e.g. inside <code>src/realms/yanel-website/realm.xml</code>) is the same as the common name of the certificate (see <code>certificate.common.name</code> inside <code>src/build/(local.)build.properties</code>)</li>
     </ul>
   </li>
 </ul>
