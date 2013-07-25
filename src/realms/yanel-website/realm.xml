@@ -15,6 +15,7 @@
 
 <!-- INFO: CAS web authenticator example (Also see http://127.0.0.1:8080/yanel/yanel-website/en/documentation/security/sso-using-cas.html)
   <web-authenticator class="org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl">
+    <cas:debug xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">true</cas:debug>
     <cas:login xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0" redirect="true">https://127.0.0.1:7443/cas-server-webapp-3.5.2/login</cas:login>
     <cas:validate xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/serviceValidate</cas:validate>
 
