@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
  */
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
+    public static final String CAS_PROXY_TICKET_SESSION_NAME = "cas_proxy_ticket";
     public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
 
@@ -185,6 +186,12 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         in.close();
                         log.warn("DEBUG: pgt Id: " + pgtId);
                         String proxyTicket = getProxyTicket(pgtId);
+                        if (proxyTicket != null) {
+                            log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
+                            request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
+                        } else {
+                            log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
+                        }
                     } else {
                         log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
                     }
@@ -352,12 +359,33 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
+     * Get proxy ticket from response document
+     * @param doc Document containing proxy ticket (/cas:serviceResponse/cas:proxySuccess/cas:proxyTicket)
+     * @return proxy ticket, e.g. 'ST-15-CDvkPdxaFqOIz4yLQ1TN-cas01.example.org'
+     */
+    private String getProxyTicket(Document doc) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "proxySuccess", CAS_NAMESPACE);
+        if (successEls != null && successEls.length == 1) {
+            Element[] ptEls = XMLHelper.getChildElements(successEls[0], "proxyTicket", CAS_NAMESPACE);
+            if (ptEls != null && ptEls.length == 1) {
+                return ptEls[0].getTextContent();
+            } else {
+                log.warn("No such element 'cas:proxyTicket'!");
+                return null;
+            }
+        } else {
+            log.warn("No such element 'cas:proxySuccess'!");
+            return null;
+        }
+    }
+
+    /**
      * Get proxy ticket
      * @param id pgt Id, e.g. 'TGT-14-MM67tFTk0bdRzd2CFx6x5gNM7peCRZBQmolzjTcwB11HeiWOhP-cas01.example.org'
-     * @return proxy ticket
+     * @return proxy ticket, e.g. 'ST-15-CDvkPdxaFqOIz4yLQ1TN-cas01.example.org'
      */
     private String getProxyTicket(String id) throws Exception {
-        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode("TODO");
+        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode("http://127.0.0.1:8888/another"); // TODO: Make target service URL configurable
         log.warn("DEBUG: Get proxy ticket for Id '" + id + "' at '" + url + "'...");
         DefaultHttpClient httpClient = getHttpClient(new URL(url));
         HttpGet httpGet = new HttpGet(url);
@@ -372,7 +400,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
             }
 
-            return null;
+            return getProxyTicket(doc);
         } else {
             log.warn("Get proxy ticket failed. Returned status code: " + statusCode);
             return null;
