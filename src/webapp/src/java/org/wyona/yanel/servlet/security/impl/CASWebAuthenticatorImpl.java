@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.URIResolver;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -53,7 +54,10 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     private boolean redirectToLoginURL = true;
     private String validateURL;
     private String pgtURL;
+    private String getProxyTicketURL;
     private String logoutURL;
+
+    private boolean debugCASResponses = false;
 
     private final static String CONF_NAMESPACE = "http://www.wyona.org/yanel/cas/1.0.0";
 
@@ -63,12 +67,18 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public void init(Document configuration, URIResolver resolver) throws Exception {
         log.info("Read configuration parameters from realm configuration '" + configuration.getDocumentElement().getTagName() + "'!");
 
+        org.w3c.dom.NodeList nl = configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "debug");
+        if (nl != null && nl.getLength() == 1) {
+            debugCASResponses = new Boolean(((Element) nl.item(0)).getTextContent()).booleanValue();
+        }
+
         Element loginURLElement = (Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "login").item(0);
         loginURL = loginURLElement.getTextContent();
         redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
 
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
         pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
+        getProxyTicketURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "getProxyTicket").item(0)).getTextContent();
         logoutURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "logout").item(0)).getTextContent();
     }
 
@@ -147,8 +157,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     private String validate(String ticket, HttpServletRequest request) {
         try {
-            // TODO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
-
             String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
             DefaultHttpClient httpClient = getHttpClient(new URL(url));
@@ -159,11 +167,27 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 Document doc = XMLHelper.readDocument(response.getEntity().getContent());
 
                 // DEBUG: Since everything is over SSL, let's dump the response of CAS
-                //XMLHelper.writeDocument(doc, new java.io.FileOutputStream("/Users/michaelwechner/debug-cas-response.xml"));
+                if (debugCASResponses) {
+                    File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-validate-response.xml");
+                    XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
+                }
 
+                // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
                 String proxyGrantingTicket = getProxyGrantingTicket(doc);
                 if (proxyGrantingTicket != null) {
                     log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
+                    File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), "cas-pgt-id.txt");
+                    if (proxyIdFile.exists()) {
+                        java.io.FileReader in = new java.io.FileReader(proxyIdFile);
+                        java.io.BufferedReader br = new java.io.BufferedReader(in);
+                        String pgtId = br.readLine();
+                        br.close();
+                        in.close();
+                        log.warn("DEBUG: pgt Id: " + pgtId);
+                        String proxyTicket = getProxyTicket(pgtId);
+                    } else {
+                        log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
+                    }
                 } else {
                     log.warn("No proxy granting ticket!");
                 }
@@ -323,6 +347,34 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             }
         } else {
             log.warn("No such element 'cas:authenticationSuccess'!");
+            return null;
+        }
+    }
+
+    /**
+     * Get proxy ticket
+     * @param id pgt Id, e.g. 'TGT-14-MM67tFTk0bdRzd2CFx6x5gNM7peCRZBQmolzjTcwB11HeiWOhP-cas01.example.org'
+     * @return proxy ticket
+     */
+    private String getProxyTicket(String id) throws Exception {
+        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode("TODO");
+        log.warn("DEBUG: Get proxy ticket for Id '" + id + "' at '" + url + "'...");
+        DefaultHttpClient httpClient = getHttpClient(new URL(url));
+        HttpGet httpGet = new HttpGet(url);
+        HttpResponse response = httpClient.execute(httpGet);
+        int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
+        if (statusCode == 200) {
+            Document doc = XMLHelper.readDocument(response.getEntity().getContent());
+
+            // DEBUG: Since everything is over SSL, let's dump the response of CAS
+            if (debugCASResponses) {
+                File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-get-proxy-ticket-response.xml");
+                XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
+            }
+
+            return null;
+        } else {
+            log.warn("Get proxy ticket failed. Returned status code: " + statusCode);
             return null;
         }
     }
