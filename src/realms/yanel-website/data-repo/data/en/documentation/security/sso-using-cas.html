@@ -54,6 +54,15 @@ The following steps describe how to setup the CAS webapp independent of Yanel:
   <li>You should be redirected back to Yanel and see the Yanel toolbar.</li>
 </ul>
 
+<h2>Debugging</h2>
+
+<ul>
+  <li>In order to debug the responses of CAS, set the <code>debug</code> element of the web authenticator configuration to <code>true</code> (see for example <code>src/realms/yanel-website/realm.xml</code>) and then the responses will be logged at <code>local/apache-tomcat-7.0.25/temp</code></li>
+  <li>Debug the CAS webapp itself by using <code>tail -F cas.log</code> from where you have the Tomcat started which is running the CAS webapp.</li>
+  <li>Debug the Yanel components accessing CAS: <code>tail -F logs/log4j-cnode1.log</code></li>
+</ul>
+
+
 <h2>Using the Yanel login screen instead the CAS webapp login screen</h2>
 
 <p>
