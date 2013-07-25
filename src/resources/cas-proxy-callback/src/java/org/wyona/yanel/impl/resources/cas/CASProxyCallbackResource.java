@@ -31,10 +31,13 @@ public class CASProxyCallbackResource extends BasicXMLResource {
             log.debug("requested viewId: " + viewId);
         }
 
-        String pgtId = getEnvironment().getRequest().getParameter("pgtId");
-        if (pgtId != null) {
-            log.warn("DEBUG: pgt Id: " + pgtId);
-            java.io.FileOutputStream out = new java.io.FileOutputStream("/Users/michaelwechner/pgt-id.txt");
+        String pgtId = getEnvironment().getRequest().getParameter("pgtId"); // INFO: http://www.jusfortechies.com/java/cas/protocol.php#tgt
+        String pgtIou = getEnvironment().getRequest().getParameter("pgtIou"); // INFO: http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou
+        if (pgtId != null && pgtIou != null) {
+            log.warn("DEBUG: pgt Id: " + pgtId + ", pgt Iou: " + pgtIou);
+            // TODO: Make it synchronized/multi-threaded. Also add the parameter 'pgtIou'
+            java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), "cas-pgt-id.txt"); // INFO: The class src/webapp/src/java/org/wyona/yanel/servlet/security/impl/CASWebAuthenticatorImpl.java will read it from here
+            java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
             out.write(pgtId.getBytes());
             out.close();
         } else {
