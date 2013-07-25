@@ -36,7 +36,11 @@ The following steps describe how to setup the CAS webapp independent of Yanel:
       <li>Make sure that the hostname of the proxyCallback URL configured (e.g. inside <code>src/realms/yanel-website/realm.xml</code>) is the same as the common name of the certificate (see <code>certificate.common.name</code> inside <code>src/build/(local.)build.properties</code>)</li>
     </ul>
   </li>
-  <li>In the case the proxied webapp is not accessed right away by Yanel, then one should increase <code>timeToKillInSeconds</code> inside <code>apache-tomcat-7.0.25/webapps/cas-server-webapp-3.5.2/WEB-INF/spring-configuration/ticketExpirationPolicies.xml</code>.</li>
+  <li>In the case the proxied webapp is not accessed right away by Yanel, then one should increase <code>timeToKillInSeconds</code> inside <code>apache-tomcat-7.0.25/webapps/cas-server-webapp-3.5.2/WEB-INF/spring-configuration/ticketExpirationPolicies.xml</code>.
+    <ul>
+      <li>Also in case the proxied webapp would like to validate the proxy ticket for every request, then one has to increase the parameter <code>numberOfUses</code>.</li>
+    </ul>
+  </li>
 </ul>
 
 <h2>Testing/using CAS together with Yanel</h2>
