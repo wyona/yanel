@@ -46,7 +46,9 @@ import org.apache.log4j.Logger;
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     public static final String CAS_PROXY_TICKET_SESSION_NAME = "cas_proxy_ticket";
-    public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
+    public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
+    private static final String TARGET_SERVICE = "http://127.0.0.1:8888/another";
+
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
 
     private static Logger log = Logger.getLogger(CASWebAuthenticatorImpl.class);
@@ -104,10 +106,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
-                    // INFO: Add cas ticket to session, because some resources might have to forward the ticket to third-party services
-                    log.warn("DEBUG: Add CAS ticket '" + casTicket + "' to HTTP session...");
-                    request.getSession(true).setAttribute(CAS_TICKET_SESSION_NAME, casTicket);
-                    // TODO: What about service?!
                 } catch(Exception e) {
                     log.error(e, e);
                     return null;
@@ -189,6 +187,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         if (proxyTicket != null) {
                             log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
                             request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
+                            request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, TARGET_SERVICE);
                         } else {
                             log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
                         }
@@ -385,7 +384,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return proxy ticket, e.g. 'ST-15-CDvkPdxaFqOIz4yLQ1TN-cas01.example.org'
      */
     private String getProxyTicket(String id) throws Exception {
-        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode("http://127.0.0.1:8888/another"); // TODO: Make target service URL configurable
+        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode(TARGET_SERVICE); // TODO: Make target service URL configurable
         log.warn("DEBUG: Get proxy ticket for Id '" + id + "' at '" + url + "'...");
         DefaultHttpClient httpClient = getHttpClient(new URL(url));
         HttpGet httpGet = new HttpGet(url);
