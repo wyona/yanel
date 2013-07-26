@@ -21,6 +21,7 @@
 
     <cas:proxyCallback xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://localhost:8443/yanel/yanel-website/casProxyCallback</cas:proxyCallback>
     <cas:getProxyTicket xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/proxy</cas:getProxyTicket>
+    <cas:targetService xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">http://127.0.0.1:8888/anotherService</cas:targetService>
 
     <cas:logout xmlns:cas="http://www.wyona.org/yanel/cas/1.0.0">https://127.0.0.1:7443/cas-server-webapp-3.5.2/logout</cas:logout>
   </web-authenticator>
