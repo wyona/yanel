@@ -47,7 +47,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     public static final String CAS_PROXY_TICKET_SESSION_NAME = "cas_proxy_ticket";
     public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
-    private static final String TARGET_SERVICE = "http://127.0.0.1:8888/another";
 
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
 
@@ -58,6 +57,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     private String validateURL;
     private String pgtURL;
     private String getProxyTicketURL;
+    private String targetServiceURL;
     private String logoutURL;
 
     private boolean debugCASResponses = false;
@@ -82,6 +82,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
         pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
         getProxyTicketURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "getProxyTicket").item(0)).getTextContent();
+        targetServiceURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "targetService").item(0)).getTextContent();
+
         logoutURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "logout").item(0)).getTextContent();
     }
 
@@ -183,11 +185,11 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         br.close();
                         in.close();
                         log.warn("DEBUG: pgt Id: " + pgtId);
-                        String proxyTicket = getProxyTicket(pgtId);
+                        String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
                         if (proxyTicket != null) {
                             log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
                             request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
-                            request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, TARGET_SERVICE);
+                            request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
                         } else {
                             log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
                         }
@@ -380,11 +382,12 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Get proxy ticket
-     * @param id pgt Id, e.g. 'TGT-14-MM67tFTk0bdRzd2CFx6x5gNM7peCRZBQmolzjTcwB11HeiWOhP-cas01.example.org'
+     * @param id pgt Id, e.g. 'TGT-14-MM67tFTk0bdRzd2CFx6x5gNM7peCRZBQmolzjTcwB11HeiWOhP-cas01.example.org' (Also see http://www.jusfortechies.com/java/cas/protocol.php#tgt)
+     * @param targetServiceUrl Target service URL for which proxy ticket will be created
      * @return proxy ticket, e.g. 'ST-15-CDvkPdxaFqOIz4yLQ1TN-cas01.example.org'
      */
-    private String getProxyTicket(String id) throws Exception {
-        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode(TARGET_SERVICE); // TODO: Make target service URL configurable
+    private String getProxyTicket(String id, String targetServiceUrl) throws Exception {
+        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode(targetServiceUrl);
         log.warn("DEBUG: Get proxy ticket for Id '" + id + "' at '" + url + "'...");
         DefaultHttpClient httpClient = getHttpClient(new URL(url));
         HttpGet httpGet = new HttpGet(url);
