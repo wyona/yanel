@@ -1,11 +1,15 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0.1"/>
+  <yanel:rti name="redirect" namespace="http://www.wyona.org/yanel/resource/1.0.2"/>
 
   <yanel:property name="href" value="en/index.html"/>
 
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
+<!--
+    <rd:personalized boost-service-url="http://localhost:9080/boost/api" boost-api-key="GSrFrY27ycp3LtQ2Hbuts0kqSec4XrW2dzTwjb8WKMBRoAQWyoblqprJdz33DXaK" href="@LANG/index.html"/>
+-->
+
     <rd:language code="de" device="web.xml:mobile-devices" href="en/index.html"/> <!-- TODO: Introduce a mobile optimized page, e.g. mobile/de/index.html -->
     <rd:language code="de" href="de/index.html"/>
   </yanel:custom-config>
