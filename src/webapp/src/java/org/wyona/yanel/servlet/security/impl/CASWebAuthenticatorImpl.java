@@ -107,7 +107,17 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     org.wyona.yanel.core.map.Realm realm = map.getRealm(request.getServletPath());
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
-                    org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                    if (user !=  null) {
+                        org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                    } else {
+                        String errorMsg = "It seems that you are already authenticated as user '" + username + "', but no such user inside realm '" + realm + "'!";
+                        log.error(errorMsg);
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        java.io.PrintWriter writer = response.getWriter();
+                        writer.print("Authentication/authorization Failed: " + errorMsg);
+                        writer.close();
+                        return response;
+                    }
                 } catch(Exception e) {
                     log.error(e, e);
                     return null;
