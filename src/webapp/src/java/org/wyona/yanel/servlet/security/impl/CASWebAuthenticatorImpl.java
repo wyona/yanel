@@ -15,8 +15,6 @@
  */
 package org.wyona.yanel.servlet.security.impl;
 
-import org.wyona.yanel.core.api.security.WebAuthenticator;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,8 +28,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import org.wyona.security.core.api.Identity;
+import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.servlet.YanelServlet;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -108,14 +109,19 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     if (user !=  null) {
-                        org.wyona.yanel.servlet.YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                        Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
+                        if (existingIdentity == null) {
+                            YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                        } else {
+                            String errorMsg = "It seems that you are already authenticated as user '" + existingIdentity.getUsername() + "', but you are probably not authorized to view '" + request.getServletPath() + "'! Please check access policies...";
+                            log.error(errorMsg);
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                            return response;
+                        }
                     } else {
                         String errorMsg = "It seems that you are already authenticated as user '" + username + "', but no such user inside realm '" + realm + "'!";
                         log.error(errorMsg);
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                        java.io.PrintWriter writer = response.getWriter();
-                        writer.print("Authentication/authorization Failed: " + errorMsg);
-                        writer.close();
                         return response;
                     }
                 } catch(Exception e) {
