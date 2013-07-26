@@ -105,15 +105,20 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
                 Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
                 String cookieVal = cookie.getValue();
-                Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
-                String clickstreamLang = getLanguage(clickStream);
-                if (clickstreamLang != null) {
-                    log.warn("DEBUG: User language from click stream: " + clickstreamLang);
-                    response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                    response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
-                    return view;
-                } else {
-                    log.warn("Not able to detect user language from click stream.");
+                try {
+                    Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
+                    String clickstreamLang = getLanguage(clickStream);
+                    if (clickstreamLang != null) {
+                        log.debug("User language from click stream: " + clickstreamLang);
+                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
+                        response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
+                        return view;
+                    } else {
+                        log.warn("Not able to detect user language from click stream.");
+                    }
+                } catch(Exception e) {
+                    log.error(e, e);
+                    log.warn("Fallback to non-personalized redirect...");
                 }
             } else {
                 log.debug("Personalization of redirect not configured.");
@@ -333,7 +338,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         while (it.hasNext()) {
             java.util.Map.Entry kv = (java.util.Map.Entry) it.next();
             int count = ((Integer) kv.getValue()).intValue();
-            log.warn("DEBUG: " + kv.getKey() + ":" + kv.getValue());
+            //log.debug("Key/value: " + kv.getKey() + ":" + kv.getValue());
             if (count > highestCount) {
                 highestCount = count;
                 langWithHighestCount = (String) kv.getKey();
