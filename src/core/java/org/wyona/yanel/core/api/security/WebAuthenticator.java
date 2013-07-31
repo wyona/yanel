@@ -35,6 +35,8 @@ public interface WebAuthenticator {
 
     /**
      * Custom logout
+     * @param map Map containing realm
+     * @return true when logout was successful and false otherwise
      */
     public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception;
 }
