@@ -6,7 +6,7 @@
   class="org.wyona.yanel.impl.resources.boost.PersonalizedContentResource"
   >
 <description>
-Generates personalized content based on the interests of a user (see for example http://127.0.0.1:8080/yanel/from-scratch-realm/boost.xml or http://127.0.0.1:8080/yanel/yanel-website/boost.xml)
+Generates personalized content based on the interests of a user (see for example http://127.0.0.1:8080/yanel/from-scratch-realm/boost.xml or http://127.0.0.1:8080/yanel/yanel-website/my-profile.html)
 </description>
 
 <rtd>
