@@ -131,11 +131,17 @@ public class ShowRealms extends BasicXMLResource {
             realmsEl.appendChild(realmEl);
         }
 
-        Element rtsEl = doc.createElement("resourcetypes");
-        root.appendChild(rtsEl);
+        boolean showResourceTypes = true;
+        if (getResourceConfigProperty("show-resource-types") != null) {
+            showResourceTypes = new Boolean(getResourceConfigProperty("show-resource-types")).booleanValue();
+        }
 
-        ResourceTypeRegistry rtr = new ResourceTypeRegistry();
-        ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
+        if (showResourceTypes) {
+            Element rtsEl = doc.createElement("resourcetypes");
+            root.appendChild(rtsEl);
+
+            ResourceTypeRegistry rtr = new ResourceTypeRegistry();
+            ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
         for (ResourceTypeDefinition rt : rtds) {
 
             if(rt == null) continue;
@@ -184,6 +190,9 @@ public class ShowRealms extends BasicXMLResource {
             rtEl.appendChild(iconEl);
             rtEl.appendChild(docuEl);
             rtsEl.appendChild(rtEl);
+        }
+        } else {
+            Element rtsEl = doc.createElement("show-resource-types-set-to-false");
         }
 
         // Transform the DOM to actual output
