@@ -142,55 +142,48 @@ public class ShowRealms extends BasicXMLResource {
 
             ResourceTypeRegistry rtr = new ResourceTypeRegistry();
             ResourceTypeDefinition[] rtds = rtr.getResourceTypeDefinitions();
-        for (ResourceTypeDefinition rt : rtds) {
+            for (ResourceTypeDefinition rt : rtds) {
+                if(rt == null) continue;
 
-            if(rt == null) continue;
+                // Get local name, namespace, description
+                String namespace = rt.getResourceTypeNamespace();
+                String localname = rt.getResourceTypeLocalName();
 
-            // Get local name, namespace, description
-            String namespace = rt.getResourceTypeNamespace();
-            String localname = rt.getResourceTypeLocalName();
+                Element rtEl = doc.createElement("resourcetype");
+                Element localnameEl = doc.createElement("localname");
+                localnameEl.appendChild(doc.createTextNode(localname));
 
-            Element rtEl = doc.createElement("resourcetype");
-            Element localnameEl = doc.createElement("localname");
-            localnameEl.appendChild(doc.createTextNode(localname));
+                Element namespaceEl = doc.createElement("namespace");
+                namespaceEl.appendChild(doc.createTextNode(namespace));
 
-            Element namespaceEl = doc.createElement("namespace");
-            namespaceEl.appendChild(doc.createTextNode(namespace));
+                Element descriptionEl = doc.createElement("description");
+                descriptionEl.appendChild(doc.createTextNode(rt.getResourceTypeDescription()));
 
-            Element descriptionEl = doc.createElement("description");
-            descriptionEl.appendChild(doc.createTextNode(
-                rt.getResourceTypeDescription()));
+                rtEl.appendChild(localnameEl);
+                rtEl.appendChild(namespaceEl);
+                rtEl.appendChild(descriptionEl);
 
-            rtEl.appendChild(localnameEl);
-            rtEl.appendChild(namespaceEl);
-            rtEl.appendChild(descriptionEl);
+                // Get document and icon paths
+                String raw_path = String.format("%s::%s", namespace, localname);
+                String enc_path = URLEncoder.encode(raw_path, "UTF-8");
 
-            // Get document and icon paths
-            String raw_path = String.format("%s::%s", namespace, localname);
-            String enc_path = URLEncoder.encode(raw_path, "UTF-8");
+                String htdocPath = String.format("%s/resource-types/%s/%s/", PathUtil.getGlobalHtdocsPath(this), enc_path, yanel.getReservedPrefix());
 
-            String htdocPath = String.format(
-                "%s/resource-types/%s/%s/",
-                PathUtil.getGlobalHtdocsPath(this),
-                enc_path, yanel.getReservedPrefix());
+                String docuPath = String.format("%s/doc/index.html", htdocPath);
 
-            String docuPath = String.format(
-                "%s/doc/index.html", htdocPath);
+                String iconPath = String.format("%s/icons/32x32/rt-icon.png", htdocPath);
 
-            String iconPath = String.format(
-                "%s/icons/32x32/rt-icon.png", htdocPath);
+                Element iconEl = doc.createElement("icon");
+                iconEl.setAttribute("alt", localname);
+                iconEl.appendChild(doc.createTextNode(iconPath));
 
-            Element iconEl = doc.createElement("icon");
-            iconEl.setAttribute("alt", localname);
-            iconEl.appendChild(doc.createTextNode(iconPath));
+                Element docuEl = doc.createElement("docu");
+                docuEl.appendChild(doc.createTextNode(docuPath));
 
-            Element docuEl = doc.createElement("docu");
-            docuEl.appendChild(doc.createTextNode(docuPath));
-
-            rtEl.appendChild(iconEl);
-            rtEl.appendChild(docuEl);
-            rtsEl.appendChild(rtEl);
-        }
+                rtEl.appendChild(iconEl);
+                rtEl.appendChild(docuEl);
+                rtsEl.appendChild(rtEl);
+            }
         } else {
             Element rtsEl = doc.createElement("show-resource-types-set-to-false");
         }
