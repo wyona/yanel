@@ -3,6 +3,8 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="show-realms" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+  <yanel:property name="show-resource-types" value="false"/>
+
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
