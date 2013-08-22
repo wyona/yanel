@@ -20,7 +20,8 @@
 <!--
         <xsl:if test="not(y:exception or y:message)">
 -->
-          <p>Choose the repository for which you would like to clean the index (Please note that you will be asked to confirm before the actual cleaning will start):</p>
+          <p>'<i>Cleaning the index</i>' means, that all entries inside the index, but which don't exist anymore inside the data repository, will be removed.</p>
+          <p>Select the repository for which you would like to clean the index. Please note, that by selecting a repository, you will receive a list of all entries inside the index, but which don't exist anymore inside the repository, but these entries won't be removed. Only when you confirm this list, then the entries will be removed from the index for good:</p>
           <ul>
             <xsl:for-each select="y:repository">
               <li>
