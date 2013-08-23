@@ -30,14 +30,14 @@
     1) Build/Compile Yanel by running
 
         Linux/MacOSX/UNIX: ./build.sh quick-start
-        Windows: build.bat quick-start
+        Windows: build.bat quick-start (or when using the github shell: .\build.bat quick-start)
 
        whereas by default the build will be without SSL. Please use the script 'configure' described further down to setup Yanel with SSL.
 
     2) Start Yanel/Tomcat by running
 
         Linux/MacOSX/UNIX: ./yanel.sh start
-        Windows: yanel.bat start
+        Windows: yanel.bat start (or when using the github shell: .\yanel.bat start)
 
     3) Use your favorite web browser to request and start using Yanel http://127.0.0.1:8080/yanel/
 
