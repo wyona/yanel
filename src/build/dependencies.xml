@@ -39,6 +39,11 @@
       <remoteRepository refid="glassfish.repository"/>
 -->
 
+      <!-- INFO: log4j version 2 -->
+      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-api" version="2.0-beta8"/>
+      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-core" version="2.0-beta8"/>
+
+      <!-- INFO: log4j version 1 -->
       <dependency groupId="log4j" artifactId="log4j" version="1.2.16"/>
       <dependency groupId="org.slf4j" artifactId="slf4j-log4j12" version="1.5.8"/>
 <!--
