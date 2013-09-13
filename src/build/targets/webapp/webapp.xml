@@ -76,6 +76,7 @@
     <copy file="${yanel.source.home}/conf/quartz.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/jndi.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <copy file="${yanel.source.home}/conf/log4j.properties" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
+    <copy file="${yanel.source.home}/conf/log4j2.xml" todir="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes" overwrite="false"/>
     <!-- Create yanel.xml -->
     <condition property="local.yanel.config.exists">
       <available file="${local.config.home}/local.yanel.xml" type="file"/>
@@ -94,10 +95,12 @@
       <available file="${local.config.home}/local.log4j.properties" type="file"/>
     </condition>
     <antcall target="check-config-version-log4j-properties"/>
+    <!-- TODO: Check config version of log4j2.xml -->
 
     <!-- Overwrite default by local properties -->
     <!-- TODO: Make the patching selectable within the build.properties of the build ... -->
     <copy file="${local.config.home}/local.log4j.properties" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" overwrite="true" failonerror="false"/>
+    <copy file="${local.config.home}/local.log4j2.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" overwrite="true" failonerror="false"/>
     <copy file="${local.config.home}/local.realms.xml" tofile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/realms.xml" overwrite="true" failonerror="false"/>
     <antcall target="patch-with-local-yanel-config"/>
 
@@ -147,6 +150,9 @@
     </replace>
 
     <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="${log4j.dir.forward.slashes}">
+      <replacetoken>@LOG4J_DIR@</replacetoken>
+    </replace>
+    <replace file="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" value="${log4j.dir.forward.slashes}">
       <replacetoken>@LOG4J_DIR@</replacetoken>
     </replace>
     <touch file="${log4j.file}"/>

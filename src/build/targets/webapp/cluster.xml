@@ -23,8 +23,15 @@
       <replacetoken>log4j-cmdl.log</replacetoken>
     </replace>
     <touch file="${log4j.path}/log4j-cnode1.log"/>
+    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" value="log4j2-cnode1.log">
+      <replacetoken>log4j2-cmdl.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j2-cnode1.log"/>
 
     <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="1">
+      <replacetoken>@CNODE_ID@</replacetoken>
+    </replace>
+    <replace file="${tomcat1.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" value="1">
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
 
@@ -156,8 +163,15 @@
       <replacetoken>log4j-cmdl.log</replacetoken>
     </replace>
     <touch file="${log4j.path}/log4j-cnode2.log"/>
+    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" value="log4j2-cnode2.log">
+      <replacetoken>log4j2-cmdl.log</replacetoken>
+    </replace>
+    <touch file="${log4j.path}/log4j2-cnode2.log"/>
 
     <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j.properties" value="2">
+      <replacetoken>@CNODE_ID@</replacetoken>
+    </replace>
+    <replace file="${tomcat2.webapps.dir}/${servlet.context.prefix}/WEB-INF/classes/log4j2.xml" value="2">
       <replacetoken>@CNODE_ID@</replacetoken>
     </replace>
 
