@@ -6,7 +6,7 @@
 <!--
     <File name="A1" fileName="${catalina.base}/logs/log4j2-cnode@CNODE_ID@.log" append="false">
 -->
-      <PatternLayout pattern="%-4r %d{yyyy-MM-dd HH:mm:ss,SSS Z} [%t] %-5p %c.%M():%L %x - %m%n"/>
+      <PatternLayout pattern="%-4r %d{yyyy-MM-dd HH:mm:ss,SSS Z} [%t] %-5p %c.%M():%L %x %X - %m%n"/>
 <!--
       <PatternLayout pattern="%t %-5p %c{2} - %m%n"/>
 -->
