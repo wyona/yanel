@@ -101,6 +101,9 @@ import org.wyona.security.core.api.Usecase;
 import org.wyona.security.core.api.User;
 
 import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
+
 import org.apache.xalan.transformer.TransformerIdentityImpl;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
@@ -124,11 +127,12 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
- * Main entry of Yanel webapp
+ * Main entry point of Yanel webapp (see method 'service')
  */
 public class YanelServlet extends HttpServlet {
 
-    private static Logger log = Logger.getLogger(YanelServlet.class);
+    private static org.apache.logging.log4j.Logger log = LogManager.getLogger(YanelServlet.class);
+
     private static Logger logAccess = Logger.getLogger(AccessLog.CATEGORY);
     private static Logger logDoNotTrack = Logger.getLogger("DoNotTrack"); // INFO: For debugging only!
     private static Logger log404 = Logger.getLogger("404");
@@ -318,6 +322,7 @@ public class YanelServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
         try {
+            ThreadContext.put("id", "fishtag");
             //String httpAcceptMediaTypes = request.getHeader("Accept");
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
 
@@ -400,6 +405,8 @@ public class YanelServlet extends HttpServlet {
         } catch (IOException e) {
             log.error(e, e);
             throw new IOException(e.getMessage());
+        } finally {
+            ThreadContext.clear();
         } // NOTE: This was our last chance to log an exception, hence do not add code outside the try-catch block
     }
 
