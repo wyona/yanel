@@ -322,7 +322,7 @@ public class YanelServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
         try {
-            ThreadContext.put("id", "fishtag");
+            ThreadContext.put("id", getFishTag(request));
             //String httpAcceptMediaTypes = request.getHeader("Accept");
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
 
@@ -3138,5 +3138,14 @@ public class YanelServlet extends HttpServlet {
             }
             return request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
         }
+    }
+
+    /**
+     * Generate unique fish tag, such that one can debug individual users
+     * @param request Request containing client ip and session id
+     * @return unique fishtag, e.g. '127.0.0.1_F3194'
+     */
+    private String getFishTag(HttpServletRequest request) {
+        return getClientAddressOfUser(request) + "_" + request.getSession(true).getId().substring(0, 4); // TBD: org.wyona.yanel.impl.resources.sessionmanager.SessionManagerResource#hashSessionID(String)
     }
 }
