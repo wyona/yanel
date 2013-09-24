@@ -646,7 +646,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             if (userID != null) {
                 transformer.setParameter("username", userID);
 
-                String firstname = identity.getFirstname();
+                String firstname = identity.getFirstname(); // INFO: Please note that org.wyona.security.core.api.Identity(User, String) is using User#getName() as firstname!
                 if (firstname != null) {
                     transformer.setParameter("firstname", firstname);
                 } else {
