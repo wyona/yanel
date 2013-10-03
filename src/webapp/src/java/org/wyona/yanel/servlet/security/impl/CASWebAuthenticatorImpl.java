@@ -111,7 +111,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     if (user !=  null) {
                         Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
                         if (existingIdentity == null) {
-                            YanelServlet.setIdentity(new org.wyona.security.core.api.Identity(user, username), request.getSession(true), realm);
+                            Identity identity = new org.wyona.security.core.api.Identity(user, username);
+/* TODO: Make setting identity overwritable, in order to implement custom firstname and lastname, because User has no corresponding interface yet and also one would have to pass the CAS_PROXY_TICKET_SESSION_NAME and TARGET_SERVICE_SESSION_NAME somehow, which is generated during validation!
+                            Identity identity = getIdentity(username, request, realm);
+                            identity.setFirstname();
+                            identity.setLastname();
+*/
+                            YanelServlet.setIdentity(identity, request.getSession(true), realm);
                         } else {
                             String errorMsg = "It seems that you are already authenticated as user '" + existingIdentity.getUsername() + "', but you are probably not authorized to view '" + request.getServletPath() + "'! Please check access policies...";
                             log.error(errorMsg);
@@ -132,7 +138,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
             } else {
-                log.warn("Validation of ticket '" + casTicket + "' failed!");
+                log.warn("Validation of CAS ticket '" + casTicket + "' failed!");
                 if (!redirectToLoginURL) {
                     try {
                         // INFO: Instead of redirecting directly to the CAS server, we can also provide the user with a custom login screen, which will then send credentials to CAS server.
@@ -170,12 +176,14 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * Validate CAS ticket
      * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
      * @param request Request which is used to generate service URL
-     * @return username associated with ticket when ticket is valid, return null otherwise
+     * @return username associated with ticket when ticket is valid, return null otherwise (which means validation failed)
      */
     private String validate(String ticket, HttpServletRequest request) {
         try {
+            // TBD/TODO: Check whether pgtURL has been configured, because not every realm might need to proxy CAS
             String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
+
             DefaultHttpClient httpClient = getHttpClient(new URL(url));
             HttpGet httpGet = new HttpGet(url);
             HttpResponse response = httpClient.execute(httpGet);
