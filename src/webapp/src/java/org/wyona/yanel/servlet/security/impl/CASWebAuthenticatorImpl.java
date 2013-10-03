@@ -325,6 +325,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
         boolean logoutFromYanel = new DefaultWebAuthenticatorImpl().doLogout(request, response, map);
 
+        // TODO: Make logout service configurable per realm (optionally)
         response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode(removeLogoutParam(getOriginalRequestURL(request))));
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 
@@ -334,11 +335,27 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Remove logout parameter 'yanel.usecase=logout' from query string
      * @param url URL containing logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.usecase=logout
-     * @return url without logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html
+     * @return url without logout parameter, but with refresh query string, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.refresh=1380828599217
      */
-    private String removeLogoutParam(String url) {
-        log.warn("TODO: Use original request, but without logout query string, but with refresh query string: " + url);
-        return "http://127.0.0.1:8080/yanel/yanel-website/";
+    private String removeLogoutParam(String url) throws Exception {
+        URL tmpURL = new URL(url);
+        String qs = tmpURL.getQuery();
+        if (qs != null) {
+            log.warn("DEBUG: Remove query string: " + qs);
+            url = url.substring(0, url.indexOf("?"));
+        }
+        url = url + "?yanel.refresh=" + new java.util.Date().getTime();
+        if (qs != null) {
+            String[] queryKeyValue = qs.split("&");
+            log.warn("DEBUG: Check whether there are other parameters than 'yanel.usecase=logout'. Number of query key value pairs: " + queryKeyValue.length);
+            for (int i = 0; i < queryKeyValue.length; i++) {
+                if (!queryKeyValue[i].equals("yanel.usecase=logout")) {
+                    url = url + "&" + queryKeyValue[i];
+                }
+            }
+        }
+        log.warn("DEBUG: Redirect URL after logout: " + url);
+        return url;
     }
 
     /**
