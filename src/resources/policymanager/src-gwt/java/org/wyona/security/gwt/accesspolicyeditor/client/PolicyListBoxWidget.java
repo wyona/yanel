@@ -52,13 +52,19 @@ public class PolicyListBoxWidget extends Composite implements ClickListener {
     public PolicyListBoxWidget(int visibleItemCount, User[] users, Group[] groups, boolean useInheritedPolicies, String language) {
         initWidget(vp);
 
-        vp.add(new Label("Policy:"));
+        //vp.add(new Label("Policy:"));
+        VerticalPanel titlePanel = new VerticalPanel();
+        titlePanel.setStyleName("gwt-wyona-policy-list-box-title");
+        titlePanel.add(new Label("Policy:"));
 
         policyInheritanceCB = new CheckBox(I18n.getLabel("inherit-rights-label", language));
         setInheritRightsFlag(useInheritedPolicies);
-        vp.add(policyInheritanceCB);
+        //vp.add(policyInheritanceCB);
+        titlePanel.add(policyInheritanceCB);
+        vp.add(titlePanel);
 
         lb = new ListBox(true); // NOTE: ListBox#setMultipleSelect(true) can spuriously fail on IE 6.0
+        lb.setStyleName("gwt-wyona-policy-list-box");
         lb.addClickListener(this);
         //setIdentities(visibleItemCount, users, groups);
         displayLoading(visibleItemCount);
