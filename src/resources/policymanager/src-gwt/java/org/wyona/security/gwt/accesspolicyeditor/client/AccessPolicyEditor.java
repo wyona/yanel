@@ -159,7 +159,7 @@ public class AccessPolicyEditor implements EntryPoint {
                 }
             }
         });
-        saveButton.setStyleName("gwt-wyona-SaveButton");
+        saveButton.addStyleName("gwt-wyona-SaveButton");
         buttonHP.add(saveButton);
 
         // Cancel Button
@@ -178,11 +178,10 @@ public class AccessPolicyEditor implements EntryPoint {
                 $wnd.location.href=url;
             }-*/; 
         });
-        saveButton.setStyleName("gwt-wyona-CancelButton");
+        cancelButton.addStyleName("gwt-wyona-CancelButton");
         buttonHP.add(cancelButton);
 
-        //vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0-dev-r47029"));
-        vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0-dev-rREVISION"));
+        vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0.1-dev-rREVISION"));
         
 
         AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW);
