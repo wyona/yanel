@@ -186,7 +186,7 @@ public class AccessPolicyEditor implements EntryPoint {
         vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0.1-dev-rREVISION"));
         
 
-        AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW, groupURL);
+        AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW, groupURL, language);
         ariw.setStyleName("gwt-wyona-AddRemoveWidget");
 
         CutPasteListOrderWidget cutPasteWidget = new CutPasteListOrderWidget(policyLBW);

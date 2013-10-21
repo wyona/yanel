@@ -45,19 +45,23 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
     private Button addMembersButton;
     private Button removeButton;
 
+    private String groupURL;
+
     /**
-     *
+     * @param groupURL URL to get group as XML
      */
-    public AddRemoveIdentitiesWidget(IdentitiesListBoxWidget identitiesListBox, ListBox policyListBox, PolicyListBoxWidget policyLBW) {
+    public AddRemoveIdentitiesWidget(IdentitiesListBoxWidget identitiesListBox, ListBox policyListBox, PolicyListBoxWidget policyLBW, String groupURL, String language) {
         initWidget(verticalPanel);
 
-        addButton = new Button("Hinzufügen" + " >", this);
+        this.groupURL = groupURL;
+
+        addButton = new Button(I18n.getLabel("add-identities", language) + " >", this);
         verticalPanel.add(addButton);
 
-        addMembersButton = new Button("Hinzufügen von Mitgliedern", this);
+        addMembersButton = new Button(I18n.getLabel("add-members", language) + " >", this);
         verticalPanel.add(addMembersButton);
 
-        removeButton = new Button("Entfernen" + " <", this);
+        removeButton = new Button(I18n.getLabel("remove-identities", language) + " <", this);
         verticalPanel.add(removeButton);
 
         this.identitiesLBW = identitiesListBox;
@@ -122,9 +126,7 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
             if (selectedGroup != null) {
                 final String selectedGroupID = selectedGroup;
                 Window.alert("DEBUG: Move direct members of selected group: " + selectedGroupID);
-                // TODO: Replace hard-coded URL
-                String getGroupURL = "http://127.0.0.1:8080/yanel/naz-move-nodes/yanel/api/usermanager?yanel.usecase=getgroup&id=REPLACE_WITH_GROUP_ID";
-                GroupReader groupReader = new GroupReader(getGroupURL.replace("REPLACE_WITH_GROUP_ID", selectedGroupID)) {
+                GroupReader groupReader = new GroupReader(groupURL.replace("REPLACE_WITH_GROUP_ID", selectedGroupID)) {
                     @Override
                     public void handleGroupRead(User[] users, Group[] groups, Group[] parentGroups) {
                         Window.alert("AddRemoveIdentitiesWidget#onClick() - DEBUG: Number of users: " + users.length + ", number of groups: " + groups.length);
