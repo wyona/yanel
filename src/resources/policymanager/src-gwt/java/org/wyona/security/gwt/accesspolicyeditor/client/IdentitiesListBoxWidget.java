@@ -174,6 +174,12 @@ public class IdentitiesListBoxWidget extends Composite implements ClickListener 
     public void removeUser(String id) {
         //Window.alert("DEBUG: Remove user: " + id);
         users.remove(id);
+
+        for (int i = lb.getItemCount() - 1; i >= 0; i--) { // INFO: One needs to step backwards, because the size of the list decreases, because item is being removed
+            if (lb.getValue(i).equals("u: " + id)) {
+                lb.removeItem(i);
+            }
+        }
     }
 
     /**
@@ -191,6 +197,12 @@ public class IdentitiesListBoxWidget extends Composite implements ClickListener 
      */
     public void removeGroup(String id) {
         groups.remove(id);
+
+        for (int i = lb.getItemCount() - 1; i >= 0; i--) { // INFO: One needs to step backwards, because the size of the list decreases, because item is being removed
+            if (lb.getValue(i).equals("g: " + id)) {
+                lb.removeItem(i);
+            }
+        }
     }
 
     /**
