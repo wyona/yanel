@@ -125,11 +125,11 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
 
             if (selectedGroup != null) {
                 final String selectedGroupID = selectedGroup;
-                Window.alert("DEBUG: Move direct members of selected group: " + selectedGroupID);
+                //Window.alert("DEBUG: Move direct members of selected group: " + selectedGroupID);
                 GroupReader groupReader = new GroupReader(groupURL.replace("REPLACE_WITH_GROUP_ID", selectedGroupID)) {
                     @Override
                     public void handleGroupRead(User[] users, Group[] groups, Group[] parentGroups) {
-                        Window.alert("AddRemoveIdentitiesWidget#onClick() - DEBUG: Number of users: " + users.length + ", number of groups: " + groups.length);
+                        //Window.alert("AddRemoveIdentitiesWidget#onClick() - DEBUG: Number of users: " + users.length + ", number of groups: " + groups.length);
                         for (User user : users) {
                             identitiesLBW.removeUser(user.getId());
                             policyLBW.insertItemAtTop("u", user.getId(), true);
