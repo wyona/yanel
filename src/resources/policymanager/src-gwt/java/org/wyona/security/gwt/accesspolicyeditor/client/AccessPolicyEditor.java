@@ -183,7 +183,7 @@ public class AccessPolicyEditor implements EntryPoint {
         cancelButton.addStyleName("gwt-wyona-CancelButton");
         buttonHP.add(cancelButton);
 
-        vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0.1-dev-rREVISION"));
+        vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.1.0"));
         
 
         AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW, groupURL, language);
