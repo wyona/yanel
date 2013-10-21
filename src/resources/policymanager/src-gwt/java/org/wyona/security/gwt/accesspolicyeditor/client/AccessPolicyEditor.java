@@ -66,6 +66,7 @@ public class AccessPolicyEditor implements EntryPoint {
     public void onModuleLoad() {
         String language = "en"; // DEFAULT
 
+        String groupURL = "DEFAULT-group.xml";
         String identitiesURL = "DEFAULT-identities-and-usecases.xml";
         String readPolicyURL = "DEFAULT-policy.xml";
         boolean cancelURLBaseEqualsHostPageURL = false;
@@ -76,6 +77,7 @@ public class AccessPolicyEditor implements EntryPoint {
         try {
             Dictionary dict = Dictionary.getDictionary("getURLs");
             language = dict.get("language");
+            groupURL = GWT.getHostPageBaseURL() + dict.get("group-url").replace("&amp;", "&"); // INFO: The property 'group-url' is set by src/java/org/wyona/yanel/impl/resources/policymanager/PolicyManagerResource.java
             identitiesURL = dict.get("identities-url");
             readPolicyURL = dict.get("policy-url");
             cancelURL = dict.get("cancel-url").replace("&amp;", "&");
@@ -184,7 +186,7 @@ public class AccessPolicyEditor implements EntryPoint {
         vp.add(new Label("Wyona Access Control Policy (GWT) Editor version 1.0.1-dev-rREVISION"));
         
 
-        AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW);
+        AddRemoveIdentitiesWidget ariw = new AddRemoveIdentitiesWidget(identitiesLBW, policyLBW.getListBox(), policyLBW, groupURL);
         ariw.setStyleName("gwt-wyona-AddRemoveWidget");
 
         CutPasteListOrderWidget cutPasteWidget = new CutPasteListOrderWidget(policyLBW);
