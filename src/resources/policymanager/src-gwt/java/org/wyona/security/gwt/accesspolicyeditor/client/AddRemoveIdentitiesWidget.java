@@ -37,22 +37,26 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
     private ListBox policyLB;
     private PolicyListBoxWidget policyLBW;
 
-    private FlowPanel fp = new FlowPanel();
+    private VerticalPanel verticalPanel = new VerticalPanel();
 
     private Button addButton;
+    private Button addMembersButton;
     private Button removeButton;
 
     /**
      *
      */
     public AddRemoveIdentitiesWidget(IdentitiesListBoxWidget identitiesListBox, ListBox policyListBox, PolicyListBoxWidget policyLBW) {
-        initWidget(fp);
+        initWidget(verticalPanel);
 
-        addButton = new Button(">", this);
-        fp.add(addButton);
+        addButton = new Button("Hinzufügen" + " >", this);
+        verticalPanel.add(addButton);
 
-        removeButton = new Button("<", this);
-        fp.add(removeButton);
+        addMembersButton = new Button("Hinzufügen von Mitgliedern", this);
+        verticalPanel.add(addMembersButton);
+
+        removeButton = new Button("Entfernen" + " <", this);
+        verticalPanel.add(removeButton);
 
         this.identitiesLBW = identitiesListBox;
         this.policyLB = policyListBox;
@@ -87,7 +91,44 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
             }
 
             if (noItemSelected) {
-                Window.alert("No identity selected yet! Please select an identity within 'Identities' list.");
+                Window.alert("No identity selected yet! Please select an identity from the 'Identities' list.");
+            }
+        } else if (sender == addMembersButton) {
+            boolean noItemSelected = true;
+            String selectedGroup = null;
+            int listPos = -1;
+
+            for (int i = identitiesLB.getItemCount() - 1; i >= 0; i--) { // INFO: One needs to step backwards, because the size of the list decreases, because items are being removed if selected
+                if (identitiesLB.isItemSelected(i)) {
+                    String selectedIdentity = identitiesLB.getValue(i);
+                    if (selectedIdentity.startsWith("u:")) {
+                        Window.alert("ERROR: Selected identity '" + selectedIdentity + "' is a user and not a group!");
+                        return;
+                    } else if (selectedIdentity.startsWith("g:")) {
+                        if (selectedGroup == null) {
+                            selectedGroup = selectedIdentity.substring(3); // INFO: Cut off "g: " (including space)
+                            listPos = i;
+                            noItemSelected = false;
+                        } else {
+                            Window.alert("ERROR: Do not select more than one group!");
+                            return;
+                        }
+                    } else {
+                        Window.alert("ERROR: Neither user nor group: " + selectedIdentity);
+                        return;
+                    }
+                }
+            }
+
+            if (selectedGroup != null) {
+                Window.alert("DEBUG: Move direct members of selected group: " + selectedGroup);
+                identitiesLBW.removeGroup(selectedGroup);
+                identitiesLB.removeItem(listPos);
+                policyLBW.insertItemAtTop("g", selectedGroup, true);
+            }
+
+            if (noItemSelected) {
+                Window.alert("No group selected yet! Please select a group from the 'Identities' list.");
             }
         } else if (sender == removeButton) {
             boolean noItemSelected = true;
