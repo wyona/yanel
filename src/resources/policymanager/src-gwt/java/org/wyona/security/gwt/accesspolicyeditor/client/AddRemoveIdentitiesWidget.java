@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.wyona.security.gwt.accesspolicyeditor.client.GroupReader;
+
 /**
  * Move users/groups from identities list into policy and vice versa
  */
@@ -81,7 +83,6 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
                     } else {
                         Window.alert("ERROR: Neither user nor group: " + selectedIdentity);
                     }
-                    identitiesLB.removeItem(i);
                     String type = selectedIdentity.substring(0, 1); // e.g. 'g' or 'u'
                     String name = selectedIdentity.substring(2).trim(); // e.g. 'lenya'
                     //Window.alert("Add selected identity " + selectedIdentity + " (" + item + ", " + value + ") to policy");
@@ -96,7 +97,6 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
         } else if (sender == addMembersButton) {
             boolean noItemSelected = true;
             String selectedGroup = null;
-            int listPos = -1;
 
             for (int i = identitiesLB.getItemCount() - 1; i >= 0; i--) { // INFO: One needs to step backwards, because the size of the list decreases, because items are being removed if selected
                 if (identitiesLB.isItemSelected(i)) {
@@ -107,7 +107,6 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
                     } else if (selectedIdentity.startsWith("g:")) {
                         if (selectedGroup == null) {
                             selectedGroup = selectedIdentity.substring(3); // INFO: Cut off "g: " (including space)
-                            listPos = i;
                             noItemSelected = false;
                         } else {
                             Window.alert("ERROR: Do not select more than one group!");
@@ -121,10 +120,28 @@ public class AddRemoveIdentitiesWidget extends Composite implements ClickListene
             }
 
             if (selectedGroup != null) {
-                Window.alert("DEBUG: Move direct members of selected group: " + selectedGroup);
-                identitiesLBW.removeGroup(selectedGroup);
-                identitiesLB.removeItem(listPos);
-                policyLBW.insertItemAtTop("g", selectedGroup, true);
+                final String selectedGroupID = selectedGroup;
+                Window.alert("DEBUG: Move direct members of selected group: " + selectedGroupID);
+                // TODO: Replace hard-coded URL
+                String getGroupURL = "http://127.0.0.1:8080/yanel/naz-move-nodes/yanel/api/usermanager?yanel.usecase=getgroup&id=REPLACE_WITH_GROUP_ID";
+                GroupReader groupReader = new GroupReader(getGroupURL.replace("REPLACE_WITH_GROUP_ID", selectedGroupID)) {
+                    @Override
+                    public void handleGroupRead(User[] users, Group[] groups, Group[] parentGroups) {
+                        Window.alert("AddRemoveIdentitiesWidget#onClick() - DEBUG: Number of users: " + users.length + ", number of groups: " + groups.length);
+                        for (User user : users) {
+                            identitiesLBW.removeUser(user.getId());
+                            policyLBW.insertItemAtTop("u", user.getId(), true);
+                        }
+                        for (Group group : groups) {
+                            identitiesLBW.removeGroup(group.getId());
+                            policyLBW.insertItemAtTop("g", group.getId(), true);
+                        }
+                        if (groups.length == 0 && users.length == 0) {
+                            Window.alert("AddRemoveIdentitiesWidget#onClick() - WARN: Selected group '" + selectedGroupID + "' has no members!");
+                        }
+                    }
+                };
+                groupReader.read();
             }
 
             if (noItemSelected) {
