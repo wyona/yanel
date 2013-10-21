@@ -31,6 +31,12 @@ public class I18n {
                 return "Inherit rights from parent policies";
             } else if(key.equals("list-box-identities")) {
                 return "Identities (Users and Groups)";
+            } else if(key.equals("add-identities")) {
+                return "Add";
+            } else if(key.equals("add-members")) {
+                return "Add members";
+            } else if(key.equals("remove-identities")) {
+                return "Remove";
             } else if(key.equals("button-all")) {
                 return "All";
             }
@@ -41,6 +47,12 @@ public class I18n {
                 return "Uebernehme vererbte Rechte der Eltern-Policies";
             } else if(key.equals("list-box-identities")) {
                 return "Identitäten (Benutzer und Gruppen)";
+            } else if(key.equals("add-identities")) {
+                return "Hinzufügen";
+            } else if(key.equals("add-members")) {
+                return "Hinzufügen von Mitgliedern";
+            } else if(key.equals("remove-identities")) {
+                return "Entfernen";
             } else if(key.equals("button-all")) {
                 return "Alle";
             }
