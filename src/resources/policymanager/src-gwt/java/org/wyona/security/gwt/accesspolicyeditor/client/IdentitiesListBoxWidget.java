@@ -54,10 +54,15 @@ public class IdentitiesListBoxWidget extends Composite implements ClickListener 
         this.language = language;
         initWidget(vp);
 
-        vp.add(new Label(I18n.getLabel("list-box-identities", language) + ":"));
+        //vp.add(new Label(I18n.getLabel("list-box-identities", language) + ":"));
+        VerticalPanel titlePanel = new VerticalPanel();
+        titlePanel.setStyleName("gwt-wyona-identity-list-box-title");
+        titlePanel.add(new Label(I18n.getLabel("list-box-identities", language) + ":"));
+        vp.add(titlePanel);
 
         boolean isMultipleSelect = true;
         lb = new ListBox(isMultipleSelect); // NOTE: ListBox#setMultipleSelect(true) can spuriously fail on IE 6.0
+        lb.setStyleName("gwt-wyona-identity-list-box");
         lb.addClickListener(this);
 
         lb.clear();
