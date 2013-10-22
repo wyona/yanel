@@ -163,6 +163,7 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                 SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
                 
                 TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPath.length];
+                org.wyona.security.core.api.Identity identity = getEnvironment().getIdentity();
                 for (int i = 0; i < xsltPath.length; i++) {
                     xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPath[i]).getInputStream()));
                     xsltHandlers[i].getTransformer().setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(currentPath));
@@ -179,6 +180,26 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
                     xsltHandlers[i].getTransformer().setParameter("content-language", getContentLanguage());
                     xsltHandlers[i].getTransformer().setParameter("currentPath", currentPath);
                     xsltHandlers[i].getTransformer().setParameter("activePath", activePath);
+                    if (identity != null) {
+                        String userID = identity.getUsername();
+                        if (userID != null) {
+                            xsltHandlers[i].getTransformer().setParameter("username", userID);
+
+                            String firstname = identity.getFirstname(); // INFO: Please note that org.wyona.security.core.api.Identity(User, String) is using User#getName() as firstname!
+                            if (firstname != null) {
+                                xsltHandlers[i].getTransformer().setParameter("firstname", firstname);
+                            } else {
+                                log.warn("No firstname (user ID: " + userID + ")!");
+                            }
+
+                            String lastname = identity.getLastname();
+                            if (lastname != null) {
+                                xsltHandlers[i].getTransformer().setParameter("lastname", lastname);
+                            } else {
+                                log.warn("No lastname (user ID: " + userID + ")!");
+                            }
+                        }
+                    }
                 }
                 
                 SourceResolver uriResolver = new SourceResolver(this);
