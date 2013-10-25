@@ -104,19 +104,23 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         if (casTicket != null) {
             String username = validate(casTicket, request);
             if (username != null) {
+                log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
+                Realm realm = null;
                 try {
-                    org.wyona.yanel.core.map.Realm realm = map.getRealm(request.getServletPath());
+                    realm = map.getRealm(request.getServletPath());
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     if (user !=  null) {
                         Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
                         if (existingIdentity == null) {
                             Identity identity = new org.wyona.security.core.api.Identity(user, username);
+
 /* TODO: Make setting identity overwritable, in order to implement custom firstname and lastname, because User has no corresponding interface yet and also one would have to pass the CAS_PROXY_TICKET_SESSION_NAME and TARGET_SERVICE_SESSION_NAME somehow, which is generated during validation!
                             Identity identity = getIdentity(username, request, realm);
                             identity.setFirstname();
                             identity.setLastname();
 */
+
                             YanelServlet.setIdentity(identity, request.getSession(true), realm);
                         } else {
                             String errorMsg = "It seems that you are already authenticated as user '" + existingIdentity.getUsername() + "', but you are probably not authorized to view '" + request.getServletPath() + "'! Please check access policies...";
@@ -134,7 +138,10 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     log.error(e, e);
                     return null;
                 }
-                response.setHeader("Location", getOriginalRequestURL(request));
+
+                String originalURL = considerProxy(getRequestURLWithoutTicket(request), realm);
+                log.warn("DEBUG: Redirect to original request '" + originalURL + "'...");
+                response.setHeader("Location", originalURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
             } else {
@@ -164,7 +171,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 }
             } else {
                 String redirectURL = loginURL + "?service=" + encode(request);
-                log.info("Redirecting to '" + redirectURL + "'...");
+                log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to login...");
                 response.setHeader("Location", redirectURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             }
@@ -263,7 +270,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @param request Request containing ticket (and/or service) as query string parameters
      * @return URL without ticket (and/or service) as query string parameters
      */
-    private String getOriginalRequestURL(HttpServletRequest request) {
+    private String getRequestURLWithoutTicket(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
         String qs = request.getQueryString();
         if (qs != null) {
@@ -326,10 +333,34 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         boolean logoutFromYanel = new DefaultWebAuthenticatorImpl().doLogout(request, response, map);
 
         // TODO: Make logout service configurable per realm (optionally)
-        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode(removeLogoutParam(getOriginalRequestURL(request))));
+        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode(considerProxy(removeLogoutParam(getRequestURLWithoutTicket(request)), map.getRealm(request.getServletPath()))));
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 
         return logoutFromYanel;
+    }
+
+    /**
+     * Modify URL depending whether reverse proxy is configured
+     * @param url URL which will be modified
+     */
+    private String considerProxy(String url, Realm realm) {
+        if (realm != null && realm.isProxySet()) { // INFO: Also see YanelServlet#getRequestURLQS(...)
+            log.warn("DEBUG: Modify url '" + url + "' according to reverse proxy configuration...");
+            try {
+                URL newURL = new URL(url);
+                String proxyPrefix = realm.getProxyPrefix();
+                if (proxyPrefix != null) {
+                    newURL = new URL(newURL.getProtocol(), newURL.getHost(), newURL.getPort(), newURL.getFile().substring(proxyPrefix.length()));
+                }
+                return newURL.toString();
+            } catch(Exception e) {
+                log.error(e, e);
+                return url;
+            }
+        } else {
+            log.warn("DEBUG: No proxy set for this realm: " + realm);
+        }
+        return url;
     }
 
     /**
