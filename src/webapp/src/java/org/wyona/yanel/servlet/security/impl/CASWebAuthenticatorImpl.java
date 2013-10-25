@@ -81,6 +81,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
 
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
+        // TBD/TODO: Check whether pgtURL has been configured, because not every realm might need to proxy CAS
         pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
         getProxyTicketURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "getProxyTicket").item(0)).getTextContent();
         targetServiceURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "targetService").item(0)).getTextContent();
@@ -100,14 +101,19 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#doAuthenticate(HttpServletRequest, HttpServletResponse, Map, String, String, String, String)
      */
     public HttpServletResponse doAuthenticate(HttpServletRequest request, HttpServletResponse response, Map map, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort) throws ServletException, IOException {
+        Realm realm = null;
+        try {
+            realm = map.getRealm(request.getServletPath());
+        } catch (Exception e) {
+            log.error(e, e);
+            throw new ServletException(e);
+        }
         String casTicket = request.getParameter("ticket");
         if (casTicket != null) {
-            String username = validate(casTicket, request);
+            String username = validate(casTicket, request, realm);
             if (username != null) {
                 log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
-                Realm realm = null;
                 try {
-                    realm = map.getRealm(request.getServletPath());
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     if (user !=  null) {
@@ -154,7 +160,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         log.error(e, e);
                     }
                 } else {
-                    String redirectURL = loginURL + "?service=" + encode(request); // TODO: Maybe ticket needs to be removed from query string?!
+                    String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
                     log.warn("Redirecting to '" + redirectURL + "'...");
                     response.setHeader("Location", redirectURL);
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -170,7 +176,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     log.error(e, e);
                 }
             } else {
-                String redirectURL = loginURL + "?service=" + encode(request);
+                String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
                 log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to login...");
                 response.setHeader("Location", redirectURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -185,10 +191,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @param request Request which is used to generate service URL
      * @return username associated with ticket when ticket is valid, return null otherwise (which means validation failed)
      */
-    private String validate(String ticket, HttpServletRequest request) {
+    private String validate(String ticket, HttpServletRequest request, Realm realm) {
         try {
-            // TBD/TODO: Check whether pgtURL has been configured, because not every realm might need to proxy CAS
-            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(request) + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
+            String url = validateURL + "?ticket=" + ticket + "&service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
+            if (pgtURL != null) {
+                log.warn("DEBUG: Ask for proxy granting ticket...");
+                url = url + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
+            }
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
 
             DefaultHttpClient httpClient = getHttpClient(new URL(url));
@@ -228,7 +237,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
                     }
                 } else {
-                    log.warn("No proxy granting ticket!");
+                    if (pgtURL != null) {
+                        log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
+                    }
                 }
 
                 return getUsername(doc);
@@ -240,29 +251,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error(e, e);
         }
         return null;
-    }
-
-    /**
-     * Encode URL of original request ('?' will become '%3F' and ':' will become '3%A' and '/' will become '2%F')
-     * @param request Original request
-     * @return encoded URL
-     */
-    private String encode(HttpServletRequest request) {
-        String url = request.getRequestURL().toString();
-        String qs = request.getQueryString();
-        if (qs != null) {
-            boolean justTicket = false;
-            if (qs.indexOf("&ticket") >= 0) {
-                log.warn("Remove CAS ticket from query string...");
-                qs = qs.substring(0, qs.indexOf("&ticket"));
-            } else if (qs.indexOf("ticket") == 0) {
-                justTicket = true;
-            }
-            if (!justTicket) {
-                url = url +"?" + qs;
-            }
-        }
-        return java.net.URLEncoder.encode(url);
     }
 
     /**
@@ -443,11 +431,11 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             if (ptEls != null && ptEls.length == 1) {
                 return ptEls[0].getTextContent();
             } else {
-                log.warn("No such element 'cas:proxyTicket'!");
+                log.error("No such element 'cas:proxyTicket'!");
                 return null;
             }
         } else {
-            log.warn("No such element 'cas:proxySuccess'!");
+            log.error("No such element 'cas:proxySuccess'!");
             return null;
         }
     }
