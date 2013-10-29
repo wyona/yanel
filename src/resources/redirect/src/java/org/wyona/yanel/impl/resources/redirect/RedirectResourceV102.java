@@ -109,7 +109,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
                     String clickstreamLang = getLanguage(clickStream);
                     if (clickstreamLang != null) {
-                        log.debug("User language from click stream: " + clickstreamLang);
+                        log.warn("DEBUG: User language from personal click stream: " + clickstreamLang);
                         response.setStatus(TMP_REDIRECT_STATUS_CODE);
                         response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
                         return view;
@@ -312,6 +312,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     /**
      * Get user language from clickstream
      * @param clickStream URLs which have been requested by user
+     * @return language with highest count
      */
     private String getLanguage(Iterable<HistoryEntry> clickStream) {
         HashMap usedLangs = new HashMap();
