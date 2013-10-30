@@ -1583,6 +1583,9 @@ public class YanelServlet extends HttpServlet {
      * Patches the mimetype of the Content-Type response field because
      * Microsoft Internet Explorer does not understand application/xhtml+xml
      * See http://en.wikipedia.org/wiki/Criticisms_of_Internet_Explorer#XHTML
+     * @param mimeType Preferred mime type
+     * @param request Browser request containing Accept information
+     * @return mime type which should be used
      */
     static public String patchMimeType(String mimeType, HttpServletRequest request) throws ServletException, IOException {
         if (mimeType != null) {
