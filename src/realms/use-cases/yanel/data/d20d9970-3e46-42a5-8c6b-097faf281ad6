@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<cal:event xmlns:cal="http://..." created="20131106T103512Z" last-modified="20131106T103516Z" dtstamp="20131106T103516Z" uid="f1c890c4-e197-b144-867e-7e77f99b231d">
+  <cal:summary>Test</cal:summary>
+  <cal:location>Test</cal:location>
+  <cal:dtstart value="DATE" tzid="Europe/Zurich:20131113T120000"/>
+  <cal:dtend value="DATE" tzid="Europe/Zurich:20131113T130000"/>
+</cal:event>
