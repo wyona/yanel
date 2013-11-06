@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?><calendar><cal:event xmlns:cal="http://..." categories="Holidays" class="PUBLIC" created="20061205T225748Z" dtstamp="20080929T085412Z" last-modified="20080929T085412Z" uid="26e7ee64-145e-4a9a-a35d-77dbb5aa7efc">
   <cal:summary>X'Mas</cal:summary>
   <cal:location>Home</cal:location>
-  <cal:dtstart tzid="/mozilla.org/20050126_1/Europe/Zurich:20061224" value="DATE"/>
-  <cal:dtend tzid="/mozilla.org/20050126_1/Europe/Zurich:20061225" value="DATE"/>
+  <cal:dtstart tzid="Europe/Zurich:20061224" value="DATE"/>
+  <cal:dtend tzid="Europe/Zurich:20061225" value="DATE"/>
 </cal:event><cal:event xmlns:cal="http://..." categories="Conference" class="PUBLIC" created="20061205T225120Z" dtstamp="20061205T225120Z" last-modified="20061205T225120Z" uid="3d05ae36-b8a3-4149-9f8b-fcf0203b52b9">
   <cal:summary>Yulup/Neutron Presentation at XML Conference 2006</cal:summary>
   <cal:location>Sheraton Boston Hotel</cal:location>
-  <cal:dtstart tzid="/mozilla.org/20050126_1/Europe/Zurich:20061206T133000" value="DATE"/>
-  <cal:dtend tzid="/mozilla.org/20050126_1/Europe/Zurich:20061206T143000" value="DATE"/>
+  <cal:dtstart tzid="Europe/Zurich:20061206T133000" value="DATE"/>
+  <cal:dtend tzid="Europe/Zurich:20061206T143000" value="DATE"/>
 </cal:event><cal:event xmlns:cal="http://..." categories="Holidays" created="20080929T085507Z" dtstamp="20080929T085526Z" last-modified="20080929T085526Z" uid="bd1c3fd7-9a39-469f-bd1e-3596cf6acb79">
   <cal:summary>Christmas</cal:summary>
   <cal:location>Home</cal:location>
-  <cal:dtstart tzid="/mozilla.org/20050126_1/Europe/Zurich:20081225T000000" value="DATE"/>
-  <cal:dtend tzid="/mozilla.org/20050126_1/Europe/Zurich:20081226T010000" value="DATE"/>
+  <cal:dtstart tzid="Europe/Zurich:20081225T000000" value="DATE"/>
+  <cal:dtend tzid="Europe/Zurich:20081226T010000" value="DATE"/>
+</cal:event><cal:event xmlns:cal="http://..." created="20131106T103512Z" dtstamp="20131106T103516Z" last-modified="20131106T103516Z" uid="f1c890c4-e197-b144-867e-7e77f99b231d">
+  <cal:summary>Test</cal:summary>
+  <cal:location>Test</cal:location>
+  <cal:dtstart tzid="Europe/Zurich:20131113T120000" value="DATE"/>
+  <cal:dtend tzid="Europe/Zurich:20131113T130000" value="DATE"/>
 </cal:event></calendar>
