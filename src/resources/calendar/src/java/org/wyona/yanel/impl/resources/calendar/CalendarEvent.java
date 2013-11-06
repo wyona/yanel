@@ -115,7 +115,7 @@ public class CalendarEvent {
      */
     public String toXML() {
         StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
-        sb.append("<cal:event xmlns:cal=\"http://...\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\"");
+        sb.append("<cal:event xmlns:cal=\"http://www.wyona.org/calendar/1.0.0\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\"");
 	if (_class != null) sb.append(" class=\"" + _class + "\"");
 	if (categories != null) sb.append(" categories=\"" + categories + "\"");
 	sb.append(">\n");
