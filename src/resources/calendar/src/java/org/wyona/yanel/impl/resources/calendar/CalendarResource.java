@@ -15,6 +15,7 @@ import org.wyona.commons.xml.XMLHelper;
 
 import org.w3c.dom.Document;
 
+import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 
 import org.wyona.yanel.impl.resources.calendar.CalendarEvent;
@@ -49,9 +50,12 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     * @see
+     * @see TODO
      */
     public long getSize() throws Exception {
+        return -1;
+
+/* WARN: The size depends on the view id, hence the below code does only work properly when requesting ICS, but not when reuesting XML! Also see https://github.com/wyona/yanel/issues/51
         Repository dataRepo = getRealm().getRepository();
         if (dataRepo.existsNode(getPath()) && dataRepo.isResource(new org.wyona.yarep.core.Path(getPath()))) {
             return dataRepo.getNode(getPath()).getSize();
@@ -59,6 +63,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             log.warn("Not implemented yet!");
             return -1;
         }
+*/
     }
 
     /**
@@ -156,6 +161,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             view.setMimeType(getMimeType(viewId));
             view.setInputStream(calendarAsXML);
             //view.setInputStream(new java.io.StringBufferInputStream(calendarAsXML));
+            log.warn("DEBUG: Return calendar as XML...");
             return view;
         } else if (viewId != null && viewId.equals("xhtml")) {
             String xslt = getRTD().getConfigFile().getParent() + File.separator + "xslt" + File.separator + "xml2xhtml.xsl";
@@ -266,6 +272,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      */
     private InputStream writeICS(InputStream in) throws Exception {
         log.debug("Write ICS as a whole to the repository: " + getPath());
+
+        Node icsNode = getRealm().getRepository().getNode(getPath());
         org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
 
         OutputStream out;
@@ -283,14 +291,29 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         }
         out.close();
         in.close();
-        return getRealm().getRepository().getInputStream(path);
+
+        org.wyona.security.core.api.Identity identity = getEnvironment().getIdentity();
+        String username = null;
+        if (identity != null) {
+            if (identity.isWorld()) {
+                username = "WORLD";
+            } else {
+                username = identity.getUsername();
+            }
+        } else {
+            log.warn("No username available");
+        }
+        icsNode.checkout(username);
+        icsNode.checkin("calendar updated");
+
+        return icsNode.getInputStream();
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getOutputStream()
      */
     public OutputStream getOutputStream() throws Exception {
-        log.warn("Do not use this method but rather write(InputStream)!");
+        log.warn("Do not use this method but rather use write(InputStream)!");
         return null;
         //return getRealm().getRepository().getOutputStream(new org.wyona.yarep.core.Path("/calendarTODO.ics"));
     }
@@ -406,17 +429,20 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 }
             }
         }
-        dumpDocument(doc);
-        return XMLHelper.getInputStream(doc, false, true, "utf-8");
+        Node calendarAsXMLNode = dumpDocument(doc);
+        return calendarAsXMLNode.getInputStream();
+
+        //return XMLHelper.getInputStream(doc, false, true, "utf-8");
         //return XMLHelper.documentToString(doc, false, true, "utf-8");
     }
 
     /**
      * Dump XML document
+     * @return Yarep node containing calendar as XML
      */
-    private void dumpDocument(Document doc) throws Exception {
-        org.wyona.yarep.core.Node parent = getRealm().getRepository().getNode(getEventsPath()).getParent();
-        org.wyona.yarep.core.Node child;
+    private Node dumpDocument(Document doc) throws Exception {
+        Node parent = getRealm().getRepository().getNode(getEventsPath()).getParent();
+        Node child;
         String name = "calendar.xml";
         if (!parent.hasNode(name)) {
             child = parent.addNode(name, org.wyona.yarep.core.NodeType.RESOURCE);
@@ -425,7 +451,10 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         }
         child.setMimeType("application/xml");
         log.warn("Dump calendar as XML to: " + child.getPath());
-        XMLHelper.writeDocument(doc, child.getOutputStream());
+        OutputStream out = child.getOutputStream();
+        XMLHelper.writeDocument(doc, out);
+        out.close();
+        return child;
     }
 
     /**
