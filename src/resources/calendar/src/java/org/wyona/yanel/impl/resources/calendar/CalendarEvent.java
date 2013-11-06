@@ -1,12 +1,17 @@
 package org.wyona.yanel.impl.resources.calendar;
 
-import org.apache.log4j.Category;
+import org.apache.log4j.Logger;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.wyona.commons.xml.XMLHelper;
 
 /**
- *
+ * Calendar event bean and utilities
  */
 public class CalendarEvent {
-    private static Category log = Category.getInstance(CalendarEvent.class);
+    private static Logger log = Logger.getLogger(CalendarEvent.class);
 
     private String uid;
     private String summary;
@@ -111,20 +116,40 @@ public class CalendarEvent {
     }
 
     /**
-     *
+     * Get event as XML document
      */
-    public String toXML() {
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>\n\n");
-        sb.append("<cal:event xmlns:cal=\"http://www.wyona.org/calendar/1.0.0\" created=\"" + created + "\" last-modified=\"" + lastModified + "\" dtstamp=\"" + dtstamp + "\" uid=\"" + uid + "\"");
-	if (_class != null) sb.append(" class=\"" + _class + "\"");
-	if (categories != null) sb.append(" categories=\"" + categories + "\"");
-	sb.append(">\n");
-        sb.append("  <cal:summary>" + summary + "</cal:summary>\n");
-        if (location != null) sb.append("  <cal:location>" + location + "</cal:location>\n");
-        sb.append("  <cal:dtstart value=\"DATE\" tzid=\"" + start + "\"/>\n");
-        sb.append("  <cal:dtend value=\"DATE\" tzid=\"" + end + "\"/>\n");
-        sb.append("</cal:event>");
-        return sb.toString();
+    public Document toXML() {
+        String NAMESPACE = "http://www.wyona.org/calendar/1.0.0";
+        Document doc = XMLHelper.createDocument(NAMESPACE, "event");
+        Element root = doc.getDocumentElement();
+        root.setAttribute("created", created);
+        root.setAttribute("last-modified", lastModified);
+        root.setAttribute("dtstamp", dtstamp);
+        root.setAttribute("uid", uid);
+	if (_class != null) root.setAttribute("class", _class);
+	if (categories != null) root.setAttribute("categories", categories);
+
+        Element summaryEl = doc.createElementNS(NAMESPACE, "summary");
+        summaryEl.appendChild(doc.createTextNode(summary));
+        root.appendChild(summaryEl);
+
+        if (location != null) {
+            Element locationEl = doc.createElementNS(NAMESPACE, "location");;
+            locationEl.appendChild(doc.createTextNode(location));
+            root.appendChild(locationEl);
+        }
+
+        Element dtstartEl = doc.createElementNS(NAMESPACE, "dtstart");
+        dtstartEl.setAttribute("value", "DATE");
+        dtstartEl.setAttribute("tzid", start);
+        root.appendChild(dtstartEl);
+
+        Element dtendEl = doc.createElementNS(NAMESPACE, "dtend");
+        dtendEl.setAttribute("value", "DATE");
+        dtendEl.setAttribute("tzid", end);
+        root.appendChild(dtendEl);
+
+        return doc;
     }
 
     /**

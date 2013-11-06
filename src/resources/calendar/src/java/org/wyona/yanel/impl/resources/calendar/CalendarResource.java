@@ -140,10 +140,8 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
         //org.wyona.yarep.core.Path[] children = dataRepo.search("categories", categories);
 
         InputStream calendarAsXML = getCalendarAsXML(children);
-        //String calendarAsXML = getCalendarAsXML(children);
         try {
             calendarAsXML = XMLHelper.isWellFormed(calendarAsXML);
-            //XMLHelper.isWellFormed(new java.io.StringBufferInputStream(calendarAsXML));
         } catch(Exception e) {
             String errorMessage = "Calendar as XML is not well-formed!";
             log.error(e, e);
@@ -247,13 +245,18 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 event = new CalendarEvent();
             } else if (line.startsWith("END:VEVENT")) {
                 String eventPath = getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml";
-                log.debug("Write event " + eventPath + ", " + event.toXML());
+                log.debug("Write event as XML '" + eventPath + "' ...");
+                Node eventNode = null;
                 if (!dataRepo.existsNode(eventPath)) {
-                    org.wyona.yarep.util.YarepUtil.addNodes(dataRepo, eventPath, org.wyona.yarep.core.NodeType.RESOURCE);
+                    eventNode = org.wyona.yarep.util.YarepUtil.addNodes(dataRepo, eventPath, org.wyona.yarep.core.NodeType.RESOURCE);
+                } else {
+                    eventNode = getRealm().getRepository().getNode(eventPath);
                 }
-                Writer out = dataRepo.getWriter(new org.wyona.yarep.core.Path(getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml"));
-                out.write(event.toXML());
+
+                OutputStream out = eventNode.getOutputStream();
+                XMLHelper.writeDocument(event.toXML(), out);
                 out.close();
+
                 event = null;
             } else {
                 if (event != null) {
