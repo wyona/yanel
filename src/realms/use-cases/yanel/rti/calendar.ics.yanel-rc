@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="calendar" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="categories" value="vacation"/>
+  <yanel:property name="classes" value="public"/>
+  <yanel:property name="user-ids" value="michi"/>
+  <yanel:property name="events-path" value="/calendar"/>
+</yanel:resource-config>
