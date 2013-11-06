@@ -224,7 +224,10 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     * Parse ICS and write events as XML into repository
+     * Save ICS and parse ICS in order to write events as XML into repository
+     * @param in InputStream containing modified ICS
+     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#write(InputStream)
      */
     public void write(InputStream in) throws Exception {
         Repository dataRepo = getRealm().getRepository();
@@ -259,6 +262,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
 
     /**
      * Save/Write the actual ICS
+     * @param in InputStream containing ICS
      */
     private InputStream writeICS(InputStream in) throws Exception {
         log.debug("Write ICS as a whole to the repository: " + getPath());
