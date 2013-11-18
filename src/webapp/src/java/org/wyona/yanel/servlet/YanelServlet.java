@@ -2755,50 +2755,41 @@ public class YanelServlet extends HttpServlet {
      * @param doc Meta document
      */
     private void appendRevisionsAndWorkflow(Document doc, Element resourceElement, Resource res, HttpServletRequest request) throws Exception {
-        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+        WorkflowableV1 workflowableResource = null;
+        Workflow workflow = null;
+        String liveRevisionName = null;
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1")) {
+            workflowableResource = (WorkflowableV1)res;
+            workflow = WorkflowHelper.getWorkflow(res);
+            liveRevisionName = WorkflowHelper.getLiveRevision(res);
+        }
 
-            WorkflowableV1 workflowableResource = null;
-            Workflow workflow = null;
-            String liveRevisionName = null;
-            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Workflowable", "1")) {
-                workflowableResource = (WorkflowableV1)res;
-                workflow = WorkflowHelper.getWorkflow(res);
-                liveRevisionName = WorkflowHelper.getLiveRevision(res);
+        if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "3")) {
+            //log.debug("Resource '" + res.getPath() + "' has VersionableV3 implemented...");
+            java.util.Iterator<RevisionInformation> it = ((VersionableV3)res).getRevisions(false);
+            if (it != null) {
+                if (it.hasNext()) {
+                    Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
+                    while(it.hasNext()) {
+                        RevisionInformation revisionInfo = (RevisionInformation)it.next();
+                        Element revisionElement = appendRevision(revisionsElement, revisionInfo); 
+                        appendWorkflow(revisionElement, workflow, workflowableResource, doc, revisionInfo, liveRevisionName);
+                    }
+                } else {
+                    resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+                }
+            } else {
+                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
             }
+        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "2")) {
+            //log.debug("Resource '" + res.getPath() + "' has VersionableV2 implemented...");
 
             RevisionInformation[] revisionsInfo = ((VersionableV2)res).getRevisions();
             if (revisionsInfo != null && revisionsInfo.length > 0) {
                 Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
                 for (int i = revisionsInfo.length - 1; i >= 0; i--) {
                     Element revisionElement = appendRevision(revisionsElement, revisionsInfo[i]);
-
-                    // INFO: Add workflow info
-                    if (workflowableResource != null && workflow != null) {
-                        Element revisionWorkflowElement = (Element) revisionElement.appendChild(doc.createElement("workflow-state"));
-                        String wfState = workflowableResource.getWorkflowState(revisionsInfo[i].getName());
-                        if (wfState  == null) {
-                            wfState = workflow.getInitialState();
-                        }
-                        if (liveRevisionName != null && revisionsInfo[i].getName().equals(liveRevisionName)) {
-                            revisionWorkflowElement.appendChild(doc.createTextNode(wfState + " (LIVE)"));
-                        } else {
-                            revisionWorkflowElement.appendChild(doc.createTextNode(wfState));
-                        }
-                    }
-                }
-            } else {
-                resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
-            }
-        } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "3")) {
-            java.util.Iterator<RevisionInformation> it = ((VersionableV3)res).getRevisions(false);
-            if (it != null) {
-                if (it.hasNext()) {
-                    Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
-                    while(it.hasNext()) {
-                        appendRevision(revisionsElement, (RevisionInformation)it.next()); 
-                    }
-                } else {
-                    resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
+                    appendWorkflow(revisionElement, workflow, workflowableResource, doc, revisionsInfo[i], liveRevisionName);
                 }
             } else {
                 resourceElement.appendChild(doc.createElement(NO_REVISIONS_TAG_NAME));
@@ -2808,6 +2799,24 @@ public class YanelServlet extends HttpServlet {
             String[] revisionIDs = ((VersionableV1)res).getRevisions();
         } else {
             Element notVersionableElement = (Element) resourceElement.appendChild(doc.createElement("not-versionable"));
+        }
+    }
+
+    /**
+     * Append workflow information to revision listed by meta document
+     */
+    private void appendWorkflow(Element revisionElement, Workflow workflow, WorkflowableV1 workflowableResource, Document doc, RevisionInformation revisionInfo, String liveRevisionName) throws Exception {
+        if (workflowableResource != null && workflow != null) {
+            Element revisionWorkflowElement = (Element) revisionElement.appendChild(doc.createElement("workflow-state"));
+            String wfState = workflowableResource.getWorkflowState(revisionInfo.getName());
+            if (wfState  == null) {
+                wfState = workflow.getInitialState();
+            }
+            if (liveRevisionName != null && revisionInfo.getName().equals(liveRevisionName)) {
+                revisionWorkflowElement.appendChild(doc.createTextNode(wfState + " (LIVE)"));
+            } else {
+                revisionWorkflowElement.appendChild(doc.createTextNode(wfState));
+            }
         }
     }
 
