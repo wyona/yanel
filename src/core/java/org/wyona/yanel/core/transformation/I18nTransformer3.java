@@ -122,12 +122,12 @@ public class I18nTransformer3 extends AbstractTransformer {
      * @param catalogues i18n catalogue names
      * @param language Localization or content language
      * @param userLanguage Localization of user (normally based on user profile setting)
-     * @param defaultLanguage
+     * @param defaultLanguage TODO
      * @param resolver
      */
     public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
         this(catalogues, language, defaultLanguage, resolver);
-        //log.debug("User language: " + userLanguage);
+        //log.debug("Content language: " + language + ", User language: " + userLanguage + ", Default language: " + defaultLanguage);
         if (userLanguage != null) {
             this.userLocale = new Locale(userLanguage);
         } else {
