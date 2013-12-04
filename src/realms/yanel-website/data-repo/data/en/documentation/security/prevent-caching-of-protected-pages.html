@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Prevent caching of protected pages</title>
+  </head>
+<body>
+  <h1>Prevent caching of protected pages</h1>
+<p>
+For security reasons one does not want certain pages to be cached, ever, by the web browser.
+After logging out from the website, one should not be able to view cached pages when pressing the back button.
+</p>
+
+<p>
+Hence Yanel allows to configure for each resource a property called 'yanel:no-cache', for example
+</p>
+
+<pre>
+&lt;yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1"&gt;
+  &lt;yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/&gt;
+
+  &lt;yanel:property name="yanel:no-cache" value="true"/&gt;
+</pre>
+
+<p>
+such that Yanel (org.wyona.yanel.servlet.YanelServlet) will set the following HTTP headers
+</p>
+
+<pre>
+Cache-Control: no-cache, no-store, must-revalidate
+Pragma: no-cache
+Expires: 0
+</pre>
+</body>
+</html>
