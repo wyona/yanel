@@ -523,10 +523,11 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response from view of resource
+     * @param TODO
+     * @param TODO
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        View view = null;
-
+        // INFO: Generate "yanel" document in order to collect information in case something should go wrong or some meta information should be requested
         org.w3c.dom.Document doc = null;
         try {
             doc = getDocument(NAMESPACE, "yanel");
@@ -564,6 +565,7 @@ public class YanelServlet extends HttpServlet {
         long size = -1;
 
         // START first try
+        View view = null;
         try {
             Environment environment = getEnvironment(request, response);
             res = getResource(request, response);
@@ -799,7 +801,7 @@ public class YanelServlet extends HttpServlet {
 
         if (view != null) {
             if (generateResponse(view, res, request, response, -1, doc, size, lastModified, trackInfo) != null) {
-                //log.debug("Response has been generated :-)");
+                //log.debug("Response has been generated successfully :-)");
                 return;
             } else {
                 log.warn("No response has been generated!");
@@ -1237,7 +1239,7 @@ public class YanelServlet extends HttpServlet {
             if (identity != null && identity.getUsername() != null) {
                 if (identity.getUsername() != null) {
                     if(log.isDebugEnabled()) log.debug("Access for user '" + identity.getUsername() + "' granted: " + getRequestURLQS(request, null, false));
-                    //response.setHeader("Cache-control", "no-cache"); // INFO: Do not cache content for users which are signed in (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465), but we currently do not use this because of performance reasons and because we have found another workaround re logout (see doLogout())
+                    //response.setHeader("Cache-control", "no-cache"); // INFO: Do not allow browsers to cache content for users which are signed in, but we currently do not use this because of performance reasons. One can set the resource property 'yanel:no-cache' on specific pages though in order to prevent caching of protected pages. Related to this see how a timestamp is appened during logout (see doLogout())
                 } else {
                     if(log.isDebugEnabled()) log.debug("Access for anonymous user (aka WORLD) granted: " + getRequestURLQS(request, null, false));
                 }
@@ -2076,9 +2078,18 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response from a resource view, whereas it will be checked first if the resource already wrote the response (if so, then just return)
+     *
+     * @param view View of resource
      * @param res Resource which handles the request in order to generate a response
+     * @param request TODO
+     * @param response TODO
      * @param statusCode HTTP response status code (because one is not able to get status code from response)
+     * @param doc TODO
+     * @param size TODO
+     * @param lastModified TODO
      * @param trackInfo Tracking information bean which might be updated by resource if resource is implementing trackable
+     *
+     * @return response to the client / browser
      */
     private HttpServletResponse generateResponse(View view, Resource res, HttpServletRequest request, HttpServletResponse response, int statusCode, Document doc, long size, long lastModified, TrackingInformationV1 trackInfo) throws ServletException, IOException {
         //log.debug("Generate response: " + res.getPath());
@@ -2092,6 +2103,18 @@ public class YanelServlet extends HttpServlet {
                 doLogAccess(request, response, statusCode, res, trackInfo);
             }
             log.debug("It seems that resource '" + res.getPath() + "' has directly created the response.");
+
+            try {
+                if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
+                    log.debug("Set no-cache headers...");
+                    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                    response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                    response.setDateHeader("Expires", 0); // Proxies.
+                }
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+
             return response;
         }
             
@@ -2125,7 +2148,7 @@ public class YanelServlet extends HttpServlet {
             doLogAccess(request, response, statusCode, res, trackInfo);
         }
 
-        // Set HTTP headers:
+        // INFO: Set HTTP headers
         HashMap<?, ?> headers = view.getHttpHeaders();
         Iterator<?> iter = headers.keySet().iterator();
         while (iter.hasNext()) {
@@ -2135,6 +2158,17 @@ public class YanelServlet extends HttpServlet {
                 log.debug("set http header: " + name + ": " + value);
             }
             response.setHeader(name, value);
+        }
+
+        try {
+            if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
+                log.debug("Set no-cache headers...");
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                response.setDateHeader("Expires", 0); // Proxies.
+            }
+        } catch(Exception e) {
+            log.error(e, e);
         }
 
         // INFO: Confirm DNT (do not track)
