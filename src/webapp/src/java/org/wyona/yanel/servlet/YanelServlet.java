@@ -196,6 +196,7 @@ public class YanelServlet extends HttpServlet {
 
     private static final String REVISIONS_TAG_NAME = "revisions";
     private static final String NO_REVISIONS_TAG_NAME = "no-revisions-yet";
+    private static final String EXCEPTION_TAG_NAME = "exception";
 
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
@@ -604,7 +605,7 @@ public class YanelServlet extends HttpServlet {
                     } catch (Exception e) {
                         String message = e.getMessage();
                         log.error(message, e);
-                        Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                        Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
                         exceptionElement.appendChild(doc.createTextNode(message));
                         exceptionElement.setAttributeNS(NAMESPACE, "status", "500");
                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -617,8 +618,7 @@ public class YanelServlet extends HttpServlet {
                     appendViewDescriptors(doc, viewElement, ((ViewableV2) res).getViewDescriptors());
 
                     if (!((ViewableV2) res).exists()) {
-                        log.warn("No such ViewableV2 resource: " + res.getPath());
-                        log.warn("TODO: Many ViewableV2 resources are not implementing exists() properly, hence do not generate a 404 for backwards compatibility! As a workaround use the exists() method within the getView(String) method and throw a ResourceNotFoundException accordingly.");
+                        log.warn("ViewableV2 resource '" + res.getPath() + "' does not seem to exist, whereas this resource might not implement exists() properly, hence Yanel does not generate a 404 for backwards compatibility! As a workaround use the exists() method within the getView(String) method and throw a ResourceNotFoundException accordingly.");
                         //do404(request, response, doc, res.getPath());
                         //return;
                     }
@@ -683,13 +683,17 @@ public class YanelServlet extends HttpServlet {
                         log.warn(message, e);
                         do404(request, response, doc, message);
                         return;
+                    } catch(Exception e) {
+                        log.error(e, e);
+                        handleException(request, response, e);
+                        return;
                     }
                 } else { // NO Viewable interface implemented!
                     String message = res.getClass().getName() + " is not viewable! (" + res.getPath() + ", " + res.getRealm() + ")";
                     log.error(message);
                     Element noViewElement = (Element) resourceElement.appendChild(doc.createElement("not-viewable"));
                     noViewElement.appendChild(doc.createTextNode(res.getClass().getName() + " is not viewable!"));
-                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                    Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
                     exceptionElement.appendChild(doc.createTextNode(message));
                     exceptionElement.setAttributeNS(NAMESPACE, "status", "501");
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_IMPLEMENTED);
@@ -808,7 +812,7 @@ public class YanelServlet extends HttpServlet {
             }
         } else {
             String message = "View is null!";
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
             exceptionElement.appendChild(doc.createTextNode(message));
         }
 
@@ -2204,7 +2208,7 @@ public class YanelServlet extends HttpServlet {
                                 String message = "Error merging toolbar into content: " + e.getMessage();
                                 //log.error(message, e);
                                 log.error(e, e);
-                                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
                                 exceptionElement.appendChild(doc.createTextNode(message));
                                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                                 setYanelOutput(request, response, doc);
@@ -2283,7 +2287,7 @@ public class YanelServlet extends HttpServlet {
                 return response;
             } else {
                 String message = "Returned InputStream of request '" + request.getRequestURI() + "' is null!";
-                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 setYanelOutput(request, response, doc);
@@ -2322,6 +2326,7 @@ public class YanelServlet extends HttpServlet {
         File shutdownLogFile = new File(System.getProperty("java.io.tmpdir"), "shutdown.log");
         log.warn("Trying to shutdown log4j loggers... (if shutdown successful, then loggers won't be available anymore. Hence see shutdown log file '" + shutdownLogFile.getAbsolutePath() + "' for final messages)");
         org.apache.log4j.LogManager.shutdown();
+        // TODO: org.apache.logging.log4j.LogManager.shutdown();
 
 /* INFO: After closing the loggers/appenders, these won't be available anymore, hence the following log statements don't make any sense.
         log.info("Shutdown of access logger completed.");
@@ -2556,7 +2561,7 @@ public class YanelServlet extends HttpServlet {
         String message = "No such node/resource exception: " + exceptionMessage;
         log.warn(message);
 
-        Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, "exception"));
+        Element exceptionElement = (Element) doc.getDocumentElement().appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
         exceptionElement.appendChild(doc.createTextNode(message));
         exceptionElement.setAttributeNS(NAMESPACE, "status", "404");
 
@@ -2612,14 +2617,14 @@ public class YanelServlet extends HttpServlet {
             } else {
                 String message = "Resource '" + res.getPath() + "' is not introspectable!";
                 log.warn(message);
-                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+                Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
                 exceptionElement.appendChild(doc.createTextNode(message));
                 setYanelOutput(request, response, doc);
             }
             return;
         } catch(Exception e) {
             log.error(e.getMessage(), e);
-            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "exception"));
+            Element exceptionElement = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EXCEPTION_TAG_NAME));
             exceptionElement.appendChild(doc.createTextNode(e.getMessage()));
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             setYanelOutput(request, response, doc);
