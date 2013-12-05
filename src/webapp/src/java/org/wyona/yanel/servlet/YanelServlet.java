@@ -618,7 +618,7 @@ public class YanelServlet extends HttpServlet {
                     appendViewDescriptors(doc, viewElement, ((ViewableV2) res).getViewDescriptors());
 
                     if (!((ViewableV2) res).exists()) {
-                        log.warn("ViewableV2 resource '" + res.getPath() + "' does not seem to exist, whereas this resource might not implement exists() properly, hence Yanel does not generate a 404 for backwards compatibility! As a workaround use the exists() method within the getView(String) method and throw a ResourceNotFoundException accordingly.");
+                        log.warn("ViewableV2 resource '" + res.getPath() + "' does not seem to exist, whereas this resource might not implement exists() properly. Yanel does not generate a 404 response for backwards compatibility reasons, because there are various ViewableV2 resources which do not implement exists() properly. As a workaround one might want to use the exists() method within the getView(String) method and throw a ResourceNotFoundException instead.");
                         //do404(request, response, doc, res.getPath());
                         //return;
                     }
