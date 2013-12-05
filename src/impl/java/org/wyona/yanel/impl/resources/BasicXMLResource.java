@@ -35,7 +35,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.utils.ListingErrorHandler;
@@ -110,7 +111,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class BasicXMLResource extends Resource implements ViewableV2 {
 
-    private static Logger log = Logger.getLogger(BasicXMLResource.class);
+    private static final Logger log = LogManager.getLogger(BasicXMLResource.class);
 
     protected static String DEFAULT_VIEW_ID = "default";
     protected static String SOURCE_VIEW_ID = "source";
@@ -245,6 +246,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @param xmlInputStream Source XML
      */
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
+        if (xmlInputStream == null) {
+            log.error("No source XML!");
+        }
         View view = new View();
         if (viewId == null) {
             if (isMobileView()) {
