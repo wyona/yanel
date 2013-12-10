@@ -14,13 +14,14 @@ import java.io.InputStream;
 import java.lang.Throwable;
 import java.lang.StackTraceElement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A generic exception handler.
  */
 public class BasicGenericExceptionHandlerResource extends BasicXMLResource {
-    private static Logger log = Logger.getLogger(BasicGenericExceptionHandlerResource.class);
+    private static final Logger log = LogManager.getLogger(BasicGenericExceptionHandlerResource.class);
 
     private Exception e;
 
