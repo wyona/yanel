@@ -32,7 +32,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
@@ -64,7 +65,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class TranslationResource extends Resource implements ViewableV2 {
 
-    private static Logger log = Logger.getLogger(TranslationResource.class);
+    private static final Logger log = LogManager.getLogger(TranslationResource.class);
 
     public static final String NS_URI = "http://www.wyona.org/yanel/1.0";
 
