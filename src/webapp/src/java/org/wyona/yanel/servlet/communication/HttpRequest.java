@@ -37,45 +37,91 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
- * This class wraps a HttpServlerRequest and does parameter decoding.
- * Further it handles multipart requests for file upload. 
+ * This class wraps a HttpServlerRequest and does parameter decoding. Further it handles multipart requests for file upload. 
  */
 public class HttpRequest extends HttpServletRequestWrapper {
     
-    private static Category log = Category.getInstance(HttpRequest.class);
+    private static final Logger log = LogManager.getLogger(HttpRequest.class);
     
     public static String form_encoding = "UTF-8";
     public static String container_encoding = "ISO-8859-1";
     
     protected List items;
-    
-    
+
+    Exception exception;
+
+    /**
+     *
+     */
     public HttpRequest(HttpServletRequest request) throws ServletException {
+        this(request, -1);
+    }
+
+    /**
+     * @param maxFileSize Maximum file size
+     */
+    public HttpRequest(HttpServletRequest request, long maxFileSize) throws ServletException {
         super(request);
-        if (isMultipartRequest()){
+        if (isMultipartRequest()) {
             try {
                 DiskFileItemFactory factory = new DiskFileItemFactory();
 
-                // Set factory constraints
-                // TODO: Do not hardcode the maximum size
-                int maxSize = 64000;
-                log.warn("The max upload size is " + maxSize);
+                // INFO: Set factory constraints
+                int maxSize = 64000; // TODO: Make configurable
                 factory.setSizeThreshold(maxSize);
-                factory.setRepository(new File(System.getProperty("java.io.tmpdir")));
-                //Create a new file upload handler
+                //log.info("Size threshold: " + factory.getSizeThreshold() + " bytes");
+
+                File repoDir = new File(System.getProperty("java.io.tmpdir"));
+                factory.setRepository(repoDir);
+                //log.info("Repository directory where temporary files will be created in order to handle files beyond the size threshold: " + factory.getRepository());
+
+                // INFO: Create a new file upload handler
                 ServletFileUpload upload = new ServletFileUpload(factory);
+                if (maxFileSize >= 0) {
+                    upload.setFileSizeMax(maxFileSize);
+                    log.warn("DEBUG: Maximum file size: " + upload.getFileSizeMax() + " bytes");
+                } else {
+                    log.warn("No maximum file size limit set, hence unlimited!");
+                }
                  
-                //Parse the request
+                // INFO: Parse the request
                 items = upload.parseRequest(request);
                             
-            } catch (FileUploadException e) {
-                log.error(e.getMessage(), e);
-                throw new ServletException(e.getMessage(), e);
+            } catch (Exception e) {
+                log.error(e, e);
+                if (e.getClass().getName().indexOf("FileSizeLimitExceededException") >= 0) { 
+                //if (e instanceof org.apache.commons.fileupload.FileUploadBase$FileSizeLimitExceededException) {
+                    setMultipartRequestException(e); // TODO: Set a yanel based exception in order to hide apache commons implementation
+                } else {
+                    setMultipartRequestException(e);
+                }
+                log.warn("Create empty list of items in order to prevent NullPointer exceptions!");
+                items = new java.util.ArrayList(); // INFO: Create empty list, such that no NullPointer is being generated
             }
+        } else {
+            //log.debug("No multipart request '" + request.getServletPath() + "', hence do nothing.");
         }
+    }
+
+    /**
+     * Remember exception, such that resources and Yanel itself will be able to check and access it
+     * @param exception Exception which has occured while parsing request
+     */
+    private void setMultipartRequestException(Exception exception) {
+        this.exception = exception;
+    }
+
+    /**
+     * Get exception which might have happened while parsing multipart request
+     * @return exception when there was an exception and null when there was no exception
+     */
+    public Exception getMultipartRequestException() {
+        return exception;
     }
 
     /**
@@ -93,9 +139,14 @@ public class HttpRequest extends HttpServletRequestWrapper {
                 return item.getString(); // TODO: fix encoding ?
             }
         }
+
+        //log.debug("No such parameter: " + name);
         return null;
     }
-    
+
+    /**
+     *
+     */
     private String fixEncoding(String str) {
         if (form_encoding == null || container_encoding == null || str == null) {
             return str;
@@ -179,7 +230,10 @@ public class HttpRequest extends HttpServletRequestWrapper {
         }
         return (String[]) values.toArray(new String[values.size()]);
     }
-    
+
+    /**
+     *
+     */
     public boolean isMultipartRequest() {
         return ServletFileUpload.isMultipartContent((HttpServletRequest) this.getRequest());
     }
@@ -207,7 +261,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     
     /**
      * Gets the filename of the uploaded file on the clients computer.
-     * @param name
+     * @param name Input field name
      * @return filename
      */
     public String getFilesystemName(String name) {
@@ -226,7 +280,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
     
     /**
      * Gets the content-type of the uploaded file.
-     * @param name
+     * @param name Input field name
      * @return content-type
      */
     public String getContentType(String name) {
