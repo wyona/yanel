@@ -106,6 +106,13 @@
   <filter>
     <filter-name>YanelFilter</filter-name>
     <filter-class>org.wyona.yanel.servlet.communication.YanelFilter</filter-class>
+    <init-param>
+      <param-name>max-file-size</param-name> <!-- in bytes -->
+      <param-value>-1</param-value> <!-- value '-1' means that there is no limit -->
+<!--
+      <param-value>3000000</param-value>
+-->
+    </init-param>
   </filter>
   <filter-mapping>
     <filter-name>YanelFilter</filter-name>
