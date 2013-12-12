@@ -114,7 +114,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.avalon.framework.configuration.DefaultConfigurationSerializer;
 import org.apache.avalon.framework.configuration.MutableConfiguration;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
+//import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import org.w3c.dom.Document;
