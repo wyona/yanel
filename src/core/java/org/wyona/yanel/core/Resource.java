@@ -84,21 +84,21 @@ public abstract class Resource {
     }
 
     /**
-     * Resource type universal name, e.g. <{http://www.wyona.org/yanel/resource/1.0}xml/>
+     * Get universal name of resource, e.g. <{http://www.wyona.org/yanel/resource/1.0}xml/>
      */
     public String getResourceTypeUniversalName() {
         return rtd.getResourceTypeUniversalName();
     }
 
     /**
-     *
+     * Get local name of resource, e.g. "xml"
      */
     public String getResourceTypeLocalName() {
         return rtd.getResourceTypeLocalName();
     }
 
     /**
-     *
+     * Get namespace of resource, e.g. "http://www.wyona.org/yanel/resource/1.0"
      */
     public String getResourceTypeNamespace() {
         return rtd.getResourceTypeNamespace();
