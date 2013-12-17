@@ -92,15 +92,24 @@ public class View {
     public void setResponse(boolean isResponse) {
         this.isResponse = isResponse;
     }
-    
+
+    /**
+     *
+     */
     public HashMap getHttpHeaders() {
         return this.httpHeaders;
     }
-    
+
+    /**
+     *
+     */
     public void setHttpHeaders(HashMap headers) {
         this.httpHeaders.putAll(headers);
     }
-    
+
+    /**
+     *
+     */
     public void setHttpHeader(String name, String value) {
         this.httpHeaders.put(name, value);
     }
