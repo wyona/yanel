@@ -9,7 +9,8 @@
 -->
 
 <!-- TODO: Enhance build process such that it will compare the version attribute of this 'template' with the local configuration local.web.xml
-<changes version="2011111000">
+<changes version="2013121800">
+  <change version="2013121800">YanelFilter init-param added</change>
   <change version="2011111000">access log tag separator added</change>
   <change version="2011090100">list of mobile devices added</change>
 </changes>
