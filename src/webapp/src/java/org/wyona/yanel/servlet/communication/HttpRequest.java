@@ -53,7 +53,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
     
     protected List items;
 
-    Exception exception;
+    private Exception exception;
+    private HashMap cachedParameters;
 
     /**
      *
@@ -68,6 +69,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
     public HttpRequest(HttpServletRequest request, long maxFileSize) throws ServletException {
         super(request);
         if (isMultipartRequest()) {
+            cacheParameters();
+
             try {
                 DiskFileItemFactory factory = new DiskFileItemFactory();
 
@@ -90,7 +93,9 @@ public class HttpRequest extends HttpServletRequestWrapper {
                 }
                  
                 // INFO: Parse the request
+                // TODO: Make copy of request and when parsing fails, then re-parse being more fault tolerant
                 items = upload.parseRequest(request);
+                //items = upload.parseRequest(this);
                             
             } catch (Exception e) {
                 log.error(e, e);
@@ -100,8 +105,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
                 } else {
                     setMultipartRequestException(e);
                 }
-                log.warn("Create empty list of items in order to prevent NullPointer exceptions!");
-                items = new java.util.ArrayList(); // INFO: Create empty list, such that no NullPointer is being generated
+                //log.warn("Create empty list of items in order to prevent NullPointer exceptions!");
+                //items = new java.util.ArrayList(); // INFO: Create empty list, such that no NullPointer is being generated
             }
         } else {
             //log.debug("No multipart request '" + request.getServletPath() + "', hence do nothing.");
@@ -128,15 +133,28 @@ public class HttpRequest extends HttpServletRequestWrapper {
      * @see javax.servlet.ServletRequestWrapper#getParameter(java.lang.String)
      */
     public String getParameter(String name) {
-        String value = super.getParameter(name);
         if(!isMultipartRequest()) {
+            String value = super.getParameter(name);
+            //log.warn("DEBUG: Value of parameter '" + name + "': " + value);
             return fixEncoding(value);
         }
-        Iterator iter = this.items.iterator();
-        while (iter.hasNext()) {
-            FileItem item = (FileItem)iter.next();
-            if (item.getFieldName().equals(name) && item.isFormField()) {
-                return item.getString(); // TODO: fix encoding ?
+
+        if (items != null) {
+            Iterator iter = this.items.iterator();
+            while (iter.hasNext()) {
+                FileItem item = (FileItem)iter.next();
+                if (item.getFieldName().equals(name) && item.isFormField()) {
+                    return item.getString(); // TODO: fix encoding ?
+                }
+            }
+        } else {
+            log.warn("items object is null! But let's try cached parameters...");
+            if (cachedParameters != null) {
+                String value = (String) cachedParameters.get(name);
+                log.warn("DEBUG: Value of parameter '" + name + "': " + value);
+                return value;
+            } else {
+                log.warn("Cached parameters also null!");
             }
         }
 
@@ -201,13 +219,18 @@ public class HttpRequest extends HttpServletRequestWrapper {
         }
         // use a set to avoid duplicate entries
         HashSet set = new HashSet();
-        Iterator iter = this.items.iterator();
-        while (iter.hasNext()) {
-            FileItem item = (FileItem)iter.next();
-            if (item.isFormField()) {
-                // don't add file upload fields
-                set.add(item.getFieldName());
+
+        if (items != null) {
+            Iterator iter = this.items.iterator();
+            while (iter.hasNext()) {
+                FileItem item = (FileItem)iter.next();
+                if (item.isFormField()) {
+                    // don't add file upload fields
+                    set.add(item.getFieldName());
+                }
             }
+        } else {
+            log.warn("items object is null!");
         }
         return new Vector(set).elements();
     }
@@ -331,5 +354,23 @@ public class HttpRequest extends HttpServletRequestWrapper {
         name = name.replaceAll(" |&|%|\\?", "_");
         return name;
     }
-}
 
+    /**
+     *
+     */
+    private void cacheParameters() {
+        log.warn("DEBUG: Try to cache parameters...");
+        cachedParameters = new HashMap();
+        Enumeration names = super.getParameterNames();
+        if (names.hasMoreElements()) {
+            log.warn("DEBUG: Has parameters."); 
+        } else {
+            log.warn("DEBUG: Has no parameters."); 
+        }
+        while(names.hasMoreElements()) {
+            String name = (String) names.nextElement();
+            log.warn("DEBUG: Cache parameter '" + name + "'...");
+            cachedParameters.put(name, super.getParameter(name));
+        }
+    }
+}
