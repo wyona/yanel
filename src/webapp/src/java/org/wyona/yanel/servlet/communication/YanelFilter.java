@@ -41,8 +41,13 @@ public class YanelFilter implements Filter {
      * @see javax.servlet.Filter#init(FilterConfig)
      */
     public void init(FilterConfig filterConfig) throws ServletException {
-        maxFileSize = new Long(filterConfig.getInitParameter("max-file-size")).longValue();
-        log.warn("DEBUG: Max file size: " + maxFileSize);
+        if (filterConfig.getInitParameter("max-file-size") != null) {
+            maxFileSize = new Long(filterConfig.getInitParameter("max-file-size")).longValue();
+            log.warn("DEBUG: Max file size: " + maxFileSize);
+        } else {
+            maxFileSize = -1; // INFO: Backwards compatibility
+            log.warn("No maximum file size configured! Therefore no limit...");
+        }
     }
 
     /**
