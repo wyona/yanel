@@ -20,7 +20,8 @@ import org.wyona.yarep.core.Repository;
 
 import org.wyona.yanel.impl.resources.calendar.CalendarEvent;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class CalendarResource extends Resource implements ViewableV2, ModifiableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(CalendarResource.class);
+    private static Logger log = LogManager.getLogger(CalendarResource.class);
 
     /**
      *
@@ -247,15 +248,21 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
                 String eventPath = getResourceConfigProperty("events-path") + "/" + event.getUID() + ".xml";
                 log.debug("Write event as XML '" + eventPath + "' ...");
                 Node eventNode = null;
+                boolean eventNodeExists = false;
                 if (!dataRepo.existsNode(eventPath)) {
                     eventNode = org.wyona.yarep.util.YarepUtil.addNodes(dataRepo, eventPath, org.wyona.yarep.core.NodeType.RESOURCE);
                 } else {
                     eventNode = getRealm().getRepository().getNode(eventPath);
+                    eventNodeExists = true;
                 }
 
-                OutputStream out = eventNode.getOutputStream();
-                XMLHelper.writeDocument(event.toXML(), out);
-                out.close();
+                boolean overwrite = true; // TODO: Make configurable
+                if (!eventNodeExists || overwrite) {
+                    eventNode.setMimeType("application/xml");
+                    OutputStream out = eventNode.getOutputStream();
+                    XMLHelper.writeDocument(event.toXML(), out);
+                    out.close();
+                }
 
                 event = null;
             } else {
