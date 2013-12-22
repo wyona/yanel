@@ -93,7 +93,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#getXHTMLAuthenticationForm(HttpServletRequest, HttpServletResponse, Realm, String, String, String, String, String, Map)
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
-        // TODO: Add loginURL
+        // TODO: Add loginURL such that one does not have to add it to the XSLT
+        // TODO: Add service such that one does not have to add it to the XSLT
         new DefaultWebAuthenticatorImpl().getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
     }
 

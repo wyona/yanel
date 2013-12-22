@@ -2230,10 +2230,6 @@ public class YanelServlet extends HttpServlet {
 
             InputStream is = view.getInputStream();
             if (is != null) {
-                // Write actual content into response
-                byte buffer[] = new byte[8192];
-                int bytesRead;
-                bytesRead = is.read(buffer);
 
                 try {
                     // Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
@@ -2264,8 +2260,11 @@ public class YanelServlet extends HttpServlet {
                     if (log.isDebugEnabled()) log.debug("No size for " + request.getRequestURI() + ": " + size);
                 }
 
-                // Check if InputStream is empty
                 try {
+                    // INFO: Check whether InputStream is empty and try to Write content into response
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    bytesRead = is.read(buffer);
                     if (bytesRead != -1) {
                         java.io.OutputStream os = response.getOutputStream();
                         os.write(buffer, 0, bytesRead);
