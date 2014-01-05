@@ -39,7 +39,8 @@ import org.w3c.dom.Element;
 
 import org.wyona.commons.xml.XMLHelper;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * CAS (http://www.jasig.org/cas) based web authenticator
@@ -51,7 +52,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
 
-    private static Logger log = Logger.getLogger(CASWebAuthenticatorImpl.class);
+    private static Logger log = LogManager.getLogger(CASWebAuthenticatorImpl.class);
 
     private String loginURL;
     private boolean redirectToLoginURL = true;
@@ -171,8 +172,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         } else {
             if (!redirectToLoginURL) {
                 try {
-                    log.warn("DEBUG: Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
-                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    log.debug("Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
+                    String message = null;
+                    if (request.getParameter("error") != null) {
+                        message = request.getParameter("error");
+                        log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
+                    }
+                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 } catch(Exception e) {
                     log.error(e, e);
                 }
