@@ -51,6 +51,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
 
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
+    private static final String CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME = "authenticationSuccess";
 
     private static Logger log = LogManager.getLogger(CASWebAuthenticatorImpl.class);
 
@@ -112,23 +113,25 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         }
         String casTicket = request.getParameter("ticket");
         if (casTicket != null) {
-            String username = validate(casTicket, request, realm);
-            if (username != null) {
+            Document doc = validate(casTicket, request, realm);
+            if (doc != null) {
                 log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
                 try {
+                    String username = getUsername(doc);
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     if (user !=  null) {
                         Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
                         if (existingIdentity == null) {
-                            Identity identity = new org.wyona.security.core.api.Identity(user, username);
-
-/* TODO: Make setting identity overwritable, in order to implement custom firstname and lastname, because User has no corresponding interface yet and also one would have to pass the CAS_PROXY_TICKET_SESSION_NAME and TARGET_SERVICE_SESSION_NAME somehow, which is generated during validation!
-                            Identity identity = getIdentity(username, request, realm);
-                            identity.setFirstname();
-                            identity.setLastname();
-*/
-
+                            Identity identity = new Identity(user, username);
+                            String displayName = getDisplayName(doc);
+                            if (displayName != null) {
+                                identity.setFirstname(displayName);
+                            } else {
+                                log.warn("No display name available, hence use username '" + username + "'.");
+                                identity.setFirstname(username);
+                            }
+                            identity.setLastname("");
                             YanelServlet.setIdentity(identity, request.getSession(true), realm);
                         } else {
                             String errorMsg = "It seems that you are already authenticated as user '" + existingIdentity.getUsername() + "', but you are probably not authorized to view '" + request.getServletPath() + "'! Please check access policies...";
@@ -196,9 +199,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * Validate CAS ticket
      * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
      * @param request Request which is used to generate service URL
-     * @return username associated with ticket when ticket is valid, return null otherwise (which means validation failed)
+     * @return document associated with ticket when ticket is valid, return null otherwise (which means validation failed)
      */
-    private String validate(String ticket, HttpServletRequest request, Realm realm) {
+    private Document validate(String ticket, HttpServletRequest request, Realm realm) {
         try {
             String url = validateURL + "?ticket=" + ticket + "&service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
             if (pgtURL != null) {
@@ -249,7 +252,12 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     }
                 }
 
-                return getUsername(doc);
+                if (getUsername(doc) != null) {
+                    return doc;
+                } else {
+                    log.warn("Validation failed. No username returned.");
+                    return null;
+                }
             } else {
                 log.warn("Validation failed. Returned status code: " + statusCode);
                 return null;
@@ -390,7 +398,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return username, e.g. 'lenya'
      */
     private String getUsername(Document doc) throws Exception {
-        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] userEls = XMLHelper.getChildElements(successEls[0], "user", CAS_NAMESPACE);
             if (userEls != null && userEls.length == 1) {
@@ -400,7 +408,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return null;
             }
         } else {
-            log.warn("No such element 'cas:authenticationSuccess'!");
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
             return null;
         }
     }
@@ -411,7 +419,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return proxy granting ticket, e.g. 'PGTIOU-1-PtV9B6QNdExmSKHfBp0n-cas01.example.org'
      */
     private String getProxyGrantingTicket(Document doc) throws Exception {
-        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] pgtEls = XMLHelper.getChildElements(successEls[0], "proxyGrantingTicket", CAS_NAMESPACE);
             if (pgtEls != null && pgtEls.length == 1) {
@@ -421,7 +429,34 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return null;
             }
         } else {
-            log.warn("No such element 'cas:authenticationSuccess'!");
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
+            return null;
+        }
+    }
+
+    /**
+     * Get display name from response document
+     * @param doc Document containing additional attributes and in particular display name (/cas:serviceResponse/cas:authenticationSuccess/cas:attributes/cas:display-name)
+     * @return display name, e.g. 'Michael Wechner'
+     */
+    private String getDisplayName(Document doc) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
+        if (successEls != null && successEls.length == 1) {
+            Element[] attrEls = XMLHelper.getChildElements(successEls[0], "attributes", CAS_NAMESPACE);
+            if (attrEls != null && attrEls.length == 1) {
+                Element[] displayNameEls = XMLHelper.getChildElements(attrEls[0], "display-name", CAS_NAMESPACE);
+                if (displayNameEls != null && displayNameEls.length == 1) {
+                    return displayNameEls[0].getTextContent();
+                } else {
+                    log.warn("No such element 'cas:display-name'!");
+                    return null;
+                }
+            } else {
+                log.warn("No such element 'cas:attributes'!");
+                return null;
+            }
+        } else {
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
             return null;
         }
     }
