@@ -124,7 +124,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
                         if (existingIdentity == null) {
                             Identity identity = new Identity(user, username);
-                            String displayName = getDisplayName(doc);
+                            String displayName = getDisplayName(doc, request, realm, username);
                             if (displayName != null) {
                                 identity.setFirstname(displayName);
                             } else {
@@ -151,7 +151,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 }
 
                 String originalURL = considerProxy(getRequestURLWithoutTicket(request), realm);
-                log.warn("DEBUG: Redirect to original request '" + originalURL + "'...");
+                log.debug("Redirect to original request '" + originalURL + "'...");
                 response.setHeader("Location", originalURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
@@ -361,7 +361,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return url;
             }
         } else {
-            log.warn("DEBUG: No proxy set for this realm: " + realm);
+            log.debug("No proxy set for this realm: " + realm);
         }
         return url;
     }
@@ -435,11 +435,14 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Get display name from response document
+     * Get display name of user from response document
      * @param doc Document containing additional attributes and in particular display name (/cas:serviceResponse/cas:authenticationSuccess/cas:attributes/cas:display-name)
+     * @param request Request associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
+     * @param realm Realm associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
+     * @param username Username associated with display name (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
      * @return display name, e.g. 'Michael Wechner'
      */
-    private String getDisplayName(Document doc) throws Exception {
+    protected String getDisplayName(Document doc, HttpServletRequest request, Realm realm, String username) throws Exception {
         Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] attrEls = XMLHelper.getChildElements(successEls[0], "attributes", CAS_NAMESPACE);
@@ -448,7 +451,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 if (displayNameEls != null && displayNameEls.length == 1) {
                     return displayNameEls[0].getTextContent();
                 } else {
-                    log.warn("No such element 'cas:display-name'!");
+                    log.warn("No such element 'cas:display-name'! Please note that 'cas:display-name' is a custom attribute, which needs to be set inside 'WEB-INF/view/jsp/protocol/2.0/casServiceValidationSuccess.jsp' of the CAS webapp. As a workaround one can also overwrite this method.");
                     return null;
                 }
             } else {
