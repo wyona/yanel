@@ -232,37 +232,39 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 }
 
                 if (pgtURL != null) {
-                // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
-                String proxyGrantingTicket = getProxyGrantingTicketIOU(doc);
-                if (proxyGrantingTicket != null) {
-                    log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
-                    File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
-                    if (proxyIdFile.exists()) {
-                        java.io.FileReader in = new java.io.FileReader(proxyIdFile);
-                        java.io.BufferedReader br = new java.io.BufferedReader(in);
-                        String pgtId = br.readLine();
-                        br.close();
-                        in.close();
-                        if (!debugCASResponses) {
-                            proxyIdFile.delete();
-                        }
-                        log.warn("DEBUG: pgt Id: " + pgtId);
-                        String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
-                        if (proxyTicket != null) {
-                            log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
-                            request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
-                            request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
+                    // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
+                    String proxyGrantingTicket = getProxyGrantingTicketIOU(doc);
+                    if (proxyGrantingTicket != null) {
+                        log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
+                        File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
+                        if (proxyIdFile.exists()) {
+                            java.io.FileReader in = new java.io.FileReader(proxyIdFile);
+                            java.io.BufferedReader br = new java.io.BufferedReader(in);
+                            String pgtId = br.readLine();
+                            br.close();
+                            in.close();
+
+                            if (!debugCASResponses) {
+                                proxyIdFile.delete();
+                            }
+
+                            log.warn("DEBUG: pgt Id: " + pgtId);
+                            String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
+                            if (proxyTicket != null) {
+                                log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
+                                request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
+                                request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
+                            } else {
+                                log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
+                            }
                         } else {
-                            log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
+                            log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
                         }
                     } else {
-                        log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
+                        if (pgtURL != null) {
+                            log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
+                        }
                     }
-                } else {
-                    if (pgtURL != null) {
-                        log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
-                    }
-                }
                 } else {
                     log.warn("DEBUG: No proxyCallback URL configured, hence we won't have to check for a proxy granting ticket.");
                 }
