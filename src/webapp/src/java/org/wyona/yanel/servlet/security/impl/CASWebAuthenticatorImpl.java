@@ -23,6 +23,7 @@ import javax.xml.transform.URIResolver;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -83,8 +84,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
 
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
-        // TBD/TODO: Check whether pgtURL has been configured, because not every realm might need to proxy CAS
-        pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
+
+        if (configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").getLength() > 0) {
+            pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
+        } else {
+            log.warn("DEBUG: No proxyCallback URL configured.");
+        }
+
         getProxyTicketURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "getProxyTicket").item(0)).getTextContent();
         targetServiceURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "targetService").item(0)).getTextContent();
 
@@ -207,6 +213,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             if (pgtURL != null) {
                 log.warn("DEBUG: Ask for proxy granting ticket...");
                 url = url + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
+            } else {
+                log.warn("DEBUG: No proxyCallback URL configured, hence we won't ask for a proxy granting ticket.");
             }
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
 
@@ -219,12 +227,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
                 // DEBUG: Since everything is over SSL, let's dump the response of CAS
                 if (debugCASResponses) {
-                    File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-validate-response.xml");
+                    File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-validate-response-" + new Date().getTime() + ".xml");
                     XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
                 }
 
+                if (pgtURL != null) {
                 // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
-                String proxyGrantingTicket = getProxyGrantingTicket(doc);
+                String proxyGrantingTicket = getProxyGrantingTicketIOU(doc);
                 if (proxyGrantingTicket != null) {
                     log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
                     File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
@@ -234,6 +243,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         String pgtId = br.readLine();
                         br.close();
                         in.close();
+                        if (!debugCASResponses) {
+                            proxyIdFile.delete();
+                        }
                         log.warn("DEBUG: pgt Id: " + pgtId);
                         String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
                         if (proxyTicket != null) {
@@ -250,6 +262,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     if (pgtURL != null) {
                         log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
                     }
+                }
+                } else {
+                    log.warn("DEBUG: No proxyCallback URL configured, hence we won't have to check for a proxy granting ticket.");
                 }
 
                 if (getUsername(doc) != null) {
@@ -414,11 +429,11 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     * Get proxy granting ticket from response document
+     * Get proxy granting ticket IOU from response document (http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou)
      * @param doc Document containing proxy granting ticket (/cas:serviceResponse/cas:authenticationSuccess/cas:proxyGrantingTicket)
      * @return proxy granting ticket, e.g. 'PGTIOU-1-PtV9B6QNdExmSKHfBp0n-cas01.example.org'
      */
-    private String getProxyGrantingTicket(Document doc) throws Exception {
+    private String getProxyGrantingTicketIOU(Document doc) throws Exception {
         Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] pgtEls = XMLHelper.getChildElements(successEls[0], "proxyGrantingTicket", CAS_NAMESPACE);
@@ -503,7 +518,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
             // DEBUG: Since everything is over SSL, let's dump the response of CAS
             if (debugCASResponses) {
-                File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-get-proxy-ticket-response.xml");
+                File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-get-proxy-ticket-response-" + new Date().getTime() + ".xml");
                 XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
             }
 
