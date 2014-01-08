@@ -227,7 +227,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 String proxyGrantingTicket = getProxyGrantingTicket(doc);
                 if (proxyGrantingTicket != null) {
                     log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
-                    File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), "cas-pgt-id.txt");
+                    File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
                     if (proxyIdFile.exists()) {
                         java.io.FileReader in = new java.io.FileReader(proxyIdFile);
                         java.io.BufferedReader br = new java.io.BufferedReader(in);
@@ -512,5 +512,14 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("Get proxy ticket failed. Returned status code: " + statusCode);
             return null;
         }
+    }
+
+    /**
+     * Generate unique filename
+     * @param proxyGrantingTicket Unique proxy granting ticket IOU (http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou), e.g. 'PGTIOU-2-i90z9WnqRRbdoe5rfSbS-cas01.example.org'
+     * @return unique filename, e.g. 'cas-pgt-id-PGTIOU-2-i90z9WnqRRbdoe5rfSbS-cas01.example.org.txt'
+     */
+    public static final String getProxyIdFilename(String proxyGrantingTicket) {
+        return "cas-pgt-id-" + proxyGrantingTicket + ".txt";
     }
 }
