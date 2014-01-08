@@ -453,7 +453,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Get display name of user from response document
-     * @param doc Document containing additional attributes and in particular display name (/cas:serviceResponse/cas:authenticationSuccess/cas:attributes/cas:display-name)
+     * @param doc Document containing additional attributes and in particular display name (/cas:serviceResponse/cas:authenticationSuccess/cas:attributes/cas:displayName)
      * @param request Request associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
      * @param realm Realm associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
      * @param username Username associated with display name (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
@@ -464,11 +464,11 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         if (successEls != null && successEls.length == 1) {
             Element[] attrEls = XMLHelper.getChildElements(successEls[0], "attributes", CAS_NAMESPACE);
             if (attrEls != null && attrEls.length == 1) {
-                Element[] displayNameEls = XMLHelper.getChildElements(attrEls[0], "display-name", CAS_NAMESPACE);
+                Element[] displayNameEls = XMLHelper.getChildElements(attrEls[0], "displayName", CAS_NAMESPACE); // TODO: Make 'displayName' tag name configurable
                 if (displayNameEls != null && displayNameEls.length == 1) {
                     return displayNameEls[0].getTextContent();
                 } else {
-                    log.warn("No such element 'cas:display-name'! Please note that 'cas:display-name' is a custom attribute, which needs to be set inside 'WEB-INF/view/jsp/protocol/2.0/casServiceValidationSuccess.jsp' of the CAS webapp. As a workaround one can also overwrite this method.");
+                    log.warn("No such element 'cas:displayName'! Please note that 'cas:displayName' is a custom attribute, which needs to be set inside 'WEB-INF/view/jsp/protocol/2.0/casServiceValidationSuccess.jsp' of the CAS webapp. As a workaround one can also overwrite this method.");
                     return null;
                 }
             } else {
