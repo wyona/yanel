@@ -8,14 +8,15 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple Resource which extends BasicXMLResource
  */
 public class CASProxyCallbackResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(CASProxyCallbackResource.class);
+    private static Logger log = LogManager.getLogger(CASProxyCallbackResource.class);
     
     /**
      * This method overrides the method to create the InputStream called by BasicXMLResource
@@ -35,8 +36,7 @@ public class CASProxyCallbackResource extends BasicXMLResource {
         String pgtIou = getEnvironment().getRequest().getParameter("pgtIou"); // INFO: http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou
         if (pgtId != null && pgtIou != null) {
             log.warn("DEBUG: pgt Id: " + pgtId + ", pgt Iou: " + pgtIou);
-            // TODO: Make it synchronized/multi-threaded. Also add the parameter 'pgtIou'
-            java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), "cas-pgt-id.txt"); // INFO: The class src/webapp/src/java/org/wyona/yanel/servlet/security/impl/CASWebAuthenticatorImpl.java will read it from here
+            java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdFilename(pgtIou));
             java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
             out.write(pgtId.getBytes());
             out.close();
