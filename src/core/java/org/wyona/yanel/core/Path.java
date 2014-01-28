@@ -13,13 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.wyona.yanel.core;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class Path extends org.wyona.yarep.core.Path {
+
+    private static final Logger log = LogManager.getLogger(Path.class);
 
     /**
      *
@@ -32,7 +36,7 @@ public class Path extends org.wyona.yarep.core.Path {
      *
      */
     public Path getRTIPath() {
-        // Remove trailing slash except for ROOT ...
+        // INFO: Remove trailing slash except for ROOT ...
         if (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
             return new Path(path.substring(0, path.length() - 1) + ".yanel-rti");
         }
@@ -40,13 +44,10 @@ public class Path extends org.wyona.yarep.core.Path {
     }
 
     /**
-     *
+     * Get resource configuration path
+     * @return path with suffix '.yanel-rc', e.g. '/people/michael-wechner/index.html.yanel-rc' or in the case of ROOT '/.yanel-rc'
      */
     public Path getRCPath() {
-        // Remove trailing slash except for ROOT ...
-        if (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
-            return new Path(path.substring(0, path.length() - 1) + ".yanel-rc");
-        }
-        return new Path(path + ".yanel-rc");
+        return new Path(org.wyona.yanel.core.util.PathUtil.getRCPath(path));
     }
 }
