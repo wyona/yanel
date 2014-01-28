@@ -10,7 +10,7 @@ Redirect resource, whereas redirects can also be based on user profile
 </description>
 
 <rtd>
-  <!-- INFO: Default redirect -->
+  <!-- INFO: Default redirect, which is mandatory! Without leading slash it will be a relative redirect and with leading slash an absolute redirect. Also see http://en.wikipedia.org/wiki/HTTP_location -->
   <property name="href"/>
 
 <!-- INFO: The element 'use-user-profile' is optional and was introduced with version 1.0.2 -->
