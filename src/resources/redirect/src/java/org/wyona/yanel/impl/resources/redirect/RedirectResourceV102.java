@@ -80,6 +80,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         response.setStatus(TMP_REDIRECT_STATUS_CODE);
         String location = getLocation();
         if (location.indexOf("/") == 0) { // INFO: Redirect is absolute path
+            // TBD: An alternative approach would be to use "getRequestURLQS(...)" in order to have a complete URL according to http://en.wikipedia.org/wiki/HTTP_location
             log.debug("Current path: " + getPath() + ", Back 2 realm: " + org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + ", Absolute redirect path: " + location);
             location = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + location.substring(1);
         }
