@@ -32,14 +32,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Controller to do redirects
  */
 public class RedirectResourceV101 extends Resource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(RedirectResourceV101.class);
+    private static final Logger log = LogManager.getLogger(RedirectResourceV101.class);
     
     public static String IDENTITY_MAP_KEY = "identity-map";
 

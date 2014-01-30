@@ -35,7 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.wyona.boost.client.BoostService;
 import com.wyona.boost.client.ServiceException;
@@ -47,10 +48,11 @@ import com.wyona.boost.client.HistoryEntry;
  */
 public class RedirectResourceV102 extends Resource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(RedirectResourceV102.class);
+    private static final Logger log = LogManager.getLogger(RedirectResourceV102.class);
     
     public static String IDENTITY_MAP_KEY = "identity-map";
     private int TMP_REDIRECT_STATUS_CODE = 307;
+    private String LOCATION = "Location";
 
     // Only a temporary variable needed during creation (roundtrip)
     private String defaultHrefSetByCreator;
@@ -73,15 +75,35 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         View view = new View();
         view.setResponse(false); // this resource writes the response itself
 
-        HttpServletResponse response = getResponse();
+        HttpServletResponse response = getEnvironment().getResponse();
+
+        response.setStatus(TMP_REDIRECT_STATUS_CODE);
+        String location = getLocation();
+        if (location.indexOf("/") == 0) { // INFO: Redirect is absolute path
+            // TBD: An alternative approach would be to use "getRequestURLQS(...)" in order to have a complete URL according to http://en.wikipedia.org/wiki/HTTP_location
+            log.debug("Current path: " + getPath() + ", Back 2 realm: " + org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + ", Absolute redirect path: " + location);
+            location = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + location.substring(1);
+        }
+        //log.debug("Location: " + location);
+        response.setHeader(LOCATION, location);
+
+        return view;
+    }
+
+    /**
+     * Get location from resource configuration
+     * @return redirect URL
+     */
+    private String getLocation() throws Exception {
 
         String defaultHref = getResourceConfigProperty("href");
+        if (defaultHref == null) {
+            throw new Exception("No default redirect has been set inside resource configuration!");
+        } else {
+            log.debug("Default href: " + defaultHref);
+        }
 
-        if (defaultHref == null) throw new Exception("No default redirect has been set inside resource configuration!");
-
-        // Default
-        response.setStatus(TMP_REDIRECT_STATUS_CODE);
-        response.setHeader("Location", defaultHref);
+        String location = defaultHref;
 
         // Username
         String currentUser = null;
@@ -110,9 +132,8 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     String clickstreamLang = getLanguage(clickStream);
                     if (clickstreamLang != null) {
                         log.warn("DEBUG: User language from personal click stream: " + clickstreamLang);
-                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                        response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
-                        return view;
+                        location =personalizedHref.replace("@LANG", clickstreamLang);
+                        return location;
                     } else {
                         log.warn("Not able to detect user language from click stream.");
                     }
@@ -135,9 +156,8 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 try {
                     String lang = languageRedirectConfigs[i].getAttribute("code");
                     if (lang.equals(localizationLanguage) || lang.equals("*")) {
-                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
                         String href = languageRedirectConfigs[i].getAttribute("href");
-                        response.setHeader("Location", href);
+                        location = href;
 
                         String if_logged_in = languageRedirectConfigs[i].getAttribute("if-logged-in", "false");
                         if("true".equals(if_logged_in) && !isLoggedIn) {
@@ -150,7 +170,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                                 //log.debug("Client language '" + localizationLanguage + "' matched and device '" + device + "' is supported. Let's check whether client is a mobile device ...");
                                 if (isMobileDevice()) {
                                     //log.debug("Client is mobile device, hence redirect to: " + href);
-                                    return view;
+                                    return location;
                                 } else {
                                     //log.debug("Client is not a mobile device.");
                                     continue;
@@ -162,7 +182,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                         } else {
                             //log.debug("No device specified (Language: " + localizationLanguage + ").");
                         }
-                        return view;
+                        return location;
                     }
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -175,8 +195,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 for (int i = 0; i < userRedirectConfigs.length; i++) {
                     try {
                         if (userRedirectConfigs[i].getAttribute("name") == currentUser || (currentUser).equals(userRedirectConfigs[i].getAttribute("name"))) {
-                            response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                            response.setHeader("Location", userRedirectConfigs[i].getAttribute("href"));
+                            location = userRedirectConfigs[i].getAttribute("href");
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -185,7 +204,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 }
             }
         }
-        return view;
+        return location;
     }
     
     /**

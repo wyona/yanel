@@ -23,6 +23,7 @@ import javax.xml.transform.URIResolver;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -39,7 +40,8 @@ import org.w3c.dom.Element;
 
 import org.wyona.commons.xml.XMLHelper;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * CAS (http://www.jasig.org/cas) based web authenticator
@@ -50,8 +52,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
 
     private static final String CAS_NAMESPACE = "http://www.yale.edu/tp/cas";
+    private static final String CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME = "authenticationSuccess";
 
-    private static Logger log = Logger.getLogger(CASWebAuthenticatorImpl.class);
+    private static Logger log = LogManager.getLogger(CASWebAuthenticatorImpl.class);
 
     private String loginURL;
     private boolean redirectToLoginURL = true;
@@ -81,8 +84,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         redirectToLoginURL = new Boolean(loginURLElement.getAttribute("redirect")).booleanValue();
 
         validateURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "validate").item(0)).getTextContent();
-        // TBD/TODO: Check whether pgtURL has been configured, because not every realm might need to proxy CAS
-        pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
+
+        if (configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").getLength() > 0) {
+            pgtURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "proxyCallback").item(0)).getTextContent();
+        } else {
+            log.warn("DEBUG: No proxyCallback URL configured.");
+        }
+
         getProxyTicketURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "getProxyTicket").item(0)).getTextContent();
         targetServiceURL = ((Element) configuration.getDocumentElement().getElementsByTagNameNS(CONF_NAMESPACE, "targetService").item(0)).getTextContent();
 
@@ -93,7 +101,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#getXHTMLAuthenticationForm(HttpServletRequest, HttpServletResponse, Realm, String, String, String, String, String, Map)
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
-        // TODO: Add loginURL
+        // TODO: Add loginURL such that one does not have to add it to the XSLT
+        // TODO: Add service such that one does not have to add it to the XSLT
         new DefaultWebAuthenticatorImpl().getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
     }
 
@@ -110,23 +119,25 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         }
         String casTicket = request.getParameter("ticket");
         if (casTicket != null) {
-            String username = validate(casTicket, request, realm);
-            if (username != null) {
+            Document doc = validate(casTicket, request, realm);
+            if (doc != null) {
                 log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
                 try {
+                    String username = getUsername(doc);
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
                     org.wyona.security.core.api.User user = realm.getIdentityManager().getUserManager().getUser(username, true); // INFO: In order to get groups which user belongs to.
                     if (user !=  null) {
                         Identity existingIdentity = YanelServlet.getIdentity(request.getSession(true), realm.getID());
                         if (existingIdentity == null) {
-                            Identity identity = new org.wyona.security.core.api.Identity(user, username);
-
-/* TODO: Make setting identity overwritable, in order to implement custom firstname and lastname, because User has no corresponding interface yet and also one would have to pass the CAS_PROXY_TICKET_SESSION_NAME and TARGET_SERVICE_SESSION_NAME somehow, which is generated during validation!
-                            Identity identity = getIdentity(username, request, realm);
-                            identity.setFirstname();
-                            identity.setLastname();
-*/
-
+                            Identity identity = new Identity(user, username);
+                            String displayName = getDisplayName(doc, request, realm, username);
+                            if (displayName != null) {
+                                identity.setFirstname(displayName);
+                            } else {
+                                log.warn("No display name available, hence use username '" + username + "'.");
+                                identity.setFirstname(username);
+                            }
+                            identity.setLastname("");
                             YanelServlet.setIdentity(identity, request.getSession(true), realm);
                         } else {
                             String errorMsg = "It seems that you are already authenticated as user '" + existingIdentity.getUsername() + "', but you are probably not authorized to view '" + request.getServletPath() + "'! Please check access policies...";
@@ -146,7 +157,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 }
 
                 String originalURL = considerProxy(getRequestURLWithoutTicket(request), realm);
-                log.warn("DEBUG: Redirect to original request '" + originalURL + "'...");
+                log.debug("Redirect to original request '" + originalURL + "'...");
                 response.setHeader("Location", originalURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 return response;
@@ -170,8 +181,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         } else {
             if (!redirectToLoginURL) {
                 try {
-                    log.warn("DEBUG: Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
-                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    log.debug("Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
+                    String message = null;
+                    if (request.getParameter("error") != null) {
+                        message = request.getParameter("error");
+                        log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
+                    }
+                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 } catch(Exception e) {
                     log.error(e, e);
                 }
@@ -189,14 +205,16 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * Validate CAS ticket
      * @param ticket CAS ticket (e.g. ST-1-Heu3XnvrG3HcJ27RBfg7-cas01.example.org)
      * @param request Request which is used to generate service URL
-     * @return username associated with ticket when ticket is valid, return null otherwise (which means validation failed)
+     * @return document associated with ticket when ticket is valid, return null otherwise (which means validation failed)
      */
-    private String validate(String ticket, HttpServletRequest request, Realm realm) {
+    private Document validate(String ticket, HttpServletRequest request, Realm realm) {
         try {
             String url = validateURL + "?ticket=" + ticket + "&service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
             if (pgtURL != null) {
                 log.warn("DEBUG: Ask for proxy granting ticket...");
                 url = url + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
+            } else {
+                log.warn("DEBUG: No proxyCallback URL configured, hence we won't ask for a proxy granting ticket.");
             }
             log.warn("DEBUG: Validate ticket '" + ticket + "' at '" + validateURL + "' or rather requesting '" + url + "'...");
 
@@ -209,40 +227,54 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
                 // DEBUG: Since everything is over SSL, let's dump the response of CAS
                 if (debugCASResponses) {
-                    File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-validate-response.xml");
+                    File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-validate-response-" + new Date().getTime() + ".xml");
                     XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
                 }
 
-                // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
-                String proxyGrantingTicket = getProxyGrantingTicket(doc);
-                if (proxyGrantingTicket != null) {
-                    log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
-                    File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), "cas-pgt-id.txt");
-                    if (proxyIdFile.exists()) {
-                        java.io.FileReader in = new java.io.FileReader(proxyIdFile);
-                        java.io.BufferedReader br = new java.io.BufferedReader(in);
-                        String pgtId = br.readLine();
-                        br.close();
-                        in.close();
-                        log.warn("DEBUG: pgt Id: " + pgtId);
-                        String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
-                        if (proxyTicket != null) {
-                            log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
-                            request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
-                            request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
+                if (pgtURL != null) {
+                    // INFO: Get proxy ticket for third party applications: https://wiki.jasig.org/display/CAS/Proxy+CAS+Walkthrough or https://wiki.jasig.org/download/attachments/729/cas_proxy_protocol.pdf?version=1&modificationDate=1304784845404&api=v2 or http://stackoverflow.com/questions/1389548/does-someone-have-a-valid-example-on-cas-proxy-granting-ticket or http://www.jasig.org/cas/proxy-authentication
+                    String proxyGrantingTicket = getProxyGrantingTicketIOU(doc);
+                    if (proxyGrantingTicket != null) {
+                        log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
+                        File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
+                        if (proxyIdFile.exists()) {
+                            java.io.FileReader in = new java.io.FileReader(proxyIdFile);
+                            java.io.BufferedReader br = new java.io.BufferedReader(in);
+                            String pgtId = br.readLine();
+                            br.close();
+                            in.close();
+
+                            if (!debugCASResponses) {
+                                proxyIdFile.delete();
+                            }
+
+                            log.warn("DEBUG: pgt Id: " + pgtId);
+                            String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
+                            if (proxyTicket != null) {
+                                log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
+                                request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
+                                request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
+                            } else {
+                                log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
+                            }
                         } else {
-                            log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
+                            log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
                         }
                     } else {
-                        log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
+                        if (pgtURL != null) {
+                            log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
+                        }
                     }
                 } else {
-                    if (pgtURL != null) {
-                        log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
-                    }
+                    log.warn("DEBUG: No proxyCallback URL configured, hence we won't have to check for a proxy granting ticket.");
                 }
 
-                return getUsername(doc);
+                if (getUsername(doc) != null) {
+                    return doc;
+                } else {
+                    log.warn("Validation failed. No username returned.");
+                    return null;
+                }
             } else {
                 log.warn("Validation failed. Returned status code: " + statusCode);
                 return null;
@@ -346,7 +378,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return url;
             }
         } else {
-            log.warn("DEBUG: No proxy set for this realm: " + realm);
+            log.debug("No proxy set for this realm: " + realm);
         }
         return url;
     }
@@ -383,7 +415,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return username, e.g. 'lenya'
      */
     private String getUsername(Document doc) throws Exception {
-        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] userEls = XMLHelper.getChildElements(successEls[0], "user", CAS_NAMESPACE);
             if (userEls != null && userEls.length == 1) {
@@ -393,18 +425,18 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return null;
             }
         } else {
-            log.warn("No such element 'cas:authenticationSuccess'!");
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
             return null;
         }
     }
 
     /**
-     * Get proxy granting ticket from response document
+     * Get proxy granting ticket IOU from response document (http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou)
      * @param doc Document containing proxy granting ticket (/cas:serviceResponse/cas:authenticationSuccess/cas:proxyGrantingTicket)
      * @return proxy granting ticket, e.g. 'PGTIOU-1-PtV9B6QNdExmSKHfBp0n-cas01.example.org'
      */
-    private String getProxyGrantingTicket(Document doc) throws Exception {
-        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), "authenticationSuccess", CAS_NAMESPACE);
+    private String getProxyGrantingTicketIOU(Document doc) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
         if (successEls != null && successEls.length == 1) {
             Element[] pgtEls = XMLHelper.getChildElements(successEls[0], "proxyGrantingTicket", CAS_NAMESPACE);
             if (pgtEls != null && pgtEls.length == 1) {
@@ -414,7 +446,37 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return null;
             }
         } else {
-            log.warn("No such element 'cas:authenticationSuccess'!");
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
+            return null;
+        }
+    }
+
+    /**
+     * Get display name of user from response document
+     * @param doc Document containing additional attributes and in particular display name (/cas:serviceResponse/cas:authenticationSuccess/cas:attributes/cas:displayName)
+     * @param request Request associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
+     * @param realm Realm associated with login (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
+     * @param username Username associated with display name (which is not necessary when getting the display name from the service response document, but maybe when overwriting this method)
+     * @return display name, e.g. 'Michael Wechner'
+     */
+    protected String getDisplayName(Document doc, HttpServletRequest request, Realm realm, String username) throws Exception {
+        Element[] successEls = XMLHelper.getChildElements(doc.getDocumentElement(), CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME, CAS_NAMESPACE);
+        if (successEls != null && successEls.length == 1) {
+            Element[] attrEls = XMLHelper.getChildElements(successEls[0], "attributes", CAS_NAMESPACE);
+            if (attrEls != null && attrEls.length == 1) {
+                Element[] displayNameEls = XMLHelper.getChildElements(attrEls[0], "displayName", CAS_NAMESPACE); // TODO: Make 'displayName' tag name configurable
+                if (displayNameEls != null && displayNameEls.length == 1) {
+                    return displayNameEls[0].getTextContent();
+                } else {
+                    log.warn("No such element 'cas:displayName'! Please note that 'cas:displayName' is a custom attribute, which needs to be set inside 'WEB-INF/view/jsp/protocol/2.0/casServiceValidationSuccess.jsp' of the CAS webapp. As a workaround one can also overwrite this method.");
+                    return null;
+                }
+            } else {
+                log.warn("No such element 'cas:attributes'!");
+                return null;
+            }
+        } else {
+            log.warn("No such element 'cas:" + CAS_AUTHENTICATION_SUCCESS_ELEMENT_NAME + "'!");
             return null;
         }
     }
@@ -458,7 +520,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
             // DEBUG: Since everything is over SSL, let's dump the response of CAS
             if (debugCASResponses) {
-                File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-get-proxy-ticket-response.xml");
+                File debugFile = new File(System.getProperty("java.io.tmpdir"), "cas-debug-get-proxy-ticket-response-" + new Date().getTime() + ".xml");
                 XMLHelper.writeDocument(doc, new java.io.FileOutputStream(debugFile));
             }
 
@@ -467,5 +529,14 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.warn("Get proxy ticket failed. Returned status code: " + statusCode);
             return null;
         }
+    }
+
+    /**
+     * Generate unique filename
+     * @param proxyGrantingTicket Unique proxy granting ticket IOU (http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou), e.g. 'PGTIOU-2-i90z9WnqRRbdoe5rfSbS-cas01.example.org'
+     * @return unique filename, e.g. 'cas-pgt-id-PGTIOU-2-i90z9WnqRRbdoe5rfSbS-cas01.example.org.txt'
+     */
+    public static final String getProxyIdFilename(String proxyGrantingTicket) {
+        return "cas-pgt-id-" + proxyGrantingTicket + ".txt";
     }
 }

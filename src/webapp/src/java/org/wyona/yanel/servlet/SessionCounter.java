@@ -6,14 +6,15 @@ import javax.servlet.http.HttpSessionEvent;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class SessionCounter implements HttpSessionListener {
 
-    private static Logger log = Logger.getLogger(SessionCounter.class);
+    private static Logger log = LogManager.getLogger(SessionCounter.class);
 
     private static HashMap activeSessions = new HashMap();
 

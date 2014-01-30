@@ -14,6 +14,7 @@ Calendar resource based on ICS format, whereas the calendar can also be generate
   <property name="categories"/>
   <property name="user-ids"/>
 
+  <!-- Path where events as individual XML documents are located -->
   <property name="events-path"/>
 <!--
   <property name="yarep-repository-id"/>
