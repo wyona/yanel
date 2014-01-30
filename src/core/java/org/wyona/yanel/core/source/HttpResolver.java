@@ -49,6 +49,7 @@ public class HttpResolver implements URIResolver {
         try {
             java.net.URL url = new java.net.URL(href);
             if (log.isDebugEnabled()) log.debug("Resolve: " + url.toString());
+            // TODO: Support SSL ...
             return new StreamSource(url.openConnection().getInputStream());
         } catch (Exception e) {
             String errorMsg = "Could not resolve URI: " + href + ": " + e.toString();
