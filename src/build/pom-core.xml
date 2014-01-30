@@ -28,13 +28,13 @@
       <groupId>yarep</groupId>
       <artifactId>yarep-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.4.0-r28ef715e302851e07720221cec98f1ac173cca9e</version>
+      <version>1.4.1-rb6b4b5d4424d148e3968db92bd6763868a936c48</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
       <artifactId>yarep-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.4.0-r28ef715e302851e07720221cec98f1ac173cca9e</version>
+      <version>1.4.1-rb6b4b5d4424d148e3968db92bd6763868a936c48</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-commons</groupId>
