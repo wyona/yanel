@@ -24,14 +24,15 @@ public class Recipient {
 
     /**
      * Set PGP public key
-     * @param pgpPublicKey PGP public key
+     * @param pgpPublicKey PGP public key block (-----BEGIN PGP PUBLIC KEY BLOCK----- ... -----END PGP PUBLIC KEY BLOCK-----)
      */
     public void setPGPPublicKey(String pgpPublicKey) {
         this.pgpPublicKey = pgpPublicKey;
     }
 
     /**
-     *
+     * Get PGP public key block
+     * @return PGP public key block (-----BEGIN PGP PUBLIC KEY BLOCK----- ... -----END PGP PUBLIC KEY BLOCK-----)
      */
     public String getPGPPublicKey() {
         return pgpPublicKey;
