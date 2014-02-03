@@ -7,6 +7,7 @@ public class Recipient {
 
     private String email;
     private String pgpPublicKey;
+    private String smimeCert;
 
     /**
      * @param email Email address of recipient
@@ -39,15 +40,19 @@ public class Recipient {
     }
 
     /**
-     *
+     * Set S/MIME certificate
+     * @param smimeCert S/MIME certificate (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)
      */
-    public void setSMIME() {
+    public void setSMIMECertificate(String smimeCert) {
+        this.smimeCert = smimeCert;
     }
 
     /**
      *
+     * Get S/MIME certificate
+     * @return S/MIME certificate (-----BEGIN CERTIFICATE----- ... -----END CERTIFICATE-----)
      */
-    public String getSMIME() {
-        return null;
+    public String getSMIMECertificate() {
+        return smimeCert;
     }
 }
