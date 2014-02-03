@@ -88,7 +88,11 @@ public class MailUtil {
                 log.error(e, e);
                 throw new MessagingException(e.getMessage());
             }
+        } else if (recipient.getSMIMECertificate() != null) {
+            log.warn("DEBUG: Encrypt email with S/MIME certificate: " + recipient.getSMIMECertificate());
+            send(null, -1, from, replyTo, recipient.getEmail(), subject, content);
         } else {
+            log.warn("DEBUG: E-Mail will not be encrypted.");
             send(null, -1, from, replyTo, recipient.getEmail(), subject, content);
         }
     }
