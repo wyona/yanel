@@ -94,7 +94,8 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     private static final String LAST_NAME = "lastname";
 
     // Email validation
-    private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+    //private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+    private String defaultEmailRegEx = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
 
     // Tracking information
     private TrackingInformationV1 trackInfo;

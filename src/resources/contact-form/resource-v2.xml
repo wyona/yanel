@@ -18,7 +18,7 @@ Contact form for sending email
   <property name="subject"/>
   <property name="mime-type"/>
   <property name="from"/> <!-- INFO: If not configured, then the email address specified of the form is used as from address -->
-  <property name="email-validation-regex"/>
+  <property name="email-validation-regex"/> <!-- INFO: If not configured, then the default '\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*' will be used -->
   <property name="back-link-base-url"/>
   <!-- NOTE: If not configured, then the global configuration from 'yanel.xml' will be used. Please note that one needs to reload/restart Yanel in order to activate changes of host and port! -->
   <property name="smtpHost"/>
