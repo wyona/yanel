@@ -7,6 +7,7 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeBodyPart;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,6 +22,10 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
 import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import org.bouncycastle.mail.smime.SMIMEEnvelopedGenerator;
+
+import java.security.cert.X509Certificate;
 
 /**
  * SMTP mail utility class
@@ -89,12 +94,32 @@ public class MailUtil {
                 throw new MessagingException(e.getMessage());
             }
         } else if (recipient.getSMIMECertificate() != null) {
-            log.warn("DEBUG: Encrypt email with S/MIME certificate: " + recipient.getSMIMECertificate());
-            send(null, -1, from, replyTo, recipient.getEmail(), subject, content);
+            try {
+                log.warn("DEBUG: Encrypt email with S/MIME certificate: " + recipient.getSMIMECertificate());
+                SMIMEEnvelopedGenerator  gen = new SMIMEEnvelopedGenerator();
+                X509Certificate certX509 = convertPEMtoX509(recipient.getSMIMECertificate());
+                gen.addKeyTransRecipient(certX509);
+                MimeBodyPart msg = new MimeBodyPart();
+                msg.setText(content);
+                java.security.Security.addProvider(new BouncyCastleProvider());
+                MimeBodyPart mp = gen.generate(msg, SMIMEEnvelopedGenerator.RC2_CBC, new BouncyCastleProvider());
+                sendForGood(null, -1, from, null, replyTo, recipient.getEmail(), subject, mp, null, null, null);
+            } catch(Exception e) {
+                log.error(e, e);
+                throw new MessagingException(e.getMessage());
+            }
         } else {
             log.warn("DEBUG: E-Mail will not be encrypted.");
             send(null, -1, from, replyTo, recipient.getEmail(), subject, content);
         }
+    }
+
+    /**
+     *
+     */
+    private static X509Certificate convertPEMtoX509(String pem) throws Exception {
+        byte [] decoded = new org.apache.commons.codec.binary.Base64().decode(pem.replaceAll("-----BEGIN CERTIFICATE-----", "").replaceAll("-----END CERTIFICATE-----", ""));
+        return (X509Certificate)java.security.cert.CertificateFactory.getInstance("X.509").generateCertificate(new java.io.ByteArrayInputStream(decoded));
     }
 
 /**
@@ -186,6 +211,24 @@ private static PGPPublicKey getEncryptionKey(PGPPublicKeyRing keyRing) {
      * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
      */
     public static void send(String smtpHost, int smtpPort, String fromEmailAddress, String fromName, String replyTo, String to, String subject, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
+        sendForGood(smtpHost, smtpPort, fromEmailAddress, fromName, replyTo, to, subject, null, content, charset, mimeSubType);
+    }
+
+    /**
+     * Send email
+     * @param smtpHost Alternative SMTP mail server host name, whereas if set to null, then the default/global configuration of Yanel will be used
+     * @param smtpPort Alternative SMTP mail server port, whereas if set to smaller than 0, then the default/global configuration of Yanel will be used
+     * @param fromEmailAddress E-Mail address of sender, e.g. contact@wyona.org
+     * @param fromName Name of sender, e.g. Wyona
+     * @param replyTo email address (if null, then no reply-to will be set)
+     * @param to To address
+     * @param subject Subject of email
+     * @param mimeBodyPart When using S/MIME, then thhe mime body part is being encrypted instead just the content itself
+     * @param content Body of email
+     * @param charset Charset, e.g. utf-8
+     * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
+     */
+    private static void sendForGood(String smtpHost, int smtpPort, String fromEmailAddress, String fromName, String replyTo, String to, String subject, MimeBodyPart mimeBodyPart, String content, String charset, String mimeSubType) throws AddressException, MessagingException {
         // Create a mail session
         Session session = null;
         if (smtpHost != null && smtpPort >= 0) {
@@ -232,7 +275,16 @@ private static PGPPublicKey getEncryptionKey(PGPPublicKeyRing keyRing) {
         }
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
-        msg.setText(content, charset, mimeSubType);
+        if (mimeBodyPart != null) {
+            try {
+                msg.setContent(mimeBodyPart.getContent(), mimeBodyPart.getContentType());
+            } catch(Exception e) {
+                log.error(e, e);
+                throw new MessagingException(e.getMessage());
+            }
+        } else {
+            msg.setText(content, charset, mimeSubType);
+        }
 
         // INFO: Send the message
         Transport.send(msg);
