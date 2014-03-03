@@ -35,8 +35,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.utils.ListingErrorHandler;
@@ -328,6 +330,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
             
             Repository repo = getRealm().getRepository();
+            // TBD: Introduce javax.xml.transform.Templates in order to cache transformers (see for example http://www.javaworld.com/article/2073394/java-xml/transparently-cache-xsl-transformations-with-jaxp.html)
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
             for (int i = 0; i < xsltPaths.length; i++) {
                 String xsltPath = xsltPaths[i];
