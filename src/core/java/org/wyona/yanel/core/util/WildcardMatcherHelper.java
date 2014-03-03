@@ -23,6 +23,8 @@ import org.apache.regexp.REProgram;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class is an utility class that perform wildcard-patterns matching and isolation.
@@ -30,6 +32,8 @@ import java.util.Map;
  * @version $Id: WildcardMatcherHelper.java 448573 2006-09-21 14:52:23Z anathaniel $
  */
 public class WildcardMatcherHelper {
+    private static final Logger log = LogManager.getLogger(WildcardMatcherHelper.class);
+
     //~ Static fields/initializers -----------------------------------------------------------------
 
     /** Default path separator: "/" */
@@ -116,15 +120,6 @@ public class WildcardMatcherHelper {
      */
     private static class Matcher {
 
-        /** Regexp to split constant parts from front and back leaving wildcards in the middle. */
-        private static final REProgram splitter;
-
-        static {
-            final String fixedRE = "([^*\\\\]*)";
-            final String wcardRE = "(.*[*\\\\])";
-            final String splitRE = "^" + fixedRE + wcardRE + fixedRE + "$";
-            splitter = new RECompiler().compile(splitRE);
-        }
 
         /** Wildcard types to short-cut simple '*' and "**' matches. */
         private static final int WC_CONST = 0;
@@ -160,9 +155,19 @@ public class WildcardMatcherHelper {
          * @param str The string
          */
         Matcher(final String pat) {
+            /** Regexp to split constant parts from front and back leaving wildcards in the middle. */
+            String fixedRE = "([^*\\\\]*)";
+            String wcardRE = "(.*[*\\\\])";
+            String splitRE = "^" + fixedRE + wcardRE + fixedRE + "$";
+            REProgram splitter = null;
+            try {
+                splitter = new RECompiler().compile(splitRE);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
             RE re = new RE(splitter);
 
-            if ( re.match(pat) ) {
+            if (re.match(pat) ) {
 
                 // Split pattern into (foo/)(*)(/bar).
 
@@ -308,6 +313,11 @@ public class WildcardMatcherHelper {
         }
         repat.append('$');
 
-        return new RECompiler().compile(repat.toString());
+        try {
+            return new RECompiler().compile(repat.toString());
+        } catch(Exception e) {
+            log.error(e, e);
+            return null;
+        }
     }
 }
