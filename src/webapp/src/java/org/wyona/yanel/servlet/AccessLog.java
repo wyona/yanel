@@ -101,6 +101,7 @@ public class AccessLog {
         } catch(Exception e) {
             log.error(e, e);
         }
+        // TODO: Extract email from referer
         return getLogMessage(url, realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags, TAG_SEPARATOR);
     }
 
