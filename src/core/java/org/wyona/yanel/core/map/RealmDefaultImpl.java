@@ -39,7 +39,8 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Default realm implementation
@@ -49,7 +50,7 @@ public class RealmDefaultImpl implements Realm {
     public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
     private static String EXTRA_REPOSITORY_FACTORY_BEAN_ID = "ExtraRepositoryFactory";
 
-    private static Logger log = Logger.getLogger(RealmDefaultImpl.class);
+    private static final Logger log = LogManager.getLogger(RealmDefaultImpl.class);
 
     private String domain;
     private String name;
