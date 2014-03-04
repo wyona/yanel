@@ -822,6 +822,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if (identityMap != null && identityMap.containsKey(realm.getID())) {
                 log.info("Logout from realm: " + realm.getID());
                 identityMap.remove(realm.getID());
+            } else {
+                log.warn("Identity map contains no such realm '" + realm.getID() + "'!");
             }
 
             String clientSupportedAuthScheme = getClientAuthenticationScheme(request);
