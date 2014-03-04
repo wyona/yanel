@@ -328,7 +328,7 @@ public class YanelServlet extends HttpServlet {
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
-            if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+            if (yanelUsecase != null && yanelUsecase.equals("logout")) {
                 try {
                     log.debug("Disable auto login..."); // TODO: The cookie is not always deleted!
                     AutoLogin.disableAutoLogin(request, response, getRealm(request).getRepository());
@@ -336,7 +336,7 @@ public class YanelServlet extends HttpServlet {
                     log.error("Exception while disabling auto login: " + e.getMessage(), e);
                 }
                 // INFO: Logout from Yanel
-                if(doLogout(request, response)) {
+                if (doLogout(request, response)) {
                     return;
                 } else {
                     log.error("Logout failed!");
@@ -1558,6 +1558,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Do logout
+     * @param request TODO
+     * @param response TODO
      * @return true if logout was successful (and set a "Redirect response" for a regular logout and a "Neutron response" if auth scheme is Neutron)
      */
     private boolean doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -1570,7 +1572,15 @@ public class YanelServlet extends HttpServlet {
             }
 
 	    WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
-            return wa.doLogout(request, response, map);
+            boolean successfulLogout = wa.doLogout(request, response, map);
+
+            //int status = response.getStatus(); // INFO: This only works with servlet spec 3.0 (also see http://tomcat.apache.org/whichversion.html)
+            int status = 301;
+            TrackingInformationV1 trackInfo = null;
+            Resource res = null;
+            doLogAccess(request, response, status, res, trackInfo);
+
+            return successfulLogout;
         } catch (Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage(), e);
@@ -2673,6 +2683,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Log browser history of each user
+     * @param request TODO
+     * @param response TODO
      * @param resource Resource which handles the request
      * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param trackInfo Tracking information bean
@@ -3166,7 +3178,7 @@ public class YanelServlet extends HttpServlet {
                 }
             }
         } else {
-            log.debug("Resource is null because access was probably denied: " + servletPath);
+            log.debug("Resource is null because access was probably denied or not necessarily initialized: " + servletPath);
         }
         return tags;
     }
