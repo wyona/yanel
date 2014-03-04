@@ -35,7 +35,10 @@ import org.w3c.dom.Element;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 
 // JOID is an alternative openid impl
@@ -57,7 +60,7 @@ import org.openid4java.message.ParameterList;
  */
 public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
-    private static Logger log = Logger.getLogger(DefaultWebAuthenticatorImpl.class);
+    private static Logger log = LogManager.getLogger(DefaultWebAuthenticatorImpl.class);
 
     private static String OPENID_DISCOVERED_KEY = "openid-discovered";
 
@@ -813,8 +816,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
         try {
             HttpSession session = request.getSession(true);
-            // TODO: should we logout only from the current realm, or from all realms?
-            // -> logout only from the current realm
+            // TBD: Should we logout only from the current realm, or from all realms? Currently we logout only from the current realm.
             Realm realm = map.getRealm(request.getServletPath());
             IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
             if (identityMap != null && identityMap.containsKey(realm.getID())) {
@@ -848,10 +850,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"0;url=" + urlWithoutLogoutQS + "\"/></head><body></body></html>");
 */
 
-            // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
+            // INFO: Append timestamp in order to workaround 301 redirect cache problem. Please note that when "yanel:no-cache" set inside resource configuration, then timestamp is not necessary anymore (see YanelServlet)
             // TODO: Check if url still has a query string (see above)
             urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new java.util.Date().getTime();
-            log.debug("Redirect to original request: " + urlWithoutLogoutQS);
+            log.debug("Redirect to original request with refresh query string attached: " + urlWithoutLogoutQS);
 
             response.setHeader("Location", urlWithoutLogoutQS.toString());
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
