@@ -15,7 +15,7 @@
         <strong>Total number of sessions: </strong>
         <xsl:value-of select="s:number-of-sessions"/>
 
-        <h2>All "logged-in" sessions</h2>
+        <h2>All "logged-in" (or previously logged-in) sessions</h2>
         <!-- INFO: Show all logged-in sessions first -->
         <xsl:if test="not(s:session[s:identities])">
           <p>No "logged-in" sessions yet.</p>
