@@ -1,3 +1,5 @@
-<project name="Yanel-lookup-RT">
+<?xml version="1.0"?>
+
+<project name="yanel-lookup-resource" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 </project>
