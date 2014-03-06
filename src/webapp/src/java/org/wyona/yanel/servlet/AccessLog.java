@@ -8,14 +8,15 @@ import java.util.UUID;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * First attempt to "standardize" access logging for resources
  */
 public class AccessLog {
 
-    private static Logger log = Logger.getLogger(AccessLog.class);
+    private static Logger log = LogManager.getLogger(AccessLog.class);
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
 
