@@ -6,7 +6,8 @@ import java.io.OutputStreamWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -28,7 +29,7 @@ class YanelHTMLUI {
     private String reservedPrefix;
     private Map map;
 
-    private static Logger log = Logger.getLogger(YanelHTMLUI.class);
+    private static Logger log = LogManager.getLogger(YanelHTMLUI.class);
 
     /**
      *
