@@ -30,7 +30,9 @@ import javax.xml.transform.Source;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -71,7 +73,7 @@ import org.wyona.yarep.core.Revision;
  */
 public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, VersionableV3, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1, CommentableV1 {
 
-    private static Logger log = Logger.getLogger(XMLResource.class);
+    private static Logger log = LogManager.getLogger(XMLResource.class);
 
     private Boolean annotationRead = false;
     private Set<String> annotations  = new HashSet<String>();
@@ -137,7 +139,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                 // TODO: Pass the request ...
                 View view = ((ViewableV2) res).getView(null);
@@ -145,9 +147,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
             } else {
-                log.error("Resource is not ViewableV1: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("Resource is not ViewableV1: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
             }
             return null;
         }
@@ -273,7 +275,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         long lastModified;
         String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
-            log.warn("Get last modified for parameter yanel-path '" + yanelPath + "' is not implemented yet!");
+            log.warn("Get last modified for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' is not implemented yet!");
             lastModified = -1;
         } else {
             Node node = getRealm().getRepository().getNode(getPath());
@@ -296,7 +298,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         if (path == null) {
             path = getPath();
         } else {
-            if (path.indexOf("http://") == 0) {
+            if (path.indexOf("http://") == 0 || path.indexOf("https://") == 0) {
+                log.warn("No local repository node: " + path);
                 throw new NoSuchNodeException(path, getRealm().getRepository());
             }
         }
@@ -325,7 +328,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             }
         } catch(NoSuchNodeException e) {
             String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
-            if (path != null && path.indexOf("http://") == 0) {
+            if (path != null && (path.indexOf("http://") == 0 || path.indexOf("https://") == 0)) {
                 log.warn("No revisions available for external URL: " + path);
                 return null;
             } else {
@@ -422,7 +425,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     public boolean isCheckedOut() throws Exception {
         String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
-            log.warn("Check whether checked-out for parameter yanel-path '" + yanelPath + "' not implemented yet!");
+            log.warn("Check whether checked-out for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
             return false;
         } else {
             Node node = getRealm().getRepository().getNode(getPath());
@@ -533,7 +536,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         map.put("mime-type", request.getParameter("rp.mime-type"));
         map.put("source-view-mime-type", request.getParameter("rp.source-view-mime-type"));
         map.put("workflow-schema", request.getParameter("rp.workflow-schema"));
-        map.put("yanel-path", request.getParameter("rp.yanel-path"));
+        map.put(YANEL_PATH_PROPERTY_NAME, request.getParameter("rp." + YANEL_PATH_PROPERTY_NAME));
 
         // TODO: get all parameters, e.g. source-view-mime-type (Security!)
         return map;
@@ -803,7 +806,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
         String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
         if (yanelPath != null) {
-            log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
+            log.warn("Read annotations for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
         } else {
             annotations = org.wyona.yanel.core.attributes.annotatable.Util.readAnnotations(getRealm().getRepository(), getPath());
             if (annotations != null) {
