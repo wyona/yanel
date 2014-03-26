@@ -8,6 +8,11 @@
   <yanel:property name="boost-service-url" value="http://localhost:9080/boost/api"/>
   <yanel:property name="boost-api-key" value="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
 
+<!-- IMPORTANT: Please make sure to configure the truststore when using https: http://www.yanel.org/en/documentation/security/ssl.html
+  <yanel:property name="boost-service-url" value="https://b4.wyona.com/boost/api"/>
+  <yanel:property name="boost-api-key" value="TODO"/>
+-->
+
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
       <view id="default">
