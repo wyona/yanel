@@ -10,7 +10,7 @@ Generates personalized content based on the interests of a user (see for example
 </description>
 
 <rtd>
-  <property name="boost-service-url"/> <!-- For example: http://localhost:9080/boost/api -->
+  <property name="boost-service-url"/> <!-- For example: http://localhost:9080/boost/api IMPORTANT: When using https, then please make sure to set the truststore accordingly: http://www.yanel.org/en/documentation/security/ssl.html -->
   <property name="boost-api-key"/> <!-- SELECT api_secret FROM domains WHERE name='user-tracking-domain-id'; whereas see WEB-INF/classes/realms.xml for value of 'user-tracking-domain-id'-->
 
   <!-- Optional: For testing purposes -->
