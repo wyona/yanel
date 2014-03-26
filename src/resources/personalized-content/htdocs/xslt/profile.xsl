@@ -85,7 +85,7 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 </table>
   </xsl:when>
   <xsl:otherwise>
-    <p>No interests detected yet.</p>
+    <p>No clickstream detected yet.</p>
   </xsl:otherwise>
 </xsl:choose>
   </xsl:template>
