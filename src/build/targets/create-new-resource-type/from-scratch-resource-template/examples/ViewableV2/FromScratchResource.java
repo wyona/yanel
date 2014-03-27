@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2014 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -12,14 +12,15 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple HelloWorldResource which implements ViewableV2 to output "Hello World!"
  */
 public class FromScratchResource extends Resource implements ViewableV2 {
     
-    private static Logger log = Logger.getLogger(FromScratchResource.class);
+    private static Logger log = LogManager.getLogger(FromScratchResource.class);
     
     /* 
      * Since we don't read from somewhere which could not exist we just return true
