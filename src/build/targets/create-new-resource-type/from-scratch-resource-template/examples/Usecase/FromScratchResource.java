@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2014 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -10,14 +10,15 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple Usecase example
  */
 public class FromScratchResource extends ExecutableUsecaseResource {
     
-    private static Logger log = Logger.getLogger(FromScratchResource.class);
+    private static Logger log = LogManager.getLogger(FromScratchResource.class);
     
     protected static String PARAM_EXAMPLE_FORM_FIELD = "example-form-field";
     protected static String PARAM_EXAMPLE_FORM_FIELD_DATE = "example-form-field-date";
