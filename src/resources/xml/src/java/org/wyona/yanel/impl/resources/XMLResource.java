@@ -36,7 +36,9 @@ import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import org.wyona.commons.xml.XMLHelper;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.AnnotatableV1;
@@ -92,20 +94,19 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getView(String, String)
      */
     public View getView(String viewId, String revisionName) throws Exception {
-        Repository repo = getRealm().getRepository();
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
-        InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
+        InputStream xmlInputStream = getSourceXML(revisionName);
         return getXMLView(viewId, xmlInputStream);
     }
 
     /**
      * Get initial content as XML
-     * @param yanelPath Path from resource configuration, which might contain a protocol, e.g. 'http' or 'yanelresource'
+     * @param revisionName Name of revision for which source XML will be retrieved / generated
      */
-    private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
+    private InputStream getSourceXML(String revisionName) throws Exception {
+        String yanelPath = getCustomSourcePath();
 
         if (yanelPath != null) {
-            if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
+            if (log.isDebugEnabled()) log.debug("Source path: " + yanelPath);
             if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:") || yanelPath.startsWith("https:")) {
                 log.debug("Protocol/Scheme used: " + yanelPath);
                 // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
@@ -126,7 +127,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
                 }
             } else {
-                log.info("No protocol used.");
+                log.info("Either no protocol used or protocol not implemented: " + yanelPath);
             }
 
             Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), yanelPath);
@@ -154,6 +155,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return null;
         }
 
+        Repository repo = getRealm().getRepository();
         Node node;
         if (revisionName != null) {
             node = repo.getNode(getPath()).getRevision(revisionName);
@@ -273,7 +275,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public long getLastModified() throws Exception {
         long lastModified;
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
             log.warn("Get last modified for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' is not implemented yet!");
             lastModified = -1;
@@ -290,11 +292,18 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
+     * Get custom path
+     */
+    protected String getCustomSourcePath() throws Exception {
+        return getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+    }
+
+    /**
      * Get repository node
      */
     public Node getRepoNode() throws Exception {
-        // INFO: yanel-path is normally not just another repository path, but rather another resource! See getContentXML()
-        String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        // INFO: The property 'yanel-path' is normally not just another repository path, but rather another resource! See getSourceXML(String) ...
+        String path = getCustomSourcePath();
         if (path == null) {
             path = getPath();
         } else {
@@ -327,7 +336,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 return null;
             }
         } catch(NoSuchNodeException e) {
-            String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+            String path = getCustomSourcePath();
             if (path != null && (path.indexOf("http://") == 0 || path.indexOf("https://") == 0)) {
                 log.warn("No revisions available for external URL: " + path);
                 return null;
@@ -423,7 +432,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#isCheckedOut()
      */
     public boolean isCheckedOut() throws Exception {
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
             log.warn("Check whether checked-out for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
             return false;
@@ -804,7 +813,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return;
         }
 
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
             log.warn("Read annotations for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
         } else {
@@ -830,5 +839,23 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public CommentManagerV1 getCommentManager() throws Exception {
         return new org.wyona.yanel.impl.comments.CommentManagerV1Impl();
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
+     */
+    @Override
+    public boolean exists() throws Exception {
+        String sourcePath = getCustomSourcePath();
+        if (sourcePath != null) {
+            if (sourcePath.startsWith("yanelrepo:") || sourcePath.startsWith("yanelresource:") || sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+            } else {
+                log.info("Either no protocol used or protocol not implemented: " + sourcePath);
+            }
+            log.warn("Method exists() for custom source path '" + sourcePath + "' not implemented yet!");
+            return false;
+        } else {
+            return super.exists();
+        }
     }
 }
