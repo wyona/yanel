@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Wyona
+ * Copyright 2014 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -9,14 +9,15 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A simple HelloWorldResource which extends BasicXMLResource to output "Hello World!" in XML
  */
 public class FromScratchResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(FromScratchResource.class);
+    private static Logger log = LogManager.getLogger(FromScratchResource.class);
     
     /**
      * This method overrides the method to create the InputStream called by BasicXMLResource
