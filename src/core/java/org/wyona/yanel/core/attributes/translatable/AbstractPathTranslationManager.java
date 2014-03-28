@@ -19,7 +19,8 @@ package org.wyona.yanel.core.attributes.translatable;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceManager;
 import org.wyona.yanel.core.Yanel;
@@ -35,7 +36,7 @@ import org.wyona.yanel.core.util.ResourceAttributeHelper;
  */
 public abstract class AbstractPathTranslationManager extends DefaultTranslationManager {
 
-    private static Category log = Category.getInstance(AbstractPathTranslationManager.class);
+    private static final Logger log = LogManager.getLogger(AbstractPathTranslationManager.class);
     
     protected ResourceManager resourceManager;
     
