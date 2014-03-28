@@ -58,6 +58,8 @@ import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.source.HttpResolver;
+import org.wyona.yanel.core.source.SourceException;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
@@ -81,6 +83,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     private Set<String> annotations  = new HashSet<String>();
 
     private static final String YANEL_PATH_PROPERTY_NAME = "yanel-path";
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+    private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
@@ -111,20 +115,36 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 log.debug("Protocol/Scheme used: " + yanelPath);
                 // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
                 try {
-                    SourceResolver resolver = new SourceResolver(this);
-                    Source source = resolver.resolve(yanelPath, null);
-                    return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    javax.xml.transform.URIResolver resolver = null;
+                    if ((isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME) || isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) && (yanelPath.startsWith("http:") || yanelPath.startsWith("https:"))) {
+                        resolver = new HttpResolver(this, getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME), getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+                    } else {
+                        resolver = new SourceResolver(this);
+                    }
+
+                    Source source = null;
+                    try {
+                        source = resolver.resolve(yanelPath, null);
+                    } catch(SourceException e) {
+                        String exceptionMessage = e.getMessage();
+                        log.error(exceptionMessage);
+                        StringBuilder sb = new StringBuilder("<exception>" + exceptionMessage + "</exception>");
+                        return new java.io.ByteArrayInputStream(sb.toString().getBytes());
+                    }
+                    try {
+                        return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    } catch(Exception e) {
+                        String exceptionMessage = "Data retrieved from '" + yanelPath + "' might not be well-formed (Original exception message: " + e.getMessage() + "), hence let's request it again and try to tidy it...";
+                        log.warn(exceptionMessage);
+                        source = resolver.resolve(yanelPath, null);
+                        return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                        //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
+                    }
                 } catch(Exception e) {
-                    String exceptionMessage = "Data retrieved from '" + yanelPath + "' not well-formed!";
-                    log.warn(exceptionMessage);
-/*
+                    String exceptionMessage = e.getMessage();
+                    log.error(exceptionMessage);
                     StringBuilder sb = new StringBuilder("<exception>" + exceptionMessage + "</exception>");
                     return new java.io.ByteArrayInputStream(sb.toString().getBytes());
-*/
-                    SourceResolver resolver = new SourceResolver(this);
-                    Source source = resolver.resolve(yanelPath, null);
-                    return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
-                    //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
                 }
             } else {
                 log.info("Either no protocol used or protocol not implemented: " + yanelPath);
@@ -856,6 +876,32 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return false;
         } else {
             return super.exists();
+        }
+    }
+
+    /**
+     * Check whether timeout property is configured
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when timeout property is configured
+     */
+    private boolean isTimeoutConfigured(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get value of timeout property
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of timeout property in milliseconds
+     */
+    private int getTimeoutValue(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return new Integer(getResourceConfigProperty(name)).intValue();
+        } else {
+            return 0;
         }
     }
 }
