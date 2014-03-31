@@ -16,7 +16,6 @@
       <dependency groupId="wyona-org-yanel" artifactId="yanel-webapp" version="${yanel.source.version}"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
-      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="1.0.0-r3f6cd07add6"/> <!-- TODO: Move to core of Yanel -->
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
@@ -24,7 +23,6 @@
       <!-- No resource specific libs yet -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
       <dependency groupId="avalon-framework" artifactId="avalon-framework-impl" version="4.3"/>
-      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="1.0.0-r3f6cd07add6"/> <!-- TODO: Move to core of Yanel -->
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
