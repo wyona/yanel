@@ -40,8 +40,8 @@ public class HttpResolver implements URIResolver {
     
     //private Resource resource;
 
-    int connectionTimeout = -1;
-    int socketTimeout = -1;
+    private int connectionTimeout = -1;
+    private int socketTimeout = -1;
 
     /**
      * @param resource Resource associated with source resolving
