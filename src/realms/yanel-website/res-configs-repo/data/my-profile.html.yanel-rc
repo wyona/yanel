@@ -11,7 +11,12 @@
 <!-- IMPORTANT: Please make sure to configure the truststore when using https: http://www.yanel.org/en/documentation/security/ssl.html
   <yanel:property name="boost-service-url" value="https://b4.wyona.com/boost/api"/>
   <yanel:property name="boost-api-key" value="TODO"/>
+  <yanel:property name="domain" value="TODO"/>
+  <yanel:property name="cookie" value="YA-TODO"/>
 -->
+
+  <yanel:property name="connection-timeout" value="100"/>
+  <yanel:property name="socket-timeout" value="2000"/>
 
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
