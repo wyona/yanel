@@ -16,5 +16,8 @@ Generates personalized content based on the interests of a user (see for example
   <!-- Optional: For testing purposes -->
   <property name="cookie"/>
   <property name="domain"/>
+
+  <property name="connection-timeout" default-value="0"/> <!-- optional, milliseconds -->
+  <property name="socket-timeout" default-value="0"/> <!-- optional, milliseconds -->
 </rtd>
 </resource>
