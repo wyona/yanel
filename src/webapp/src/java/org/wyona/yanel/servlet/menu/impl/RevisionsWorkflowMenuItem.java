@@ -18,14 +18,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Generate a generic revisions and worlflow menu item
  */
 public class RevisionsWorkflowMenuItem {
 
-    private static Logger log = Logger.getLogger(RevisionsWorkflowMenuItem.class);
+    private static Logger log = LogManager.getLogger(RevisionsWorkflowMenuItem.class);
 
     /**
      * Get generic revisions and workflow menu item
