@@ -110,16 +110,21 @@
   </target>
     
   <target name="set-classpath" description="Set classpath" depends="init, dependencies">
-    <echo>INFO: Set classpath ...</echo>
+    <echo>INFO: Set classpath based on dependencies.xml ...</echo>
     <path id="classpath.compile">
       <!--
       <fileset dir="${yanel.source.home}/lib">
         <include name="*.jar"/>
       </fileset>
       -->
+      <pathelement path="${maven2.compile.cp}"/> <!-- INFO: dependencies which are only needed at compile time, like for example servlet-api (see dependencies.xml) -->
       <pathelement path="${maven2.cp}"/>
-      <pathelement path="${maven2.compile.cp}"/>
     </path>
+
+<!--
+    <property name="property.classpath.compile" refid="classpath.compile"/>
+    <echo>DEBUG COMPILE CLASSPATH: ${property.classpath.compile}</echo>
+-->
   </target>
 
 
