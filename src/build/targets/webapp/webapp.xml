@@ -198,6 +198,12 @@
 
   <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl, compile-neutron"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
     <mkdir dir="${classes.dir}"/>
+
+<!--
+    <property name="property.classpath.compile" refid="classpath.compile"/>
+    <echo>DEBUG COMPILE WEBAPP CLASSPATH: ${property.classpath.compile}</echo>
+-->
+
     <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
       encoding="${javac.encoding}"
