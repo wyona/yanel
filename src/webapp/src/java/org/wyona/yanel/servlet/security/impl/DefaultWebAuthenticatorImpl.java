@@ -376,8 +376,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 String userAgent = request.getHeader("User-Agent");
                 if (userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
                     log.warn("DEBUG: In the case of the user agent '" + userAgent + "' an error 401 is returned instead a login form.");
-                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
                     response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
                     //log.debug("Returned status code: " + response.getStatus());
                     return response;
                 }
@@ -413,8 +413,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                     return;
                 } else if (yanelFormat.equals("error")) {
-                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
                     response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
                     //log.debug("Returned status code: " + response.getStatus());
                     return;
                 } else {
