@@ -97,7 +97,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
 
 
-            // HTML Form based authentication
+            // INFO: HTML Form based authentication
             String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME);
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
@@ -174,8 +174,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 }
                 return response;
             } else {
-                if (log.isDebugEnabled()) log.debug("No form based authentication request.");
+                if (log.isDebugEnabled()) log.debug("No form based authentication request or no credentials submitted yet.");
             }
+
             // Check for Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
             if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
@@ -370,11 +371,20 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.warn("DEBUG: Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return response;
             } else {
+                String userAgent = request.getHeader("User-Agent");
+                if (userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
+                    log.warn("DEBUG: In the case of the user agent '" + userAgent + "' an error 401 is returned instead a login form.");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    //log.debug("Returned status code: " + response.getStatus());
+                    return response;
+                }
+                //log.debug("Generate authentication form to enter credentials...");
                 getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
             }
             return response;
-
 /*
             if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
             return null;
@@ -386,7 +396,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
 
-        // TODO: Enhance with global resource, which will make it more flexible
+        // TODO: Enhance as global resource, which will make it more flexible
 
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
@@ -394,18 +404,29 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
 
             String yanelFormat = request.getParameter("yanel.login.format");
-            if(yanelFormat != null && yanelFormat.equals("xml")) {
-                response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
-                //OutputStream out = response.getOutputStream();
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
-                //out.close();
+            if (yanelFormat != null) {
+                if (yanelFormat.equals("xml")) {
+                    response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
+                    //OutputStream out = response.getOutputStream();
+                    javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
+                    //out.close();
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                    return;
+                } else if (yanelFormat.equals("error")) {
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    //log.debug("Returned status code: " + response.getStatus());
+                    return;
+                } else {
+                    throw new ServletException("No such login format '" + yanelFormat + "' implemented!");
+                }
             } else {
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
 
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                 //response.setHeader("Optional-WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\""); // INFO: See http://tools.ietf.org/html/draft-oiwa-http-auth-extension-02
-/* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13)
+/* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13 or http://webmasters.stackexchange.com/questions/24443/should-i-return-a-http-401-status-code-on-an-html-based-login-form)
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
 */
