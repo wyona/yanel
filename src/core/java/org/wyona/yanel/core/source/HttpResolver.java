@@ -44,6 +44,9 @@ public class HttpResolver implements URIResolver {
     private int connectionTimeout = -1;
     private int socketTimeout = -1;
 
+    private String username = null;
+    private String password = null;
+
     /**
      * @param resource Resource associated with source resolving
      */
@@ -60,6 +63,16 @@ public class HttpResolver implements URIResolver {
         //this.resource = resource;
         this.connectionTimeout = connectionTimeout;
         this.socketTimeout = socketTimeout;
+    }
+
+    /**
+     * Set basic authentication credentials
+     * @param username Username
+     * @param password Password
+     */
+    public void setBasicAuthCredentials(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -80,8 +93,7 @@ public class HttpResolver implements URIResolver {
         try {
             java.net.URL url = new java.net.URL(href);
             if (log.isDebugEnabled()) log.debug("Resolve: " + url.toString());
-            // TODO: Make BASIC AUTH username and password configurable (similar to connection- and socket-timeout)
-            DefaultHttpClient httpClient = getHttpClient(url, null, null, connectionTimeout, socketTimeout);
+            DefaultHttpClient httpClient = getHttpClient(url, username, password, connectionTimeout, socketTimeout);
             HttpGet httpGet = new HttpGet(url.toString());
             org.apache.http.HttpResponse response = httpClient.execute(httpGet);
             if (response.getStatusLine().getStatusCode() == 200) {
