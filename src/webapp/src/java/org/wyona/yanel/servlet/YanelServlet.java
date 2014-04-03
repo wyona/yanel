@@ -348,7 +348,7 @@ public class YanelServlet extends HttpServlet {
 
             // Check authorization and if authorization failed, then try to authenticate
             if (doAccessControl(request, response) != null) {
-                // INFO: Either redirect (after successful authentication) or access denied (and response will send the login screen)
+                // INFO: Either redirect (after successful authentication) or access denied (and response will contain the login screen)
                 return;
             } else {
                 if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
@@ -1006,7 +1006,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 Resource resource = getResource(request, response);
-                log.warn("Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
+                log.warn("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
                 save(request, response, false);
                 return;
             }
@@ -1096,6 +1096,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Save data
+     * @param request TODO
+     * @param response TODO
      */
     private void save(HttpServletRequest request, HttpServletResponse response, boolean doCheckin) throws ServletException, IOException {
         log.debug("Save data ...");
@@ -1307,6 +1309,7 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
 
+                //log.debug("Returned status code: " + response.getStatus()); // INFO: Only supported by servlet api 3.0 and higher
                 return response;
             } else {
                 try {
