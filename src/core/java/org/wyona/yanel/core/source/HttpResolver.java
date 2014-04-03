@@ -14,6 +14,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.params.BasicHttpParams;
 
 import org.apache.logging.log4j.Logger;
@@ -118,6 +119,8 @@ public class HttpResolver implements URIResolver {
         } else {
             log.warn("No socket timeout set, hence use default value: " + HttpConnectionParams.getSoTimeout(httpParams));
         }
+        String yanelVersion = org.wyona.yanel.core.Yanel.getInstance().getVersion();
+        HttpProtocolParams.setUserAgent(httpParams, "Yanel/" + yanelVersion + " HttpResolver");
         DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
 
         // INFO: http://stackoverflow.com/questions/7201154/httpclient-1-4-2-explanation-needed-for-custom-ssl-context-example
