@@ -107,24 +107,36 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @param revisionName Name of revision for which source XML will be retrieved / generated
      */
     private InputStream getSourceXML(String revisionName) throws Exception {
-        String yanelPath = getCustomSourcePath();
+        String sourcePath = getCustomSourcePath();
 
-        if (yanelPath != null) {
-            if (log.isDebugEnabled()) log.debug("Source path: " + yanelPath);
-            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:") || yanelPath.startsWith("https:")) {
-                log.debug("Protocol/Scheme used: " + yanelPath);
+        if (sourcePath != null) {
+            if (log.isDebugEnabled()) log.debug("Source path: " + sourcePath);
+            if (sourcePath.startsWith("yanelrepo:") || sourcePath.startsWith("yanelresource:") || sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+                log.debug("Protocol/Scheme used: " + sourcePath);
                 // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
                 try {
                     javax.xml.transform.URIResolver resolver = null;
-                    if ((isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME) || isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) && (yanelPath.startsWith("http:") || yanelPath.startsWith("https:"))) {
-                        resolver = new HttpResolver(this, getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME), getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+                    if (sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+                        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME) || isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+                            resolver = new HttpResolver(this, getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME), getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+                        } else {
+                            resolver = new HttpResolver(this);
+                        }
+
+                        String username = getResourceConfigProperty("username");
+                        String password = getResourceConfigProperty("password");
+                        if (username != null && password != null) {
+                            ((HttpResolver) resolver).setBasicAuthCredentials(username, password);
+                        } else {
+                            log.warn("No BASIC AUTH credentials configured in order to request: " + sourcePath);
+                        }
                     } else {
                         resolver = new SourceResolver(this);
                     }
 
                     Source source = null;
                     try {
-                        source = resolver.resolve(yanelPath, null);
+                        source = resolver.resolve(sourcePath, null);
                     } catch(SourceException e) {
                         String exceptionMessage = e.getMessage();
                         log.error(exceptionMessage);
@@ -134,9 +146,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     try {
                         return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
                     } catch(Exception e) {
-                        String exceptionMessage = "Data retrieved from '" + yanelPath + "' might not be well-formed (Original exception message: " + e.getMessage() + "), hence let's request it again and try to tidy it...";
+                        String exceptionMessage = "Data retrieved from '" + sourcePath + "' might not be well-formed (Original exception message: " + e.getMessage() + "), hence let's request it again and try to tidy it...";
                         log.warn(exceptionMessage);
-                        source = resolver.resolve(yanelPath, null);
+                        source = resolver.resolve(sourcePath, null);
                         return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
                         //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
                     }
@@ -147,20 +159,20 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     return new java.io.ByteArrayInputStream(sb.toString().getBytes());
                 }
             } else {
-                log.info("Either no protocol used or protocol not implemented: " + yanelPath);
+                log.info("Either no protocol used or protocol not implemented: " + sourcePath);
             }
 
-            Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), yanelPath);
+            Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), sourcePath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
-                String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
+                String viewV1path = getRealm().getMountPoint() + sourcePath.substring(1);
                 log.warn("Path of view: " + viewV1path);
                 View view = ((ViewableV1) res).getView(new Path(viewV1path), null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                 // TODO: Pass the request ...
                 View view = ((ViewableV2) res).getView(null);
@@ -168,9 +180,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             } else {
-                log.error("Resource is not ViewableV1: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + yanelPath + ")");
+                log.error("Resource is not ViewableV1: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             }
             return null;
         }
