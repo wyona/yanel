@@ -3189,6 +3189,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get client address of user
      * @param request Client request
+     * @return original client IP address
      */
     private String getClientAddressOfUser(HttpServletRequest request) {
         String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
@@ -3196,12 +3197,19 @@ public class YanelServlet extends HttpServlet {
             if (remoteIPAddr.indexOf("unknown") >= 0) {
                 log.warn("TODO: Clean remote IP address: " + remoteIPAddr);
             }
-            return remoteIPAddr;
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP or if no proxy is used
             }
-            return request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
+            remoteIPAddr = request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
+        }
+
+        if (remoteIPAddr.indexOf(",") > 0) { // INFO: Comma separated addresses, like for example '172.21.126.179, 89.250.145.138' (see Format of X-Forwarded-For at http://en.wikipedia.org/wiki/X-Forwarded-For)
+            String firstAddress = remoteIPAddr.split(",")[0].trim();
+            log.warn("Use the first IP address '" + firstAddress + "' of comma separated list '" + remoteIPAddr + "' ...");
+            return firstAddress;
+        } else {
+            return remoteIPAddr;
         }
     }
 
