@@ -2771,9 +2771,13 @@ public class YanelServlet extends HttpServlet {
 */
             }
 
+            String clientIP = getClientAddressOfUser(request);
+
             String httpAcceptLanguage = request.getHeader("Accept-Language");
             if (httpAcceptLanguage != null) {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("a-lang", httpAcceptLanguage);
+            } else {
+                log.warn("Client request (IP: " + clientIP + ") has no Accept-Language header.");
             }
 
             HttpSession session = request.getSession(true);
@@ -2787,7 +2791,7 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "" + HttpServletResponse.SC_OK);
             }
 
-            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", getClientAddressOfUser(request));
+            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", clientIP);
 
             logAccess.info(accessLogMessage);
 
