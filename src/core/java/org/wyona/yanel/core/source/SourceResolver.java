@@ -88,7 +88,7 @@ public class SourceResolver implements URIResolver {
         URIResolver resolver = null;
         if (this.resolvers.containsKey(scheme)) {
             resolver = this.resolvers.get(scheme);
-            log.warn("DEBUG: Get cached resolver '" + resolver + "' for scheme '" + scheme + "'.");
+            //log.debug("Get cached resolver '" + resolver + "' for scheme '" + scheme + "'.");
         } else {
             if (scheme.equals("yanelresource")) {
                 resolver = new ResourceResolver(this.resource);
