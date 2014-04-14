@@ -57,6 +57,9 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     // Only a temporary variable needed during creation (roundtrip)
     private String defaultHrefSetByCreator;
     private static String REDIRECT_URL = "redirectURL";
+
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+    private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
     
     /**
      *
@@ -324,7 +327,18 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
      */
     private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setConnectionTimeout(getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
+        } else {
+            log.warn("No connection timeout configured.");
+        }
+        if (isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setSocketTimeout(getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+        } else {
+            log.warn("No socket timeout configured.");
+        }
         BoostService boost = new BoostService(bsc);
+        // TODO: Limit number of returned clickstream entries
         return boost.getClickStream(cookie);
     }
 
@@ -344,7 +358,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     count++; // WARN: If we increase the count as an argument of the Integer below, then it somehow does not get increased!
                     usedLangs.put(language, new Integer(count));
                 } else {
-                    //log.warn("DEBUG: Add language '" + language + "' to has map.");
+                    //log.warn("DEBUG: Add language '" + language + "' to hash map.");
                     usedLangs.put(language, new Integer(1));
                 }
             } else {
@@ -372,10 +386,12 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
     /**
      * Get requested language
-     * @param url Requested URL, which might contain requested language either as prefix or suffix
+     * @param url Requested URL, which might contain requested language either as prefix or suffix, e.g. 'http://127.0.0.1:8080/yanel/yanel-website/de/ueber.html'
+     * @return language, e.g. 'de'
      */
     private String getLanguage(String url) {
         try {
+            //log.debug("Try to get language from url '" + url + "' ...");
             String path = new java.net.URL(url).getPath();
             if (path.length() >= 17 && path.charAt(13) == '/' && path.charAt(16) == '/') {
                 String lang = path.substring(14,16);
@@ -388,5 +404,51 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             log.error(e, e);
         }
         return null;
+    }
+
+    /**
+     * Check whether timeout property is configured
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when timeout property is configured
+     */
+    private boolean isTimeoutConfigured(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+
+            // INFO: Personalization
+            Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
+            if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
+                String value = personalizedRedirectConfigs[0].getAttribute(name, null);
+                if (value != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get value of timeout property
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of timeout property in milliseconds
+     */
+    private int getTimeoutValue(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+
+            // INFO: Personalization
+            Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
+            if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
+                String value = personalizedRedirectConfigs[0].getAttribute(name, null);
+                if (value != null) {
+                    return new Integer(value).intValue();
+                }
+            }
+        }
+        return 0;
     }
 }
