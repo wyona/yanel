@@ -60,6 +60,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
     private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
     private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
+    private static final String LIMIT_PROPERTY_NAME = "limit";
     
     /**
      *
@@ -327,19 +328,23 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
      */
     private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
-        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
-            bsc.setConnectionTimeout(getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
+        if (isAttributeConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setConnectionTimeout(getAttributeValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
         } else {
             log.warn("No connection timeout configured.");
         }
-        if (isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
-            bsc.setSocketTimeout(getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+        if (isAttributeConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setSocketTimeout(getAttributeValue(SOCKET_TIMEOUT_PROPERTY_NAME));
         } else {
             log.warn("No socket timeout configured.");
         }
         BoostService boost = new BoostService(bsc);
-        // TODO: Limit number of returned clickstream entries
-        return boost.getClickStream(cookie);
+
+        if (isAttributeConfigured(LIMIT_PROPERTY_NAME)) {
+            return boost.getClickStream(cookie, getAttributeValue(LIMIT_PROPERTY_NAME));
+        } else {
+            return boost.getClickStream(cookie);
+        }
     }
 
     /**
@@ -407,11 +412,11 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     }
 
     /**
-     * Check whether timeout property is configured
-     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
-     * @return true when timeout property is configured
+     * Check whether attribute is configured
+     * @param name Name of attribute, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when attribute is configured
      */
-    private boolean isTimeoutConfigured(String name) throws Exception {
+    private boolean isAttributeConfigured(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
@@ -430,11 +435,11 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     }
 
     /**
-     * Get value of timeout property
-     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
-     * @return value of timeout property in milliseconds
+     * Get value of attribute
+     * @param name Name of attribute, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of attribute
      */
-    private int getTimeoutValue(String name) throws Exception {
+    private int getAttributeValue(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
         if (customConfigDoc != null) {
