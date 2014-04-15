@@ -125,13 +125,16 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             // INFO: Personalization
             Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
             if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
-                String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
-                String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
-                String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
-                //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
-                Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
-                String cookieVal = cookie.getValue();
                 try {
+                    String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
+                    String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
+                    String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
+                    //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
+                    Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
+                    if (cookie == null) {
+                        throw new Exception("No yanel analytics cookie yet, probably because this is the very first request: " + getEnvironment().getRequest().getServletPath());
+                    }
+                    String cookieVal = cookie.getValue();
                     Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
                     String clickstreamLang = getLanguage(clickStream);
                     if (clickstreamLang != null) {
