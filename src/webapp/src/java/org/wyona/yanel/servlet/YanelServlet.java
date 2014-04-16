@@ -3210,7 +3210,7 @@ public class YanelServlet extends HttpServlet {
 
         if (remoteIPAddr.indexOf(",") > 0) { // INFO: Comma separated addresses, like for example '172.21.126.179, 89.250.145.138' (see Format of X-Forwarded-For at http://en.wikipedia.org/wiki/X-Forwarded-For)
             String firstAddress = remoteIPAddr.split(",")[0].trim();
-            log.warn("Use the first IP address '" + firstAddress + "' of comma separated list '" + remoteIPAddr + "' ...");
+            //log.debug("Use the first IP address '" + firstAddress + "' of comma separated list '" + remoteIPAddr + "' ...");
             return firstAddress;
         } else {
             return remoteIPAddr;
