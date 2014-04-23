@@ -4,6 +4,7 @@ SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
 JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Home
+JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
 
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"

@@ -34,8 +34,7 @@
                   version="1.6"/>
       <dependency groupId="serializer" artifactId="serializer"
                   version="2.7.0"/>
-      <dependency groupId="xalan" artifactId="xalan"
-                  version="2.7.0"/>
+      <dependency groupId="xalan" artifactId="xalan" version="2.7.1"/>
       <dependency groupId="xerces" artifactId="xercesImpl"
                   version="2.7.1"/>
       <dependency groupId="xml-apis" artifactId="xml-apis"
