@@ -6,6 +6,7 @@ import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+
 /**
  * This serializer serializes XML.
  * It does _not_ perform a namespace normalization as described in: 

@@ -77,7 +77,7 @@
   <!-- IMPORTANT: Please note that forgotpw depends on contact-form and hence the build order matters! -->
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/forgotpw/" compile="true"/>
 
-  <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/" compile="true" copy-dir-name="yanel-wiki"/>
+  <!-- <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/wiki/" compile="true" copy-dir-name="yanel-wiki"/> -->
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/zip/" compile="true" copy-dir-name="yanel-zip"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/calendar/" compile="true" copy-dir-name="yanel-calendar"/>
   <resource-type src="@YANEL_SRC_DIR@/src/contributions/resources/resource-creator/" compile="true"/>

@@ -176,5 +176,6 @@
   <target name="deploy-jar" depends="compile">
     <copy todir="${tomcat1.home.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib" file="${realm.lib.dir}/yanel-realm-${realm.name}-${realm.version}.jar">
     </copy>
+    <antcall target="deploy-jar-post"/>
   </target>
 </project>

@@ -20,3 +20,4 @@ src/realms/use-cases/yanel/src/test/canoo/local.build.properties
 # Canoo results
 src/realms/use-cases/yanel/src/test/canoo/results/
 src/realms/yanel-website/src/test/canoo/results/
+/build

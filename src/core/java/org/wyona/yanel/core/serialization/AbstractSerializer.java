@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Properties;
-import org.apache.log4j.Category;
-import org.apache.xml.serializer.Serializer;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.xml.serializer.DOMSerializer;
+import org.apache.xml.serializer.Serializer;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.EntityResolver;
@@ -15,9 +17,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ *
+ */
 public abstract class AbstractSerializer extends DefaultHandler implements Serializer, LexicalHandler {
 
-    private static Category log = Category.getInstance(AbstractSerializer.class);
+    private static Logger log = LogManager.getLogger(AbstractSerializer.class);
     private EntityResolver entityResolver;
     
     public AbstractSerializer() {
@@ -69,6 +74,9 @@ public abstract class AbstractSerializer extends DefaultHandler implements Seria
         return null;
     }
 
+    public java.lang.Object asDOM3Serializer() throws IOException {
+        return null;
+    }
 
     protected OutputStream os;
     
