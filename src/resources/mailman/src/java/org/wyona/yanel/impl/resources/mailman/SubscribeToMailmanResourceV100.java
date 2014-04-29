@@ -72,6 +72,8 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
                     listEl.setAttribute("name", listname);
                 } else {
                     log.error("Subscription to list '" + listname + "' for user '" + email + "' failed!");
+                    Element noSuchListEl = (Element) rootEl.appendChild(rootEl.getOwnerDocument().createElement("no-such-list"));
+                    noSuchListEl.setAttribute("name", listname);
                 }
             }
         }
@@ -81,7 +83,36 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
      *
      */
     private boolean subscribeToMailingList(String email, String password, String listname) {
-        return true;
+        String url = getListURL(listname);
+        if (url != null) {
+            log.warn("DEBUG: Subscribe user '" + email + "' to mailing list '" + url + "' ...");
+            return true;
+        } else {
+            log.error("No list URL configured for list name '" + listname + "'!");
+            return false;
+        }
+    }
+
+    /**
+     * Get URL of mailman mailing list website
+     * @param listname Name of mailing list, e.g. 'aos'
+     * @return list URL, e.g. 'http://lists.imstat.org/mailman/listinfo/aos'
+     */
+    private String getListURL(String listname) {
+        try {
+            String[] lists = getResourceConfigProperty("lists").split(",");
+            for (int i = 0; i < lists.length; i++) {
+                String name = lists[i].substring(0, lists[i].indexOf(":"));
+                String url = lists[i].substring(lists[i].indexOf(":") + 1);
+                log.warn("DEBUG: Configured list: " + name + ", " + url);
+                if (name.equals(listname)) {
+                    return url;
+                }
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return null;
     }
 
     /**
