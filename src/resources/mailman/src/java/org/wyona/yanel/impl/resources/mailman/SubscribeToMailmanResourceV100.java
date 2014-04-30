@@ -6,6 +6,7 @@ package org.wyona.yanel.impl.resources.mailman;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +15,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.wyona.commons.xml.XMLHelper;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.BasicHttpParams;
 
 /**
  * Get email, password and list names in order to subscribe user to various mailman mailing lists
@@ -86,7 +97,23 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
         String url = getListURL(listname);
         if (url != null) {
             log.warn("DEBUG: Subscribe user '" + email + "' to mailing list '" + url + "' ...");
-            return true;
+            try {
+                DefaultHttpClient httpClient = getHttpClient(new URL(url), null, null, 2000, 10000);
+                HttpPost httpPost = new HttpPost(url);
+                HttpResponse response = httpClient.execute(httpPost);
+                int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
+                if (statusCode == 200) {
+                    // TODO: Parse response
+                    log.warn("DEBUG: User '" + email + "' has been subscribed successfully to list '" + listname + "'.");
+                    return true;
+                } else {
+                    log.warn("Subscribing user '" + email + "' to list '" + listname + "' failed! Response code: " + statusCode);
+                    return false;
+                }
+            } catch(Exception e) {
+                log.error(e, e);
+                return false;
+            }
         } else {
             log.error("No list URL configured for list name '" + listname + "'!");
             return false;
@@ -128,5 +155,61 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
             log.warn("Passwords did not match!");
             return false;
         }
+    }
+
+    /**
+     * Get http client using SSL if necessary and basic authentication set
+     * @param username Username for basic authentication
+     * @param password Password for basic authentication
+     * @param connectionTimeout Value of CONNECTION_TIMEOUT in milliseconds
+     * @param socketTimeout Value of SO_TIMEOUT in milliseconds
+     */
+    private DefaultHttpClient getHttpClient(URL url, String username, String password, int connectionTimeout, int socketTimeout) throws Exception {
+        HttpParams httpParams = new BasicHttpParams();
+        if (connectionTimeout >= 0) {
+            log.info("Connection timeout: " + connectionTimeout);
+            HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout);
+        } else {
+            log.warn("No connection timeout set, hence use default value: " + HttpConnectionParams.getConnectionTimeout(httpParams));
+        }
+        if (socketTimeout >= 0) {
+            log.info("Socket timeout: " + socketTimeout);
+            HttpConnectionParams.setSoTimeout(httpParams, socketTimeout);
+        } else {
+            log.warn("No socket timeout set, hence use default value: " + HttpConnectionParams.getSoTimeout(httpParams));
+        }
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
+        if (url.getProtocol().equals("https")) {
+            log.info("Connect via SSL...");
+            int port = 443;
+            if (url.getPort() > 0) {
+                port = url.getPort();
+            }
+            httpClient.getConnectionManager().getSchemeRegistry().register(new org.apache.http.conn.scheme.Scheme("https", port, getSSLFactory()));
+        } else {
+            log.warn("Unsecure connection: " + url);
+        }
+
+        if (username != null && password != null) {
+            // TODO: Set credentials
+        }
+
+        return httpClient;
+    }
+
+    /**
+     * Get SSL factory
+     */
+    private org.apache.http.conn.ssl.SSLSocketFactory getSSLFactory() throws Exception {
+        // TODO: Make SSLSocketFactory configurable...
+        // INFO: Just trust the certificate without checking/comparing a list of trusted certificates
+        org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(new org.apache.http.conn.ssl.TrustStrategy() {
+            public boolean isTrusted(final java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+                return true;
+            }
+        }, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        //org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(getSSLContext(), new org.apache.http.conn.ssl.StrictHostnameVerifier());
+
+        return factory;
     }
 }
