@@ -3,7 +3,7 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="mailman" namespace="http://www.wyona.org/yanel/resource/1.0.0"/>
 
-  <yanel:property name="lists" value=""/>
+  <yanel:property name="lists" value="yanel-development:http://lists.wyona.org/cgi-bin/mailman/subscribe/yanel-development/,yanel-usage:http://lists.wyona.org/cgi-bin/mailman/subscribe/yanel-usage/,yanel-commits:http://lists.wyona.org/cgi-bin/mailman/subscribe/yanel-commits/"/>
 
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
