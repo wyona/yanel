@@ -18,6 +18,8 @@ import org.wyona.commons.xml.XMLHelper;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -100,6 +102,11 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
             try {
                 DefaultHttpClient httpClient = getHttpClient(new URL(url), null, null, 2000, 10000);
                 HttpPost httpPost = new HttpPost(url);
+                java.util.ArrayList<NameValuePair> postParameters = new java.util.ArrayList<NameValuePair>();
+                postParameters.add(new BasicNameValuePair("email", email));
+                postParameters.add(new BasicNameValuePair("pw", password));
+                postParameters.add(new BasicNameValuePair("pw-conf", password));
+                httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
                 HttpResponse response = httpClient.execute(httpPost);
                 int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
                 if (statusCode == 200) {
