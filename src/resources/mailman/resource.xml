@@ -10,7 +10,7 @@ Resource to subscribe to mailman, etc.
 </description>
 
 <rtd>
-  <!-- INFO: Comma separated list of mailing list names and corresponding URLs, e.g. 'yanel-development:http://lists.wyona.org/cgi-bin/mailman/listinfo/yanel-development/,yanel-usage:http://lists.wyona.org/cgi-bin/mailman/listinfo/yanel-usage/' -->
+  <!-- INFO: Comma separated list of mailing list names and corresponding URLs, e.g. 'yanel-development:http://lists.wyona.org/cgi-bin/mailman/subscribe/yanel-development/,yanel-usage:http://lists.wyona.org/cgi-bin/mailman/subscribe/yanel-usage/' -->
   <property name="lists"/>
 </rtd>
 </resource>
