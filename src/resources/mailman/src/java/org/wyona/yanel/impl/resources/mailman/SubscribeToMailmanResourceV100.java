@@ -110,9 +110,16 @@ public class SubscribeToMailmanResourceV100 extends BasicXMLResource {
                 HttpResponse response = httpClient.execute(httpPost);
                 int statusCode = new Integer(response.getStatusLine().getStatusCode()).intValue();
                 if (statusCode == 200) {
-                    // TODO: Parse response
-                    log.warn("DEBUG: User '" + email + "' has been subscribed successfully to list '" + listname + "'.");
-                    return true;
+                    java.io.InputStream in = response.getEntity().getContent();
+                    String body = org.apache.commons.io.IOUtils.toString(in);
+                    in.close();
+                    if (body != null && body.indexOf("Your subscription request has been received, and will soon be acted upon") >= 0) {
+                        log.warn("DEBUG: User '" + email + "' has been subscribed successfully to list '" + listname + "'.");
+                        return true;
+                    } else {
+                        log.error("Subscription failed: " + body);
+                        return false;
+                    }
                 } else {
                     log.warn("Subscribing user '" + email + "' to list '" + listname + "' failed! Response code: " + statusCode);
                     return false;
