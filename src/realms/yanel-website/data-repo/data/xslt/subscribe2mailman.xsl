@@ -7,7 +7,6 @@
   xmlns:xi="http://www.w3.org/2001/XInclude"
   xmlns:dc="http://purl.org/dc/elements/1.1/"
   xmlns:dcterms="http://purl.org/dc/terms/"
-  xmlns:wb="http://www.imstat.org/meeting/1.0"
   xmlns:yanel="http://www.wyona.org/yanel/mailman/1.0.0"
   >
 <!--
@@ -44,7 +43,7 @@ Your subscription request for e-mail address '<xsl:value-of select="/yanel:subsc
 
 <ul>
 <xsl:for-each select="/yanel:subscribe-to-mailman/yanel:list">
-  <li><a href="http://lists.imstat.org/mailman/listinfo/{@name}"><xsl:value-of select="@name"/></a></li>
+  <li><a href="http://lists.wyona.org/cgi-bin/mailman/listinfo/{@name}"><xsl:value-of select="@name"/></a></li>
 </xsl:for-each>
 </ul>
 
@@ -60,7 +59,7 @@ email which contains further instructions.
 <p><font color="red">The following lists are either not configured or something else went wrong:</font></p>
 <ul>
 <xsl:for-each select="/yanel:subscribe-to-mailman/yanel:no-such-list">
-  <li><a href="http://lists.imstat.org/mailman/listinfo/{@name}"><xsl:value-of select="@name"/></a></li>
+  <li><a href="http://lists.wyona.org/cgi-bin/mailman/listinfo/{@name}"><xsl:value-of select="@name"/></a></li>
 </xsl:for-each>
 </ul>
 </xsl:if>
@@ -101,26 +100,6 @@ email which contains further instructions.
     </html>
   </xsl:template>
   
-  <xsl:template match="wb:keywords">
-    <p>Keywords: <xsl:value-of select="."/></p>
-  </xsl:template>
-  
-  <xsl:template match="wb:valid-from">
-    <p>Valid from date: <xsl:value-of select="."/></p>
-  </xsl:template>
-  
-  <xsl:template match="wb:valid-to">
-    <p>Valid to date: <xsl:value-of select="."/></p>
-  </xsl:template>
-  
-  <xsl:template match="@is-annual-meeting">
-    <p>Is annual meeting: <xsl:value-of select="."/></p>
-  </xsl:template>
-  
-  <xsl:template match="wb:image">
-    <p>Annual meeting image:<br/><img src="{$name-without-suffix}/{@id}"/></p>
-  </xsl:template>
-
   <xsl:template match="@*|node()" priority="-1">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
