@@ -43,6 +43,14 @@ The elements <code>host-name</code> and <code>prefix</code> allow Yanel to act u
   <li>Original client request: <code>http://www.yanel.org/en/download/index.html</code></li>
   <li>Request Yanel receives from reverse proxy: <code>http://127.0.0.1:8080/yanel/yanel-website/en/download/index.html</code></li>
 </ul>
+
+whereas the reverse proxy configuration might be as follows:
+
+<ul>
+  <li><code>ProxyPassReverseCookiePath /yanel /</code></li>
+  <li><code>ProxyPass           /  http://127.0.0.1:8080/yanel/yanel-website/</code></li>
+  <li><code>ProxyPassReverse    /  http://127.0.0.1:8080/yanel/yanel-website/</code></li>
+</ul>
 </p>
 
 <h2>Environment variable YANEL_REALMS_HOME<br /></h2>
