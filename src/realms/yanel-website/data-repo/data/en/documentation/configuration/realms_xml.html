@@ -35,6 +35,16 @@
 
 &lt;/realms&gt;        
     <br /><br /></pre>
+
+<p>
+The elements <code>host-name</code> and <code>prefix</code> allow Yanel to act upon URLs as the original client requested, for example
+
+<ul>
+  <li>Original client request: <code>http://www.yanel.org/en/download/index.html</code></li>
+  <li>Request Yanel receives from reverse proxy: <code>http://127.0.0.1:8080/yanel/yanel-website/en/download/index.html</code></li>
+</ul>
+</p>
+
 <h2>Environment variable YANEL_REALMS_HOME<br /></h2>
 <p>The environment variable can for example be set within <code>apache-tomcat-7.0.25/bin/catalina.sh</code> of Tomcat</p>
 <p><code>export YANEL_REALMS_HOME=/Users/michaelwechner/src/realms</code></p>
