@@ -530,6 +530,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (proxyPrefix != null) {
                     url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
                 }
+
+                org.wyona.yanel.core.map.ReverseProxyConfig reverseProxyConfig = realm.getReverseProxyConfig();
+                if (reverseProxyConfig.getReversePrefix() != null) {
+                    // INFO: Add reverse proxy prefix, e.g. "/boost2"
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), reverseProxyConfig.getReversePrefix() + url.getFile());
+                }
+
                 //log.debug("Proxy enabled for this realm resp. request: " + realm + ", " + url);
             } else {
                 //log.debug("No proxy set for this realm resp. request: " + realm + ", " + url);
