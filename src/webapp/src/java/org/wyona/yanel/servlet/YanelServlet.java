@@ -87,6 +87,7 @@ import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.ReverseProxyConfig;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource;
@@ -1352,6 +1353,7 @@ public class YanelServlet extends HttpServlet {
             String proxyHostName = realm.getProxyHostName();
             int proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
+            ReverseProxyConfig reverseProxyConfig = realm.getReverseProxyConfig();
     
             URL url = new URL(request.getRequestURL().toString());
 
@@ -1373,8 +1375,15 @@ public class YanelServlet extends HttpServlet {
                 }
 
                 if (proxyPrefix != null) {
+                    // INFO: Remove proxy prefix, e.g. "/yanel/yanel-website"
                     url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
                 }
+
+                if (reverseProxyConfig.getReversePrefix() != null) {
+                    // INFO: Add reverse proxy prefix, e.g. "/boost2"
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), reverseProxyConfig.getReversePrefix() + url.getFile());
+                }
+
                 //log.debug("Proxy enabled for this realm resp. request: " + realm + ", " + url);
             } else {
                 //log.debug("No proxy set for this realm resp. request: " + realm + ", " + url);
@@ -3193,7 +3202,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get client address of user
      * @param request Client request
-     * @return original client IP address
+     * @return original client IP address, e.g. 'TODO'
      */
     private String getClientAddressOfUser(HttpServletRequest request) {
         String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
@@ -3208,6 +3217,7 @@ public class YanelServlet extends HttpServlet {
             remoteIPAddr = request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
         }
 
+        // TODO: What about ", 198.240.213.22, 146.67.140.72"
         if (remoteIPAddr.indexOf(",") > 0) { // INFO: Comma separated addresses, like for example '172.21.126.179, 89.250.145.138' (see Format of X-Forwarded-For at http://en.wikipedia.org/wiki/X-Forwarded-For)
             String firstAddress = remoteIPAddr.split(",")[0].trim();
             //log.debug("Use the first IP address '" + firstAddress + "' of comma separated list '" + remoteIPAddr + "' ...");
