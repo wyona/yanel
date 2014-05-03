@@ -5,6 +5,7 @@
 <realms xmlns="http://www.wyona.org/yanel/1.0" version="2009042800">
 
 <changes>
+  <change version="2014050300">Optional element 'reverse-prefix' added (but has no impact on version attribute)</change>
   <change version="2012091000">Optional 'jms_user' and 'jms_password' attributes added (but has no impact on version attribute)</change>
   <change version="2012081600">Optional 'authkey' attribute added (but has no impact on version attribute)</change>
   <change version="2012022200">Optional 'user-tracking-domain-id' attribute added (but has no impact on version attribute)</change>
@@ -81,10 +82,11 @@ IMPORTANT NOTE: When using a prefix different than the ROOT prefix, then make su
   <config src="PATH/TO/YULUP/yanel-realm-config.xml"/>
 
   <reverse-proxy>
-    <host-name>demo.yulup.org</host-name>
+    <host-name>www.yulup.org</host-name>
     <port></port>
     <ssl-port></ssl-port>
     <prefix>/yanel/yulup-demo</prefix>
+    <reverse-prefix>/demo</reverse-prefix>
   </reverse-proxy>
 </realm>
 -->
