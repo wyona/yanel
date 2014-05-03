@@ -64,15 +64,6 @@ public interface Realm {
     public File getConfigFile();
 
     /**
-     * @deprecated Use setReverseProxyConfig(ReverseProxyConfig) instead
-     * @param hostName TODO
-     * @param port TODO
-     * @param sslPort TODO
-     * @param prefix TODO
-     */
-    public void setProxy(String hostName, int port, int sslPort, String prefix);
-
-    /**
      * Set reverse proxy configuration
      * @param reverseProxyConfig TODO
      */
