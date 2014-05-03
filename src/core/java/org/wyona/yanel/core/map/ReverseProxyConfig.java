@@ -18,19 +18,21 @@ package org.wyona.yanel.core.map;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Class providing access to reverse proxy configuration
  */
 public class ReverseProxyConfig {
 
-    private static Logger log = Logger.getLogger(ReverseProxyConfig.class);
+    private static Logger log = LogManager.getLogger(ReverseProxyConfig.class);
 
     private String hostName;
     private int port;
     private int sslPort;
     private String prefix;
+    private String reversePrefix;
 
     /**
      * @param hostName Host name
@@ -67,6 +69,21 @@ public class ReverseProxyConfig {
     }
 
     /**
+     * Set reverse prefix
+     * @param prefix Reverse proxy prefix
+     */
+    public void setReversePrefix(String prefix) {
+        this.reversePrefix = prefix;
+    }
+
+    /**
+     * Get reverse prefix
+     */
+    public String getReversePrefix() {
+        return reversePrefix;
+    }
+
+    /**
      * Get host name
      */
     public String getHostName() {
@@ -82,6 +99,7 @@ public class ReverseProxyConfig {
         s = s + "  Port = " + port + "\n";
         s = s + "  SSL port = " + sslPort + "\n";
         s = s + "  prefix = " + prefix;
+        s = s + "  reverse prefix = " + reversePrefix;
         return s;
     }
 }
