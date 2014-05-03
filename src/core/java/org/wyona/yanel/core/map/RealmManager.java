@@ -305,11 +305,7 @@ public class RealmManager {
                     
                     ReverseProxyConfig rpc = rcc[i].getReverseProxyConfig();
                     if (rpc != null) {
-                        int proxyPort = rpc.getPort();
-                        int proxySSLPort = rpc.getSSLPort();
-                        String prefixValue = rpc.getPrefix();
-                        log.debug("Prefix value: " + prefixValue);
-                        realm.setProxy(rpc.getHostName(), proxyPort, proxySSLPort, prefixValue);
+                        realm.setReverseProxyConfig(rpc);
                     }
                 } catch (Exception e) {
                     String errorMsg = "Error setting up realm [" + realmId + "]: '" + realmConfigFile + "': " + e;
@@ -439,7 +435,7 @@ public class RealmManager {
             if (!realm.getID().equals(rootRealm.getID())) {
                 log.debug("Check whether to inherit root realm properties to another realm: " + realm.getName());
                 if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
-                    realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
+                    realm.setReverseProxyConfig(rootRealm.getReverseProxyConfig());
                     log.info("Inherit root realm properties to realm: " + key);
                 }
                 if (realm.getIdentityManager() == null) {
