@@ -37,7 +37,8 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Realm with configuration exception (for example during startup or reload)
@@ -47,7 +48,7 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
     public static String DEFAULT_REPOSITORY_FACTORY_BEAN_ID = "DefaultRepositoryFactory";
     private static String EXTRA_REPOSITORY_FACTORY_BEAN_ID = "ExtraRepositoryFactory";
 
-    private static Logger log = Logger.getLogger(RealmWithConfigurationExceptionImpl.class);
+    private static Logger log = LogManager.getLogger(RealmWithConfigurationExceptionImpl.class);
 
     private String domain;
     private String name;
@@ -138,6 +139,21 @@ public class RealmWithConfigurationExceptionImpl implements Realm {
         proxyPort = port;
         proxySSLPort = sslPort;
         proxyPrefix = prefix;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setReverseProxyConfig(ReverseProxyConfig)
+     */
+    public void setReverseProxyConfig(ReverseProxyConfig reverseProxyConfig) {
+        log.warn("Not implemented!");
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#getReverseProxyConfig()
+     */
+    public ReverseProxyConfig getReverseProxyConfig() {
+        log.warn("Not implemented!");
+        return null;
     }
 
     /**
