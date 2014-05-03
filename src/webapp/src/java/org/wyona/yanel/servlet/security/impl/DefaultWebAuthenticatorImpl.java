@@ -699,7 +699,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         if (user != null && user.authenticate(password)) {
             log.debug("Realm: " + realm);
             YanelServlet.setIdentity(new Identity(user, username), session, realm);
-            log.warn("Authentication was successful for user: " + user.getID());
+            log.warn("DEBUG: Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
         } else {
