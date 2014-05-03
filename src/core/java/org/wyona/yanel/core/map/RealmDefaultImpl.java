@@ -73,10 +73,7 @@ public class RealmDefaultImpl implements Realm {
     private String i18nCatalogue;
 
     private boolean proxySet = false;
-    private String proxyHostName;
-    private int proxyPort = -1;
-    private int proxySSLPort = -1;
-    private String proxyPrefix;
+    private ReverseProxyConfig rpc;
 
     /**
      * Init realm
@@ -93,6 +90,7 @@ public class RealmDefaultImpl implements Realm {
         log.info("Init realm: " + id + ", " + mountPoint + ", " + configFile);
 
         proxySet = false;
+        rpc = new ReverseProxyConfig(null, -1, -1, null);
 
         if (configFile != null) {
             DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder(true);
@@ -299,10 +297,22 @@ public class RealmDefaultImpl implements Realm {
      */
     public void setProxy(String hostName, int port, int sslPort, String prefix) {
         proxySet = true;
-        proxyHostName = hostName;
-        proxyPort = port;
-        proxySSLPort = sslPort;
-        proxyPrefix = prefix;
+        rpc = new ReverseProxyConfig(hostName, port, sslPort, prefix);
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#setReverseProxyConfig(ReverseProxyConfig)
+     */
+    public void setReverseProxyConfig(ReverseProxyConfig reverseProxyConfig) {
+        proxySet = true;
+        this.rpc = reverseProxyConfig;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.map.Realm#getReverseProxyConfig()
+     */
+    public ReverseProxyConfig getReverseProxyConfig() {
+        return rpc;
     }
 
     /**
@@ -316,28 +326,28 @@ public class RealmDefaultImpl implements Realm {
      *
      */
     public String getProxyHostName() {
-        return proxyHostName;
+        return rpc.getHostName();
     }
 
     /**
      *
      */
     public int getProxyPort() {
-        return proxyPort;
+        return rpc.getPort();
     }
 
     /**
      *
      */
     public int getProxySSLPort() {
-        return proxySSLPort;
+        return rpc.getSSLPort();
     }
 
     /**
      *
      */
     public String getProxyPrefix() {
-        return proxyPrefix;
+        return rpc.getPrefix();
     }
 
     /**
@@ -346,21 +356,21 @@ public class RealmDefaultImpl implements Realm {
     public String toString() {
         String descr = "Name: " + name + ", ID: " + id + ", Mount-Point: " + mountPoint;
         if (isProxySet()) {
-            if (proxyHostName != null) {
-                descr = descr + ", Reverse Proxy Host Name: " + proxyHostName;
+            if (rpc.getHostName() != null) {
+                descr = descr + ", Reverse Proxy Host Name: " + rpc.getHostName();
             }
-            if (proxyPort >= 0) {
-                descr = descr + ", Reverse Proxy Port: " + proxyPort;
+            if (rpc.getPort() >= 0) {
+                descr = descr + ", Reverse Proxy Port: " + rpc.getPort();
             } else {
                 descr = descr + ", Reverse Proxy Port is set to default 80 (resp. -1)";
             }
-            if (proxySSLPort >= 0) {
-                descr = descr + ", Reverse Proxy SSL Port: " + proxySSLPort;
+            if (rpc.getSSLPort() >= 0) {
+                descr = descr + ", Reverse Proxy SSL Port: " + rpc.getSSLPort();
             } else {
                 descr = descr + ", Reverse Proxy SSL Port is set to default 443 (resp. -1)";
             }
-            if (proxyPrefix != null) {
-               descr = descr + ", Reverse Proxy Prefix: " + proxyPrefix;
+            if (rpc.getPrefix() != null) {
+               descr = descr + ", Reverse Proxy Prefix: " + rpc.getPrefix();
             }
         } else {
             descr = descr + ", No reverse proxy set";
