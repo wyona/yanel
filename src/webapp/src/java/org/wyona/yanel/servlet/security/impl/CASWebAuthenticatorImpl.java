@@ -179,14 +179,20 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return response;
             }
         } else {
-            if (!redirectToLoginURL) {
+            log.warn("DEBUG: No CAS ticket yet, which means user has either not provided any credentials yet or possible CAS session not checked yet.");
+
+            if (!redirectToLoginURL && request.getParameter("error") == null) {
+                log.warn("DEBUG: Check whether user already has a CAS session, which means try to login with dummy credentials ...");
+                String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
+                log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to check whether user already has a CAS session ...");
+                response.setHeader("Location", redirectURL);
+                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+            } else if (!redirectToLoginURL && request.getParameter("error") != null) {
                 try {
-                    log.debug("Instead of redirecting directly to the CAS server, we can provide the user with a custom login screen, which will then send credentials to CAS server.");
-                    String message = null;
-                    if (request.getParameter("error") != null) {
-                        message = request.getParameter("error");
-                        log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
-                    }
+                    log.warn("DEBUG: Instead of redirecting directly to the CAS server, we provide the user with a custom login screen, which will then send credentials to CAS server.");
+                    // INFO: The error parameter is set inside 'cas-server-webapp-3.5.2/WEB-INF/view/jsp/default/ui/casLoginView.jsp'
+                    String message = request.getParameter("error");
+                    log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
                     getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
                 } catch(Exception e) {
                     log.error(e, e);
@@ -198,6 +204,27 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
             }
             return response;
+        }
+    }
+
+    /**
+     * Get content or user language
+     * @param request TODO
+     * @param realm TODO
+     * @return language, e.g. 'de' or 'fr'
+     */
+    private String getLanguage(HttpServletRequest request, Realm realm) {
+        String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
+        String contentLanguage = org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl.getContentLanguage(pathRelativeToRealm);
+        if (contentLanguage != null) {
+            return contentLanguage;
+        } else {
+            try {
+                return org.wyona.yanel.servlet.YanelServlet.getLanguage(request, realm.getDefaultLanguage());
+            } catch(Exception e) {
+                log.error(e, e);
+                return "en"; // INFO: Return english as fallback
+            }
         }
     }
 
