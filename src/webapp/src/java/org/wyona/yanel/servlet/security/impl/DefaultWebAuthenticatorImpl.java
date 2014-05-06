@@ -793,7 +793,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * @param path Path such as for example "/en/index.html"
      * @return two-letter language code, e.g. "en"
      */
-    private String getContentLanguage(String path) {
+    static String getContentLanguage(String path) {
         if (path.length() >= 3 && path.charAt(0) == '/' && path.charAt(3) == '/') {
             return path.substring(1,3);
         } else {
