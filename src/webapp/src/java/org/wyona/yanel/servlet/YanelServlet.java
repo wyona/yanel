@@ -1684,7 +1684,7 @@ public class YanelServlet extends HttpServlet {
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request), yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request, yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage()), yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
                 CatalogResolver catalogResolver = new CatalogResolver();
                 i18nTransformer.setEntityResolver(new CatalogResolver());
                 
@@ -1705,11 +1705,14 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
+     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Fallback language
+     * @param fallbackLanguage Fallback when neither query string parameter nor Accept-Language header exists
      */
-    private String getLanguage(HttpServletRequest request) throws Exception {
+    public static String getLanguage(HttpServletRequest request, String fallbackLanguage) throws Exception {
         // TODO: Shouldn't this be replaced by Resource.getRequestedLanguage() or Resource.getContentLanguage() ?!
+
         String language = request.getParameter("yanel.meta.language");
+
         if (language == null) {
             language = request.getHeader("Accept-Language");
             if (language != null) {
@@ -1723,8 +1726,12 @@ public class YanelServlet extends HttpServlet {
                 }
             }
         }
-        if(language != null && language.length() > 0) return language;
-        return yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage();
+
+        if(language != null && language.length() > 0) {
+            return language;
+        }
+
+        return fallbackLanguage;
     }
 
     /**
