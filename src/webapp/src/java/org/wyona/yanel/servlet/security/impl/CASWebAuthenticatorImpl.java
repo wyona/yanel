@@ -181,21 +181,23 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         } else {
             log.warn("DEBUG: No CAS ticket yet, which means user has either not provided any credentials yet or possible CAS session not checked yet.");
 
-            if (!redirectToLoginURL && request.getParameter("error") == null) {
-                log.warn("DEBUG: Check whether user already has a CAS session, which means try to login with dummy credentials ...");
-                String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
-                log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to check whether user already has a CAS session ...");
-                response.setHeader("Location", redirectURL);
-                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            } else if (!redirectToLoginURL && request.getParameter("error") != null) {
-                try {
-                    log.warn("DEBUG: Instead of redirecting directly to the CAS server, we provide the user with a custom login screen, which will then send credentials to CAS server.");
-                    // INFO: The error parameter is set inside 'cas-server-webapp-3.5.2/WEB-INF/view/jsp/default/ui/casLoginView.jsp'
-                    String message = request.getParameter("error");
-                    log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
-                    getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
-                } catch(Exception e) {
-                    log.error(e, e);
+            if (!redirectToLoginURL) {
+                if (request.getParameter("error") != null || request.getParameter("yanel.refresh") != null) {
+                    try {
+                        log.warn("DEBUG: Instead of redirecting directly to the CAS server, we provide the user with a custom login screen, which will then send credentials to CAS server.");
+                        // INFO: The error parameter is set inside 'cas-server-webapp-3.5.2/WEB-INF/view/jsp/default/ui/casLoginView.jsp'
+                        String message = request.getParameter("error");
+                        log.warn("It seems like CAS encountered an error '" + message + "' and hence added an error request parameter to the redirect URL");
+                        getXHTMLAuthenticationForm(request, response, map.getRealm(request.getServletPath()), message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
+                } else {
+                    log.warn("DEBUG: Check whether user already has a CAS session, which means try to login with dummy credentials ...");
+                    String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
+                    log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to check whether user already has a CAS session ...");
+                    response.setHeader("Location", redirectURL);
+                    response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 }
             } else {
                 String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
@@ -412,17 +414,19 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Remove logout parameter 'yanel.usecase=logout' from query string
-     * @param url URL containing logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.usecase=logout
-     * @return url without logout parameter, but with refresh query string, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.refresh=1380828599217
+     * @param url URL containing logout parameter, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.usecase=logout&param=value
+     * @return url without logout parameter, but with refresh query string, e.g. https://127.0.0.1:8443/yanel/yanel-website/en/about.html?yanel.refresh=1380828599217&param=value
      */
     private String removeLogoutParam(String url) throws Exception {
         URL tmpURL = new URL(url);
         String qs = tmpURL.getQuery();
         if (qs != null) {
-            log.warn("DEBUG: Remove query string: " + qs);
+            log.warn("DEBUG: Remove complete query string: " + qs);
             url = url.substring(0, url.indexOf("?"));
         }
+
         url = url + "?yanel.refresh=" + new java.util.Date().getTime();
+
         if (qs != null) {
             String[] queryKeyValue = qs.split("&");
             log.warn("DEBUG: Check whether there are other parameters than 'yanel.usecase=logout'. Number of query key value pairs: " + queryKeyValue.length);
