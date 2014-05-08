@@ -194,8 +194,13 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     }
                 } else {
                     log.warn("DEBUG: Check whether user already has a CAS session, which means try to login with dummy credentials ...");
-                    String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
+
+                    // WARN: Checking dummy credentials works, but the performance is bad: String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
+                    // INFO: See http://www.jasig.org/cas/client-integration/gateway
+                    String redirectURL = loginURL + "?gateway=true&service=" + java.net.URLEncoder.encode(addToQueryString(considerProxy(getRequestURLWithoutTicket(request), realm), "yanel.refresh", "" + new java.util.Date().getTime())) + "&language=" + getLanguage(request, realm) + "&check-cas-session=true";
+
                     log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to check whether user already has a CAS session ...");
+
                     response.setHeader("Location", redirectURL);
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 }
@@ -312,6 +317,21 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error(e, e);
         }
         return null;
+    }
+
+    /**
+     * Add parameter to query string
+     * @param url URL to which query string parameter should be appended
+     * @name name Parameter name
+     * @name name Parameter value
+     * @return url with appended query string parameter
+     */
+    private String addToQueryString(String url, String name, String value) {
+        if (url.indexOf("?") > 0) {
+            return url + "&" + name + "=" + value;
+        } else {
+            return url + "?" + name + "=" + value;
+        }
     }
 
     /**
