@@ -179,7 +179,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 return response;
             }
         } else {
-            log.warn("DEBUG: No CAS ticket yet, which means user has either not provided any credentials yet or possible CAS session not checked yet.");
+            log.warn("DEBUG: No CAS ticket, which means user has either not provided any credentials yet or possible CAS session not checked yet.");
 
             if (!redirectToLoginURL) {
                 if (request.getParameter("error") != null || request.getParameter("yanel.refresh") != null) {
@@ -193,7 +193,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         log.error(e, e);
                     }
                 } else {
-                    log.warn("DEBUG: Check whether user already has a CAS session, which means try to login with dummy credentials ...");
+                    log.warn("DEBUG: Check whether user already has a CAS session, which means user might have signed in already at another service ...");
 
                     // WARN: Checking dummy credentials works, but the performance is bad: String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
                     // INFO: See http://www.jasig.org/cas/client-integration/gateway
