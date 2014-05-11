@@ -12,18 +12,13 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * A simple Resource which extends BasicXMLResource
+ * TODO
  */
 public class CASProxyCallbackResource extends BasicXMLResource {
     
     private static Logger log = LogManager.getLogger(CASProxyCallbackResource.class);
     
     /**
-     * This method overrides the method to create the InputStream called by BasicXMLResource
-     * Since you extend the BasicXMLResource this has to contain well-formed xml.
-     * Should return a InputStream which contains XML. 
-     * Use StringBuilder, dom, jdom, org.apache.commons.io.IOUtils and so on to generate the XML.
-     *
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
     @Override
