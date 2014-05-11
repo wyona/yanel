@@ -260,7 +260,7 @@
     </replace>
 -->
 
-    <antcall target="createCK"/>
+    <antcall target="createSSLKeystore"/>
     <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat1.home.dir}"/>
     <xslt in="${tomcat1.home.dir}/conf/server.xml"
           out="${tomcat1.home.dir}/conf/server.xml.ssl"
@@ -287,7 +287,7 @@
   </target>
   
   <target name="reconfigure-tomcat-cluster-node2" if="reconfigureTomcat2" description="reconfigures tomcat regarding ssl">
-    <antcall target="createCK"/>
+    <antcall target="createSSLKeystore"/>
     <copy file="${build.dir}/${certificate.keystore}" todir="${tomcat2.home.dir}"/>
     <xslt in="${tomcat2.home.dir}/conf/server.xml"
           out="${tomcat2.home.dir}/conf/server.xml.ssl"
