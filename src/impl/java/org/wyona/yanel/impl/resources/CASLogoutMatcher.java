@@ -1,4 +1,4 @@
-package ch.globus.yanel.impl;
+package org.wyona.yanel.impl.resources;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
