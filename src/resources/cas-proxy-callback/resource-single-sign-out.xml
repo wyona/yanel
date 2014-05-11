@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="cas-single-sign-out"
+  namespace="http://www.wyona.org/yanel/resource/1.0.0"
+  class="org.wyona.yanel.impl.resources.cas.CASSingleSignOutResource"
+  >
+<description>
+Logout user from Yanel, when Yanel gets notified by CAS about a single sign out
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
