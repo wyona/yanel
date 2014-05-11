@@ -10,9 +10,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2014042900">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2014051100">
 
   <changes>
+    <change version="2014051100">CAS resource directory renamed</change>
     <change version="2014042900">Mailman resource added</change>
     <change version="2013072400">CAS proxy callback resource added</change>
     <change version="2012072700">consolidate resources into same directory</change>
@@ -48,7 +49,7 @@
   <!-- HEADSUP: Make sure to add the trailing slash (/) in the @src attribute! -->
   <resource-type package="org.wyona.yanel.impl.resources.jellyadapterofcmdv3"/> <!-- INFO: This resource is loaded as dependency via src/build/dependencies.xml. IMPORTANT: Please make sure that when building it from source to set copy.resource-type-configs.to.webapp=true inside src/build/local.build.properties such that the jar file will contain the resource configuration and hence registration will be possible!  -->
   <resource-type src="@YANEL_SRC_DIR@/src/resources/mailman/" compile="true"/>
-  <resource-type src="@YANEL_SRC_DIR@/src/resources/cas-proxy-callback/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/cas/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/scheduler/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/registration/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/personalized-content/" compile="true"/>
