@@ -16,6 +16,7 @@ public class SessionCounter implements HttpSessionListener {
 
     private static Logger log = LogManager.getLogger(SessionCounter.class);
 
+    // TODO: Consider to make activeSessions persistent, such that after restart the existing sessions also get listed
     private static HashMap activeSessions = new HashMap();
 
     /**
