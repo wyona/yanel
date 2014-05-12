@@ -28,6 +28,7 @@ public class CASSingleSignOutResource extends BasicXMLResource {
         }
 
         log.warn("DEBUG: Logout user 'TODO' ...");
+        // See src/webapp/src/java/org/wyona/yanel/servlet/YanelServlet.java#doCASLogout(...)
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<root/>");
