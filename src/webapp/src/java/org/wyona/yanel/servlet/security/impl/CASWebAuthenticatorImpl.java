@@ -33,6 +33,7 @@ import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.servlet.CASTicketsMap;
 import org.wyona.yanel.servlet.YanelServlet;
 
 import org.w3c.dom.Document;
@@ -48,7 +49,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
-    public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
+    public static final String CAS_TICKETS_SESSION_NAME = "cas_tickets";
 
     public static final String CAS_PROXY_TICKET_SESSION_NAME = "cas_proxy_ticket";
     public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
@@ -125,8 +126,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             if (doc != null) {
                 log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
                 log.warn("DEBUG: Add CAS ticket '" + casTicket + "' to HTTP session, such that it can be re-used for single sign out ..."); // See YanelServlet#doCASLogout(...)
-                // TODO: Associate with realm!
-                request.getSession(true).setAttribute(CAS_TICKET_SESSION_NAME, casTicket);
+                addTicket(request.getSession(true), realm.getID(), casTicket);
                 try {
                     String username = getUsername(doc);
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
@@ -598,16 +598,29 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     *
+     * Encode URL, such that it can be used as part of the query string
+     * @param url URL to be encoded
      */
-    private String encode(String s) {
+    private String encode(String url) {
 /* INFO: Because of "java.security.cert.CertificateException: No subject alternative names present", we replace as workaround the IP 127.0.0.1 by localhost
-        if (s.indexOf("127.0.0.1") >= 0) {
-            log.warn("Replace IP by name: " + s);
-            s = s.replace("127.0.0.1", "localhost");
-            log.warn("IP replaced by name: " + s);
+        if (url.indexOf("127.0.0.1") >= 0) {
+            log.warn("Replace IP by name: " + url);
+            url = url.replace("127.0.0.1", "localhost");
+            log.warn("IP replaced by name: " + url);
         }
 */
-        return java.net.URLEncoder.encode(s);
+        return java.net.URLEncoder.encode(url);
+    }
+
+    /**
+     * Add CAS ticket to session, such that it can be used for single sign out
+     */
+    private void addTicket(javax.servlet.http.HttpSession session, String realmID, String casTicket) {
+        CASTicketsMap casTicketsMap = (CASTicketsMap) session.getAttribute(CAS_TICKETS_SESSION_NAME);
+        if (casTicketsMap == null) {
+            casTicketsMap = new CASTicketsMap();
+            session.setAttribute(CAS_TICKETS_SESSION_NAME, casTicketsMap);
+        }
+        casTicketsMap.put(realmID, casTicket);
     }
 }
