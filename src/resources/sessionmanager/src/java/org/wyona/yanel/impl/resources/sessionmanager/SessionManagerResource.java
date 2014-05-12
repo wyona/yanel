@@ -59,6 +59,14 @@ public class SessionManagerResource extends BasicXMLResource {
                 sessionEl.setAttribute("last-accessed-time", dateFormat.format(new Date(activeSessions[i].getLastAccessedTime())));
                 rootEl.appendChild(sessionEl);
 
+                String casTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKET_SESSION_NAME);
+                if (casTicket != null) {
+                    Element casTicketEl = doc.createElementNS(NAMESPACE, "cas-ticket");
+                    casTicketEl.appendChild(doc.createTextNode(hashSessionID(casTicket)));
+                    sessionEl.appendChild(casTicketEl);
+                } else {
+                }
+
                 String casProxyTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
                 if (casProxyTicket != null) {
                     Element casProxyTicketEl = doc.createElementNS(NAMESPACE, "cas-proxy-ticket");
