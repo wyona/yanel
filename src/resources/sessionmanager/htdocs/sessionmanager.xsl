@@ -64,6 +64,18 @@
             <xsl:value-of select="s:identities"/>
           </li>
         </xsl:if>
+        <xsl:if test="s:cas-proxy-ticket">
+          <li>
+            <strong>Hashed CAS proxy ticket: </strong>
+            <xsl:value-of select="s:cas-proxy-ticket"/>
+          </li>
+        </xsl:if>
+        <xsl:if test="s:cas-ticket">
+          <li>
+            <strong>Hashed CAS ticket: </strong>
+            <xsl:value-of select="s:cas-ticket"/>
+          </li>
+        </xsl:if>
 
         <xsl:if test="s:last-accessed-url">
           <li>
