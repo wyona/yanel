@@ -6,6 +6,7 @@ package org.wyona.yanel.impl.resources.sessionmanager;
 
 import org.wyona.yanel.servlet.YanelServlet;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
+import org.wyona.yanel.servlet.CASTicketsMap;
 import org.wyona.yanel.servlet.IdentityMap;
 
 import java.io.ByteArrayInputStream;
@@ -32,6 +33,8 @@ public class SessionManagerResource extends BasicXMLResource {
     
     private String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
+    private boolean hash = true;
+
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
      */
@@ -39,6 +42,12 @@ public class SessionManagerResource extends BasicXMLResource {
     protected InputStream getContentXML(String viewId) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("requested viewId: " + viewId);
+        }
+
+        if (getResourceConfigProperty("hash") != null) {
+            hash = Boolean.parseBoolean(getResourceConfigProperty("hash"));
+        } else {
+            hash = true;
         }
 
         Document doc = org.wyona.commons.xml.XMLHelper.createDocument(NAMESPACE, "session-manager");
@@ -59,10 +68,10 @@ public class SessionManagerResource extends BasicXMLResource {
                 sessionEl.setAttribute("last-accessed-time", dateFormat.format(new Date(activeSessions[i].getLastAccessedTime())));
                 rootEl.appendChild(sessionEl);
 
-                String casTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKET_SESSION_NAME);
-                if (casTicket != null) {
+                CASTicketsMap casTicketsMap = (CASTicketsMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKETS_SESSION_NAME);
+                if (casTicketsMap != null) {
                     Element casTicketEl = doc.createElementNS(NAMESPACE, "cas-ticket");
-                    casTicketEl.appendChild(doc.createTextNode(hashSessionID(casTicket)));
+                    casTicketEl.appendChild(doc.createTextNode(hashSessionID(casTicketsMap.toString())));
                     sessionEl.appendChild(casTicketEl);
                 } else {
                 }
@@ -105,6 +114,9 @@ public class SessionManagerResource extends BasicXMLResource {
      * @param id Real session ID
      */
     private String hashSessionID(String id) {
+        if (!hash) {
+            return id;
+        }
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] digest = md.digest(id.getBytes("UTF-8"));
