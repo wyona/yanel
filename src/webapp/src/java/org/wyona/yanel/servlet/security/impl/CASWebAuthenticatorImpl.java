@@ -291,7 +291,12 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                             String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
                             if (proxyTicket != null) {
                                 log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
-                                // TODO: Associate with realm!
+
+                                // TODO: Associate with realm! (see CAS_TICKETS_SESSION_NAME)
+
+                                if (request.getSession(true).getAttribute(CAS_PROXY_TICKET_SESSION_NAME) != null) {
+                                    log.warn("CAS proxy ticket already set, hence it will be overwriten ...");
+                                }
                                 request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
                                 request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
                             } else {
