@@ -48,6 +48,8 @@ import org.apache.logging.log4j.LogManager;
  */
 public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
+    public static final String CAS_TICKET_SESSION_NAME = "cas_ticket";
+
     public static final String CAS_PROXY_TICKET_SESSION_NAME = "cas_proxy_ticket";
     public static final String TARGET_SERVICE_SESSION_NAME = "cas_target_service";
 
@@ -122,6 +124,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             Document doc = validate(casTicket, request, realm);
             if (doc != null) {
                 log.warn("DEBUG: Validation of CAS ticket '" + casTicket + "' succeeded!");
+                log.warn("DEBUG: Add CAS ticket '" + casTicket + "' to HTTP session, such that it can be re-used for single sign out ..."); // See YanelServlet#doCASLogout(...)
+                // TODO: Associate with realm!
+                request.getSession(true).setAttribute(CAS_TICKET_SESSION_NAME, casTicket);
                 try {
                     String username = getUsername(doc);
                     log.warn("DEBUG: Try to load user '" + username + "' and add to HTTP session...");
@@ -171,7 +176,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                         log.error(e, e);
                     }
                 } else {
-                    String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
+                    String redirectURL = loginURL + "?service=" + encode(considerProxy(getRequestURLWithoutTicket(request), realm));
                     log.warn("Redirecting to '" + redirectURL + "'...");
                     response.setHeader("Location", redirectURL);
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -195,9 +200,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                 } else {
                     log.warn("DEBUG: Check whether user already has a CAS session, which means user might have signed in already at another service ...");
 
-                    // WARN: Checking dummy credentials works, but the performance is bad: String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
+                    // WARN: Checking dummy credentials works, but the performance is bad: String redirectURL = loginURL + "?service=" + encode(considerProxy(getRequestURLWithoutTicket(request), realm)) + "&auto=true&language=" + getLanguage(request, realm) + "&username=dummy&password=dummy&check-cas-session=true";
                     // INFO: See http://www.jasig.org/cas/client-integration/gateway
-                    String redirectURL = loginURL + "?gateway=true&service=" + java.net.URLEncoder.encode(addToQueryString(considerProxy(getRequestURLWithoutTicket(request), realm), "yanel.refresh", "" + new java.util.Date().getTime())) + "&language=" + getLanguage(request, realm) + "&check-cas-session=true";
+                    String redirectURL = loginURL + "?gateway=true&service=" + encode(addToQueryString(considerProxy(getRequestURLWithoutTicket(request), realm), "yanel.refresh", "" + new java.util.Date().getTime())) + "&language=" + getLanguage(request, realm) + "&check-cas-session=true";
 
                     log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to check whether user already has a CAS session ...");
 
@@ -205,7 +210,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
                 }
             } else {
-                String redirectURL = loginURL + "?service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
+                String redirectURL = loginURL + "?service=" + encode(considerProxy(getRequestURLWithoutTicket(request), realm));
                 log.warn("DEBUG: Redirect to CAS server '" + redirectURL + "' in order to login...");
                 response.setHeader("Location", redirectURL);
                 response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -243,10 +248,10 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     private Document validate(String ticket, HttpServletRequest request, Realm realm) {
         try {
-            String url = validateURL + "?ticket=" + ticket + "&service=" + java.net.URLEncoder.encode(considerProxy(getRequestURLWithoutTicket(request), realm));
+            String url = validateURL + "?ticket=" + ticket + "&service=" + encode(considerProxy(getRequestURLWithoutTicket(request), realm));
             if (pgtURL != null) {
                 log.warn("DEBUG: Ask for proxy granting ticket...");
-                url = url + "&pgtUrl=" + java.net.URLEncoder.encode(pgtURL);
+                url = url + "&pgtUrl=" + encode(pgtURL);
             } else {
                 log.warn("DEBUG: No proxyCallback URL configured, hence we won't ask for a proxy granting ticket.");
             }
@@ -286,6 +291,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                             String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
                             if (proxyTicket != null) {
                                 log.warn("DEBUG: Add CAS proxy ticket '" + proxyTicket + "' to HTTP session...");
+                                // TODO: Associate with realm!
                                 request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
                                 request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
                             } else {
@@ -402,7 +408,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         boolean logoutFromYanel = new DefaultWebAuthenticatorImpl().doLogout(request, response, map);
 
         // TODO: Make logout service configurable per realm (optionally)
-        response.setHeader("Location", logoutURL + "?service=" + java.net.URLEncoder.encode(considerProxy(removeLogoutParam(getRequestURLWithoutTicket(request)), map.getRealm(request.getServletPath()))));
+        response.setHeader("Location", logoutURL + "?service=" + encode(considerProxy(removeLogoutParam(getRequestURLWithoutTicket(request)), map.getRealm(request.getServletPath()))));
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 
         return logoutFromYanel;
@@ -560,7 +566,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return proxy ticket, e.g. 'ST-15-CDvkPdxaFqOIz4yLQ1TN-cas01.example.org'
      */
     private String getProxyTicket(String id, String targetServiceUrl) throws Exception {
-        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + java.net.URLEncoder.encode(targetServiceUrl);
+        String url = getProxyTicketURL + "?pgt=" + id + "&targetService=" + encode(targetServiceUrl);
         log.warn("DEBUG: Get proxy ticket for Id '" + id + "' at '" + url + "'...");
         DefaultHttpClient httpClient = getHttpClient(new URL(url));
         HttpGet httpGet = new HttpGet(url);
@@ -589,5 +595,19 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     public static final String getProxyIdFilename(String proxyGrantingTicket) {
         return "cas-pgt-id-" + proxyGrantingTicket + ".txt";
+    }
+
+    /**
+     *
+     */
+    private String encode(String s) {
+/* INFO: Because of "java.security.cert.CertificateException: No subject alternative names present", we replace as workaround the IP 127.0.0.1 by localhost
+        if (s.indexOf("127.0.0.1") >= 0) {
+            log.warn("Replace IP by name: " + s);
+            s = s.replace("127.0.0.1", "localhost");
+            log.warn("IP replaced by name: " + s);
+        }
+*/
+        return java.net.URLEncoder.encode(s);
     }
 }
