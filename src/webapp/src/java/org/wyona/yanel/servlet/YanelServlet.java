@@ -199,6 +199,8 @@ public class YanelServlet extends HttpServlet {
     private static final String NO_REVISIONS_TAG_NAME = "no-revisions-yet";
     private static final String EXCEPTION_TAG_NAME = "exception";
 
+    private static final String CAS_LOGOUT_REQUEST_PARAM_NAME = "logoutRequest";
+
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
      */
@@ -327,6 +329,16 @@ public class YanelServlet extends HttpServlet {
             ThreadContext.put("id", getFishTag(request));
             //String httpAcceptMediaTypes = request.getHeader("Accept");
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
+
+            if (isCASLogoutRequest(request)) {
+                log.warn("DEBUG: CAS logout request received: " + request.getServletPath());
+                if (doCASLogout(request, response)) {
+                    return;
+                } else {
+                    log.error("Logout based on CAS request failed!");
+                }
+                return;
+            }
 
             String yanelUsecase = request.getParameter(YANEL_USECASE);
             if (yanelUsecase != null && yanelUsecase.equals("logout")) {
@@ -1292,7 +1304,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (doAuthenticate(request, response) != null) {
-                log.info("Access denied and not authenticated yet, hence return response of web authenticator.");
+                log.info("Access denied and not authenticated correctly yet, hence return response of web authenticator...");
                 /*
 		  NOTE: Such a response can have different reasons:
                         - Either no credentials provided yet and web authenticator is generating a response to fetch credentials
@@ -1566,6 +1578,66 @@ public class YanelServlet extends HttpServlet {
         s = s.replaceAll("'", "&apos;");
         s = s.replaceAll("\"", "&quot;");
         return s;
+    }
+
+    /**
+     * Do CAS logout
+     * @param request Request containing CAS ticket information, e.g. <samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="LR-35-Cb0GJEEVItSWd5U2J4SEuzhvJ5uOORPhvG6" Version="2.0" IssueInstant="2014-05-12T10:12:10Z"><saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">@NOT_USED@</saml:NameID><samlp:SessionIndex>ST-37-rAzNSduFbOh7hJyzuNjW-cas01.example.org</samlp:SessionIndex></samlp:LogoutRequest>
+     * @param response TODO
+     * @return true when logout was successful and false otherwise
+     */
+    private boolean doCASLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String body = request.getParameter(CAS_LOGOUT_REQUEST_PARAM_NAME);
+        log.debug("Logout request content: " + body);
+        try {
+            Document doc = XMLHelper.readDocument(new java.io.ByteArrayInputStream(body.getBytes()), false);
+            String id = doc.getDocumentElement().getAttribute("ID");
+            log.warn("DEBUG: CAS ID: " + id);
+
+            Element[] sessionIndexEls = XMLHelper.getChildElements(doc.getDocumentElement(), "SessionIndex", "urn:oasis:names:tc:SAML:2.0:protocol");
+            if (sessionIndexEls != null && sessionIndexEls.length == 1) {
+                String sessionIndex = sessionIndexEls[0].getFirstChild().getNodeValue();
+                log.warn("DEBUG: CAS SessionIndex: " + sessionIndex);
+
+                HttpSession[] activeSessions = org.wyona.yanel.servlet.SessionCounter.getActiveSessions();
+                for (int i = 0; i < activeSessions.length; i++) {
+                    //log.debug("Yanel session ID: " + activeSessions[i].getId());
+                    String casTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKET_SESSION_NAME);
+                    if (casTicket != null && casTicket.equals(sessionIndex)) {
+                        log.warn("DEBUG: CAS ticket and SessionIndex match: " + casTicket);
+                        // TODO: Consider realms!
+                        removeIdentitiesAndCASTickets(activeSessions[i]);
+                        // TODO: Notify other cluster nodes!
+                        return true;
+                    } else {
+                        //log.debug("Session '" + activeSessions[i].getId() + "' has no CAS ticket.");
+                    }
+                }
+            } else {
+                log.error("No CAS SessionIndex element!");
+            }
+
+            return false;
+        } catch(Exception e) {
+            log.error(e, e);
+            return false;
+        }
+    }
+
+    /**
+     * Remove identities and CAS tickets from session
+     * @param session Session containing identities and CAS tickets
+     */
+    private void removeIdentitiesAndCASTickets(HttpSession session) {
+        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
+        if (identityMap != null) {
+            log.warn("DEBUG: Remove all identities from session '" + session.getId() + "' ...");
+            identityMap.clear();
+        } else {
+            log.warn("No identity map!");
+        }
+
+        // TODO: Remove CAS tickets
     }
 
     /**
@@ -3241,5 +3313,17 @@ public class YanelServlet extends HttpServlet {
      */
     private String getFishTag(HttpServletRequest request) {
         return getClientAddressOfUser(request) + "_" + request.getSession(true).getId().substring(0, 4); // TBD: org.wyona.yanel.impl.resources.sessionmanager.SessionManagerResource#hashSessionID(String)
+    }
+
+    /**
+     * Check whether request is a CAS single sign out request (https://wiki.jasig.org/display/casum/single+sign+out#SingleSignOut-Howitworks)
+     * @return true when request is a CAS single sign out request and false otherwise
+     */
+    private boolean isCASLogoutRequest(HttpServletRequest request) { // INFO: Also see org.wyona.yanel.impl.resources.CASLogoutMatcher
+        if (METHOD_POST.equals(request.getMethod()) && request.getParameter(CAS_LOGOUT_REQUEST_PARAM_NAME) != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
