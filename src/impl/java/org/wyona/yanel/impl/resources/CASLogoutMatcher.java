@@ -15,8 +15,8 @@ public class CASLogoutMatcher implements org.wyona.yanel.core.MatcherV1 {
      */
     public boolean match(org.wyona.yanel.core.map.Realm realm, String path, javax.servlet.http.HttpServletRequest request) throws Exception {
         //log.debug("Path: " + path);
-        if ("POST".equals(request.getMethod())) {
-            log.warn("DEBUG: Post request: " + path);
+        if ("POST".equals(request.getMethod()) && request.getParameter("logoutRequest") != null) {
+            log.debug("CAS logout request: " + path);
             return true;
         }
         return false;
