@@ -1634,12 +1634,26 @@ public class YanelServlet extends HttpServlet {
         IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
         if (identityMap != null) {
             log.warn("DEBUG: Remove identity associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
-            identityMap.clear();
+            identityMap.remove(realmId);
         } else {
             log.warn("No identity map!");
         }
 
-        // TODO: Remove CAS tickets
+        CASTicketsMap casTicketsMap = (CASTicketsMap)session.getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKETS_SESSION_NAME);
+        if (casTicketsMap != null) {
+            log.warn("DEBUG: Remove CAS ticket associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
+            casTicketsMap.remove(realmId);
+        } else {
+            log.warn("No CAS tickets map!");
+        }
+
+        String casProxyTicket = (String)session.getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
+        if (casProxyTicket != null) {
+            log.warn("DEBUG: Remove CAS proxy ticket associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
+            session.removeAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
+        } else {
+            log.warn("No CAS proxy ticket map!");
+        }
     }
 
     /**
