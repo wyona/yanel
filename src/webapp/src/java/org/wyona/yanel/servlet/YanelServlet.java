@@ -1602,22 +1602,23 @@ public class YanelServlet extends HttpServlet {
                 HttpSession[] activeSessions = org.wyona.yanel.servlet.SessionCounter.getActiveSessions();
                 for (int i = 0; i < activeSessions.length; i++) {
                     //log.debug("Yanel session ID: " + activeSessions[i].getId());
-                    String casTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKET_SESSION_NAME);
-                    if (casTicket != null && casTicket.equals(sessionIndex)) {
-                        log.warn("DEBUG: CAS ticket and SessionIndex match: " + casTicket);
-                        // TODO: Consider realms!
-                        removeIdentitiesAndCASTickets(activeSessions[i]);
+                    CASTicketsMap casTicketsMap = (CASTicketsMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKETS_SESSION_NAME);
+
+                    if (casTicketsMap != null && casTicketsMap.containsValue(sessionIndex)) {
+                        log.warn("DEBUG: Session '" + activeSessions[i].getId() + "' contains CAS ticket which matches with SessionIndex: " + sessionIndex);
+                        removeIdentitiesAndCASTickets(activeSessions[i], casTicketsMap.getRealmId(sessionIndex));
                         // TODO: Notify other cluster nodes!
                         return true;
                     } else {
-                        //log.debug("Session '" + activeSessions[i].getId() + "' has no CAS ticket.");
+                        //log.debug("Session '" + activeSessions[i].getId() + "' has either no CAS tickets or does not does match with SessionIndex.");
                     }
                 }
+                log.warn("SessionIndex '" + sessionIndex + "' did no match any session.");
+                return false;
             } else {
                 log.error("No CAS SessionIndex element!");
+                return false;
             }
-
-            return false;
         } catch(Exception e) {
             log.error(e, e);
             return false;
@@ -1627,11 +1628,12 @@ public class YanelServlet extends HttpServlet {
     /**
      * Remove identities and CAS tickets from session
      * @param session Session containing identities and CAS tickets
+     * @param realmId Realm ID associated with CAS ticket
      */
-    private void removeIdentitiesAndCASTickets(HttpSession session) {
+    private void removeIdentitiesAndCASTickets(HttpSession session, String realmId) {
         IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
         if (identityMap != null) {
-            log.warn("DEBUG: Remove all identities from session '" + session.getId() + "' ...");
+            log.warn("DEBUG: Remove identity associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
             identityMap.clear();
         } else {
             log.warn("No identity map!");
