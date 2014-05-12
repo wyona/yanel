@@ -37,7 +37,7 @@
         </ol>
 
         <hr/>
-        <p><a href="?yanel.resource.viewid=source">XML</a> (Please make sure to configure a view called "source" within your resource configuration, e.g. see <em>src/realms/welcome-admin/yanel/rti/session-manager.html.yanel-rc</em>)</p>
+        <p><a href="?yanel.resource.viewid=source">XML</a> (Please make sure to configure a view called "source" within your resource configuration, e.g. see <em>global-resource-configs/session-manager_yanel-rc.xml</em>)</p>
       </body>
     </html>
   </xsl:template>
