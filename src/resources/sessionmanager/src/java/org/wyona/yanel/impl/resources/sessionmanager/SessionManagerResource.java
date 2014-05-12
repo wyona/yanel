@@ -16,7 +16,8 @@ import java.util.Date;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.codec.binary.Hex;
 
 import org.w3c.dom.Document;
@@ -27,7 +28,7 @@ import org.w3c.dom.Element;
  */
 public class SessionManagerResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(SessionManagerResource.class);
+    private static Logger log = LogManager.getLogger(SessionManagerResource.class);
     
     private String NAMESPACE = "http://www.wyona.org/yanel/1.0";
 
@@ -50,6 +51,7 @@ public class SessionManagerResource extends BasicXMLResource {
 
         java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSZ");
         for (int i = 0; i < activeSessions.length; i++) {
+            // WARN/TODO: Only append sessions associated with this realm
             try {
                 Element sessionEl = doc.createElementNS(NAMESPACE, "session");
                 sessionEl.setAttribute("id", hashSessionID(activeSessions[i].getId()));
@@ -57,7 +59,14 @@ public class SessionManagerResource extends BasicXMLResource {
                 sessionEl.setAttribute("last-accessed-time", dateFormat.format(new Date(activeSessions[i].getLastAccessedTime())));
                 rootEl.appendChild(sessionEl);
 
-                // TODO ...
+                String casProxyTicket = (String) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
+                if (casProxyTicket != null) {
+                    Element casProxyTicketEl = doc.createElementNS(NAMESPACE, "cas-proxy-ticket");
+                    casProxyTicketEl.appendChild(doc.createTextNode(hashSessionID(casProxyTicket)));
+                    sessionEl.appendChild(casProxyTicketEl);
+                } else {
+                }
+
                 IdentityMap identityMap = (IdentityMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.YanelServlet.IDENTITY_MAP_KEY);
                 if (identityMap != null) {
                     Element identitiesEl = doc.createElementNS(NAMESPACE, "identities");
