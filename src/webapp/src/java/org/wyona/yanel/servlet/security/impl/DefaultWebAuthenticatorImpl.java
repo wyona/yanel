@@ -395,14 +395,26 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#getXHTMLAuthenticationForm(HttpServletRequest, HttpServletResponse, Realm, String, String, String, String, String, Map)
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
+        try {
+            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
+            getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc);
+        } catch(Exception e) {
+            log.error(e, e);
+            throw new ServletException(e);
+        }
+    }
+
+    /**
+     * Generate custom XHTML form for authentication, which allows to overwrite the input document
+     * @param adoc Document containing information about authentication
+     */
+    void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map, org.w3c.dom.Document adoc) throws ServletException, IOException {
 
         // TODO: Enhance as global resource, which will make it more flexible
 
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
         try {
-            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
-
             String yanelFormat = request.getParameter("yanel.login.format");
             if (yanelFormat != null) {
                 if (yanelFormat.equals("xml")) {
