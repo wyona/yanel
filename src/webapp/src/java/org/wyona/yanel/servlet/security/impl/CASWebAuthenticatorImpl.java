@@ -59,7 +59,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
 
     private static Logger log = LogManager.getLogger(CASWebAuthenticatorImpl.class);
 
-    private String loginURL;
+    protected String loginURL;
     private boolean redirectToLoginURL = true;
     private String validateURL;
     private String pgtURL;
@@ -247,7 +247,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @param realm TODO
      * @return language, e.g. 'de' or 'fr'
      */
-    private String getLanguage(HttpServletRequest request, Realm realm) {
+    protected String getLanguage(HttpServletRequest request, Realm realm) {
         String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
         String contentLanguage = org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl.getContentLanguage(pathRelativeToRealm);
         if (contentLanguage != null) {
@@ -359,7 +359,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @name name Parameter value
      * @return url with appended query string parameter
      */
-    private String addToQueryString(String url, String name, String value) {
+    protected String addToQueryString(String url, String name, String value) {
         if (url.indexOf("?") > 0) {
             return url + "&" + name + "=" + value;
         } else {
@@ -372,7 +372,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @param request Request containing ticket (and/or service) as query string parameters
      * @return URL without ticket (and/or service) as query string parameters
      */
-    private String getRequestURLWithoutTicket(HttpServletRequest request) {
+    protected String getRequestURLWithoutTicket(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
         String qs = request.getQueryString();
         if (qs != null) {
@@ -445,7 +445,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * Modify URL depending whether reverse proxy is configured
      * @param url URL which will be modified
      */
-    private String considerProxy(String url, Realm realm) {
+    protected String considerProxy(String url, Realm realm) {
         if (realm != null && realm.isProxySet()) { // INFO: Also see YanelServlet#getRequestURLQS(...)
             log.warn("DEBUG: Modify url '" + url + "' according to reverse proxy configuration...");
             try {
@@ -628,7 +628,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * Encode URL, such that it can be used as part of the query string
      * @param url URL to be encoded
      */
-    private String encode(String url) {
+    protected String encode(String url) {
 /* INFO: Because of "java.security.cert.CertificateException: No subject alternative names present", we replace as workaround the IP 127.0.0.1 by localhost
         if (url.indexOf("127.0.0.1") >= 0) {
             log.warn("Replace IP by name: " + url);
