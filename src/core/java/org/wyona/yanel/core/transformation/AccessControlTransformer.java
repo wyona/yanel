@@ -1,6 +1,7 @@
 package org.wyona.yanel.core.transformation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -38,7 +39,7 @@ import org.wyona.security.core.api.Usecase;
  */
 public class AccessControlTransformer extends AbstractTransformer {
 
-    private static Logger log = Logger.getLogger(AccessControlTransformer.class);
+    private static Logger log = LogManager.getLogger(AccessControlTransformer.class);
 
     private PolicyManager policyManager;
     private Identity identity;
@@ -46,6 +47,7 @@ public class AccessControlTransformer extends AbstractTransformer {
 
     private boolean insideAnchor;
     private boolean accessGranted;
+    private String accessDeniedLink;
     private boolean bufferEnabled;
     private int numberOfNestedElements;
     private String parentElementName;
@@ -53,6 +55,9 @@ public class AccessControlTransformer extends AbstractTransformer {
     private Attributes anchorAttrs;
 
     public static final String NS_XHTML_URI = "http://www.w3.org/1999/xhtml";
+
+    private static final String SUBSTITUTE = "span";
+    //private static final String SUBSTITUTE = "li";
     
     /**
      * @param parentElementName Element name of parent, for example "li" or "p" which can contain anchors
@@ -100,9 +105,10 @@ public class AccessControlTransformer extends AbstractTransformer {
                     } else {
                         if (log.isDebugEnabled()) log.debug("Access denied for " + identity + ", " + usecase + ", " + path);
                         accessGranted = false;
+                        accessDeniedLink = path;
                     }
                 } else {
-                    log.warn("Path does not start with '/' (probably a GROUP!). Path = " + path);
+                    //log.debug("Path '" + path + "' does not start with '/'. Element '" + parentElementName + "' probably exists just in order to group other elements.");
                     String classAttr = parentAttrs.getValue("class");
                     if (classAttr != null && classAttr.indexOf("rubrikgruppe") != -1) {
                         String idAttr = parentAttrs.getValue("id");
@@ -114,6 +120,7 @@ public class AccessControlTransformer extends AbstractTransformer {
                             } else {
                                 if (log.isDebugEnabled()) log.debug("Access denied for 'GROUP' with " + identity + ", " + usecase + ", " + path);
                                 accessGranted = false;
+                                accessDeniedLink = "/de/" + idAttr;
                             }
                         }
                     } else {
@@ -129,8 +136,6 @@ public class AccessControlTransformer extends AbstractTransformer {
         if (isParentElement(namespaceURI, localName, qName) && accessGranted) {
             bufferEnabled = true;
             parentAttrs = new AttributesImpl(attrs);
-
-            new StringBuffer();
         }
 
 
@@ -151,10 +156,10 @@ public class AccessControlTransformer extends AbstractTransformer {
 
 
         if (isParentElement(namespaceURI, localName, qName) && bufferEnabled && !insideAnchor) {
-            //log.warn("Probably a separator!");
+            //log.debug("Probably a separator.");
             bufferEnabled = false;
             try {
-                reinsertBufferedParentElement();
+                insertStartOfBufferedParentElementWithoutLink();
             } catch(Exception e) {
                 log.error(e, e);
             }
@@ -165,13 +170,13 @@ public class AccessControlTransformer extends AbstractTransformer {
             insideAnchor = false;
             //log.debug("Leaving 'a' element!");
             if (bufferEnabled && !accessGranted) {
+                // INFO: Reset number of nested elements, when we find a link for which access is denied
                 numberOfNestedElements = 0;
             }
             bufferEnabled = false;
         }
 
         if (bufferEnabled || !accessGranted) {
-        //if (bufferEnabled || accessDenied) {
             //log.debug("Do nothing and just dump end of element: </" + localName + ">");
         } else {
             super.endElement(namespaceURI, localName, qName);
@@ -180,20 +185,20 @@ public class AccessControlTransformer extends AbstractTransformer {
         //log.debug("Number of nested elements: " + numberOfNestedElements);
         if (isParentElement(namespaceURI, localName, qName) && numberOfNestedElements == -1 && !accessGranted) {
             accessGranted = true;
+            if (false) { // INFO: Set to 'true' in order to debug
+                log.warn("DEBUG: Replace parent element '" + localName + "' containing link '" + accessDeniedLink + "' for which access was denied with substitute ...");
+                insertSubstitute(namespaceURI);
+            }
         }
-
-/*
-char[] characters = textBuffer.toString().toCharArray();
-super.characters(characters, 0, characters.length);
-*/
     }
     
     /**
      *
      */
     public void characters(char[] buf, int offset, int len) throws SAXException {
-        if (!accessGranted) {
-        //if (accessDenied) {
+        if (parentAttrs != null && parentAttrs.getValue("class") != null && parentAttrs.getValue("class").indexOf("separator") != -1) {
+            //log.debug("Do nothing and just dump characters!");
+        } else if (!accessGranted) {
             //log.debug("Do nothing and just dump characters!");
         } else {
             super.characters(buf, offset, len);
@@ -240,7 +245,25 @@ super.characters(characters, 0, characters.length);
     /**
      * Reinsert buffered parent element
      */
-    private void reinsertBufferedParentElement() throws Exception {
+    private void insertStartOfBufferedParentElementWithoutLink() throws Exception {
         super.startElement(NS_XHTML_URI, parentElementName, parentElementName, parentAttrs);
+        if (parentAttrs != null && parentAttrs.getValue("class") != null && parentAttrs.getValue("class").indexOf("separator") != -1) {
+            char[] characters = "SEPARATOR".toCharArray();
+            super.characters(characters, 0, characters.length);
+        }
+    }
+
+    /**
+     * Insert substitute
+     */
+    private void insertSubstitute(String namespaceURI) {
+        try {
+            super.startElement(NS_XHTML_URI, SUBSTITUTE, SUBSTITUTE, new AttributesImpl());
+            char[] characters = "SUBSTITUTE".toCharArray();
+            super.characters(characters, 0, characters.length);
+            super.endElement(namespaceURI, SUBSTITUTE, SUBSTITUTE);
+        } catch(Exception e) {
+            log.error(e, e);
+        }
     }
 }
