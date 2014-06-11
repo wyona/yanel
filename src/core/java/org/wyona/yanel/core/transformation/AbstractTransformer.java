@@ -7,7 +7,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.TransformerHandler;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -17,9 +18,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ *
+ */
 public abstract class AbstractTransformer extends DefaultHandler implements TransformerHandler {
 
-    private static Logger log = Logger.getLogger(AbstractTransformer.class);
+    private static Logger log = LogManager.getLogger(AbstractTransformer.class);
 
     protected EntityResolver entityResolver;
     protected SAXResult result;
@@ -37,6 +41,9 @@ public abstract class AbstractTransformer extends DefaultHandler implements Tran
         this.resultHandler.endDocument();
     }
 
+    /**
+     *
+     */
     public void startElement(String namespaceURI, String localName, String qName, Attributes attrs) throws SAXException {
         this.resultHandler.startElement(namespaceURI, localName, qName, attrs);
     }
