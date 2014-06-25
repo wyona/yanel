@@ -25,6 +25,10 @@
       <appender-ref ref="A1"/>
     </logger>
 
+    <logger name="org.wyona.yanel.core.ResourceTypeRegistry" level="debug">
+      <appender-ref ref="A1"/>
+    </logger>
+
     <root level="warn">
       <appender-ref ref="A1"/>
 <!--
