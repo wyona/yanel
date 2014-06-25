@@ -2,9 +2,9 @@
 
 <configuration>
   <appenders>
-    <RollingFile name="A1" fileName="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log" filePattern="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log.%1">
+    <RollingFile name="A1" fileName="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log" filePattern="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log.%i">
 <!--
-    <RollingFile name="A1" fileName="${catalina.base}/logs/log4j2-cnode@CNODE_ID@.log" append="false">
+    <RollingFile name="A1" fileName="${sys:catalina.base}/logs/log4j2-cnode@CNODE_ID@.log" filePattern="${sys:catalina.base}/logs/log4j2-cnode@CNODE_ID@.log.%i" append="false">
 -->
       <PatternLayout pattern="%-4r %d{yyyy-MM-dd HH:mm:ss,SSS Z} [%t] %-5p %c.%M():%L %x %X - %m%n"/>
 <!--
