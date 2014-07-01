@@ -36,12 +36,20 @@ public class CASProxyCallbackResource extends BasicXMLResource {
             out.write(pgtId.getBytes());
             out.close();
         } else {
-            log.warn("No pgt Id!");
+            log.warn("No parameter 'pgtId' or 'pgtIou' received ('" + getEnvironment().getRequest().getRequestURL() + "', '" + getEnvironment().getRequest().getQueryString() + "')!");
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<root/>");
 
         return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
+     */
+    @Override
+    public boolean exists() throws Exception {
+        return true;
     }
 }
