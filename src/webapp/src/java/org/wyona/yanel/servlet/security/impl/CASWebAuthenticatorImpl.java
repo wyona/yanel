@@ -272,8 +272,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
         try {
             String url = validateURL + "?ticket=" + ticket + "&service=" + encode(considerProxy(getRequestURLWithoutTicket(request), realm));
             if (pgtURL != null) {
-                log.warn("DEBUG: Ask for proxy granting ticket...");
                 url = url + "&pgtUrl=" + encode(pgtURL);
+                log.warn("DEBUG: Ask for proxy granting ticket '" + url + "' ...");
             } else {
                 log.warn("DEBUG: No proxyCallback URL configured, hence we won't ask for a proxy granting ticket.");
             }
@@ -317,7 +317,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                                 // TODO: Associate with realm! (see CAS_TICKETS_SESSION_NAME)
 
                                 if (request.getSession(true).getAttribute(CAS_PROXY_TICKET_SESSION_NAME) != null) {
-                                    log.warn("CAS proxy ticket already set, hence it will be overwriten ...");
+                                    log.warn("CAS proxy ticket already set (" + request.getSession(true).getAttribute(CAS_PROXY_TICKET_SESSION_NAME) + "), hence it will be overwriten (" + proxyTicket + ") ...");
                                 }
                                 request.getSession(true).setAttribute(CAS_PROXY_TICKET_SESSION_NAME, proxyTicket);
                                 request.getSession(true).setAttribute(TARGET_SERVICE_SESSION_NAME, targetServiceURL);
@@ -328,9 +328,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                             log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
                         }
                     } else {
-                        if (pgtURL != null) {
-                            log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
-                        }
+                        log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
                     }
                 } else {
                     log.warn("DEBUG: No proxyCallback URL configured, hence we won't have to check for a proxy granting ticket.");
