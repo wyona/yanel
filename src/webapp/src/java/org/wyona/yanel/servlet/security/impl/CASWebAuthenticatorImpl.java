@@ -297,18 +297,9 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                     String proxyGrantingTicket = getProxyGrantingTicketIOU(doc);
                     if (proxyGrantingTicket != null) {
                         log.warn("DEBUG: Proxy granting ticket: " + proxyGrantingTicket);
-                        File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
-                        if (proxyIdFile.exists()) {
-                            java.io.FileReader in = new java.io.FileReader(proxyIdFile);
-                            java.io.BufferedReader br = new java.io.BufferedReader(in);
-                            String pgtId = br.readLine();
-                            br.close();
-                            in.close();
 
-                            if (!debugCASResponses) {
-                                proxyIdFile.delete();
-                            }
-
+                        String pgtId = getPgtId(realm, proxyGrantingTicket);
+                        if (pgtId != null) {
                             log.warn("DEBUG: pgt Id: " + pgtId);
                             String proxyTicket = getProxyTicket(pgtId, targetServiceURL); // TODO: Implement getting proxy tickets for more than one target service
                             if (proxyTicket != null) {
@@ -325,7 +316,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
                                 log.error("No proxy ticket received for proxy Id '" + pgtId + "'!");
                             }
                         } else {
-                            log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
+                            log.error("No pgt Id for proxy granting ticket '" + proxyGrantingTicket + "'!");
                         }
                     } else {
                         log.error("Asked for proxy granting ticket, but no proxy granting ticket received!");
@@ -348,6 +339,45 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error(e, e);
         }
         return null;
+    }
+
+    /**
+     * Get pgtId from shared repository
+     * @param realm Realm associated with pgtId
+     * @param proxyGrantingTicket Proxy granting ticket (e.g. 'PGTIOU-1-hG9ive0rfjuTb9IHaRsn-cas01.example.org') associated with pgtId
+     * @return pgtId (e.g. 'TGT-2-Q2HIIavaNe4Dom6UDQ7As1zR6Td79SwScffCC6dD7XKDZRXNBm-cas01.example.org') and in case it does not exist, then return null
+     */
+    private String getPgtId(Realm realm, String proxyGrantingTicket) throws Exception {
+/*
+        if (realm.getRepository().existsNode(getProxyIdNodePath(proxyGrantingTicket))) {
+            org.wyona.yarep.core.Node proxyIdNode = realm.getRepository().getNode(getProxyIdNodePath(proxyGrantingTicket));
+            java.io.InputStream in = proxyIdNode.getInputStream();
+            java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
+            String pgtId = br.readLine();
+            br.close();
+            in.close();
+            return pgtId;
+        } else {
+            log.error("No such node '" + getProxyIdNodePath(proxyGrantingTicket) + "' to read pgt Id from!");
+            return null;
+        }
+*/
+
+        File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
+        if (proxyIdFile.exists()) {
+            java.io.FileReader in = new java.io.FileReader(proxyIdFile);
+            java.io.BufferedReader br = new java.io.BufferedReader(in);
+            String pgtId = br.readLine();
+            br.close();
+            in.close();
+            if (!debugCASResponses) {
+                proxyIdFile.delete();
+            }
+            return pgtId;
+        } else {
+            log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
+            return null;
+        }
     }
 
     /**
@@ -620,6 +650,15 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     public static final String getProxyIdFilename(String proxyGrantingTicket) {
         return "cas-pgt-id-" + proxyGrantingTicket + ".txt";
+    }
+
+    /**
+     * Get path of node containing proxy granting ticket
+     * @param proxyGrantingTicket Unique proxy granting ticket IOU (http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou), e.g. 'PGTIOU-2-i90z9WnqRRbdoe5rfSbS-cas01.example.org'
+     * @return path of node containing proxy granting ticket
+     */
+    public static final String getProxyIdNodePath(String proxyGrantingTicket) throws Exception {
+        return "/cas-proxy-tickets/" + getProxyIdFilename(proxyGrantingTicket); // TODO: Make base path configurable
     }
 
     /**
