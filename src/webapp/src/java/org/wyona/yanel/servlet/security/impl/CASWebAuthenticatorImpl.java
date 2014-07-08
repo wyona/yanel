@@ -348,7 +348,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return pgtId (e.g. 'TGT-2-Q2HIIavaNe4Dom6UDQ7As1zR6Td79SwScffCC6dD7XKDZRXNBm-cas01.example.org') and in case it does not exist, then return null
      */
     private String getPgtId(Realm realm, String proxyGrantingTicket) throws Exception {
-/*
         if (realm.getRepository().existsNode(getProxyIdNodePath(proxyGrantingTicket))) {
             org.wyona.yarep.core.Node proxyIdNode = realm.getRepository().getNode(getProxyIdNodePath(proxyGrantingTicket));
             java.io.InputStream in = proxyIdNode.getInputStream();
@@ -361,8 +360,8 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error("No such node '" + getProxyIdNodePath(proxyGrantingTicket) + "' to read pgt Id from!");
             return null;
         }
-*/
 
+/* DEPRECATED
         File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
         if (proxyIdFile.exists()) {
             java.io.FileReader in = new java.io.FileReader(proxyIdFile);
@@ -378,6 +377,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
             return null;
         }
+*/
     }
 
     /**
