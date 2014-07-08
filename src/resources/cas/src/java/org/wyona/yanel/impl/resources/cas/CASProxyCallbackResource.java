@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
- * TODO
+ * Process proxy ticket requests of CAS and make it available for user session (see org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl)
  */
 public class CASProxyCallbackResource extends BasicXMLResource {
     
@@ -30,11 +30,7 @@ public class CASProxyCallbackResource extends BasicXMLResource {
         String pgtId = getEnvironment().getRequest().getParameter("pgtId"); // INFO: http://www.jusfortechies.com/java/cas/protocol.php#tgt
         String pgtIou = getEnvironment().getRequest().getParameter("pgtIou"); // INFO: http://www.jusfortechies.com/java/cas/protocol.php#pgt-iou
         if (pgtId != null && pgtIou != null) {
-            log.warn("DEBUG: pgt Id: " + pgtId + ", pgt Iou: " + pgtIou);
-            java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdFilename(pgtIou));
-            java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
-            out.write(pgtId.getBytes());
-            out.close();
+            setPgtId(pgtId, pgtIou);
         } else {
             log.warn("No parameter 'pgtId' or 'pgtIou' received ('" + getEnvironment().getRequest().getRequestURL() + "', '" + getEnvironment().getRequest().getQueryString() + "')!");
         }
@@ -43,6 +39,31 @@ public class CASProxyCallbackResource extends BasicXMLResource {
         sb.append("<root/>");
 
         return new ByteArrayInputStream(sb.toString().getBytes());
+    }
+
+    /**
+     * @param pgtId 'TGT-2-Q2HIIavaNe4Dom6UDQ7As1zR6Td79SwScffCC6dD7XKDZRXNBm-cas01.example.org'
+     * @param pgtIou 'PGTIOU-1-hG9ive0rfjuTb9IHaRsn-cas01.example.org'
+     */
+    private void setPgtId(String pgtId, String pgtIou) throws Exception {
+        log.warn("DEBUG: pgt Id: " + pgtId + ", pgt Iou: " + pgtIou);
+
+        String nodePath = org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdNodePath(pgtIou);
+        if (!getRealm().getRepository().existsNode(nodePath)) {
+            org.wyona.yarep.core.Node proxyIdNode = org.wyona.yarep.util.YarepUtil.addNodes(getRealm().getRepository(), nodePath, org.wyona.yarep.core.NodeType.RESOURCE);
+            java.io.OutputStream out = proxyIdNode.getOutputStream();
+            out.write(pgtId.getBytes());
+            out.close();
+        } else {
+            log.error("Node '" + nodePath + "' already exists!");
+        }
+
+/* DEPRECATED
+        java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdFilename(pgtIou));
+        java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
+        out.write(pgtId.getBytes());
+        out.close();
+*/
     }
 
     /**
