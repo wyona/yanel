@@ -39,7 +39,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
@@ -79,7 +80,7 @@ import org.wyona.commons.xml.XMLHelper;
  */
 public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
 
-    private static Logger log = Logger.getLogger(ContactResourceV2.class);
+    private static Logger log = LogManager.getLogger(ContactResourceV2.class);
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/contact-message/1.0.0";
 
