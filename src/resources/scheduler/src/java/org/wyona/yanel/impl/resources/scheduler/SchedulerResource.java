@@ -9,7 +9,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -27,7 +28,7 @@ import org.wyona.commons.xml.XMLHelper;
  */
 public class SchedulerResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(SchedulerResource.class);
+    private static Logger log = LogManager.getLogger(SchedulerResource.class);
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
