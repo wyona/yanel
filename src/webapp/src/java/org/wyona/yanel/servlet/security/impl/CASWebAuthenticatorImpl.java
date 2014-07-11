@@ -475,12 +475,32 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      */
     protected String considerProxy(String url, Realm realm) {
         if (realm != null && realm.isProxySet()) { // INFO: Also see YanelServlet#getRequestURLQS(...)
-            log.warn("DEBUG: Modify url '" + url + "' according to reverse proxy configuration...");
+            log.warn("DEBUG: Modify URL '" + url + "' according to reverse proxy configuration...");
             try {
                 URL newURL = new URL(url);
-                String proxyPrefix = realm.getProxyPrefix();
-                if (proxyPrefix != null) {
-                    newURL = new URL(newURL.getProtocol(), newURL.getHost(), newURL.getPort(), newURL.getFile().substring(proxyPrefix.length()));
+                if (realm.isProxySet()) {
+                    String proxyPrefix = realm.getProxyPrefix();
+                    if (proxyPrefix != null) {
+                        newURL = new URL(newURL.getProtocol(), newURL.getHost(), newURL.getPort(), newURL.getFile().substring(proxyPrefix.length()));
+                    }
+
+                    String proxyHostName = realm.getProxyHostName();
+                    if (proxyHostName != null) {
+                        newURL = new URL(newURL.getProtocol(), proxyHostName, newURL.getFile());
+                    }
+
+                    int proxyPort = realm.getProxyPort();
+                    if (proxyPort >= 0) {
+                        //log.debug("Configured proxy port: " + proxyPort);
+                        newURL = new URL(newURL.getProtocol(), newURL.getHost(), proxyPort, newURL.getFile());
+                    } else {
+                        //log.debug("No proxy port configured, hence use default port: " + url.getDefaultPort());
+                        newURL = new URL(newURL.getProtocol(), newURL.getHost(), newURL.getFile()); // INFO: Please note that if one does not set the port explicitely, then toString() won't add the port to the returned string.
+                    }
+
+                    log.warn("DEBUG: Modified URL: " + newURL);
+                } else {
+                    log.debug("No reverse proxy configured.");
                 }
                 return newURL.toString();
             } catch(Exception e) {
