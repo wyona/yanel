@@ -7,6 +7,6 @@
   </realm>
    -->
   <realm id="zwischengas" mount-point="/" root="true">
-    <config src="/Users/baszero/development/git/zg/" />
+    <config src="/Users/baszero/development/git/zwischengas/" />
   </realm>
 </realms>

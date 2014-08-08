@@ -21,7 +21,7 @@
   <reserved-prefix>yanel</reserved-prefix>
   
   <!-- # Scheduler configuration -->
-  <scheduler enabled="false"/>
+  <scheduler enabled="true"/>
   
   <!-- # Mail server configuration.
          Username and password attributes are optional,
