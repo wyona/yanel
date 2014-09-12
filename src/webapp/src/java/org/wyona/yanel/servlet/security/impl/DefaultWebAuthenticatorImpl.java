@@ -374,7 +374,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 return response;
             } else {
                 String userAgent = request.getHeader("User-Agent");
-                if (userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
+                if (userAgent != null && userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
                     log.warn("DEBUG: In the case of the user agent '" + userAgent + "' an error 401 is returned instead a login form.");
                     response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                     response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
