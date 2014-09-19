@@ -236,6 +236,7 @@ tinymce.PluginManager.add('help', function(editor) {
 		}
 
 		// General settings shared between simple and advanced dialogs
+/*
 		var generalFormItems = [
 			{
 				name: 'src',
@@ -248,11 +249,8 @@ tinymce.PluginManager.add('help', function(editor) {
 			helpListCtrl
 		];
 
-		if (editor.settings.help_description !== false) {
-			generalFormItems.push({name: 'alt', type: 'textbox', label: 'Image description'});
-		}
-
 		generalFormItems.push(classListCtrl);
+*/
 
 		function updateStyle() {
 			function addPixelSuffix(value) {
@@ -278,69 +276,19 @@ tinymce.PluginManager.add('help', function(editor) {
 			win.find('#style').value(dom.serializeStyle(dom.parseStyle(dom.serializeStyle(css))));
 		}
 
-		if (editor.settings.help_advtab) {
-			// Parse styles from img
-			if (imgElm) {
-				data.hspace = removePixelSuffix(imgElm.style.marginLeft || imgElm.style.marginRight);
-				data.vspace = removePixelSuffix(imgElm.style.marginTop || imgElm.style.marginBottom);
-				data.border = removePixelSuffix(imgElm.style.borderWidth);
-				data.style = editor.dom.serializeStyle(editor.dom.parseStyle(editor.dom.getAttrib(imgElm, 'style')));
-			}
-
-			// Advanced dialog shows general+advanced tabs
-			win = editor.windowManager.open({
-				title: 'SUGUSInsert/edit help',
-				data: data,
-				bodyType: 'tabpanel',
-				body: [
-					{
-						title: 'General',
-						type: 'form',
-						items: generalFormItems
-					},
-
-					{
-						title: 'Advanced',
-						type: 'form',
-						pack: 'start',
-						items: [
-							{
-								label: 'Style',
-								name: 'style',
-								type: 'textbox'
-							},
-							{
-								type: 'form',
-								layout: 'grid',
-								packV: 'start',
-								columns: 2,
-								padding: 0,
-								alignH: ['left', 'right'],
-								defaults: {
-									type: 'textbox',
-									maxWidth: 50,
-									onchange: updateStyle
-								},
-								items: [
-									{label: 'Vertical space', name: 'vspace'},
-									{label: 'Horizontal space', name: 'hspace'},
-									{label: 'Border', name: 'border'}
-								]
-							}
-						]
-					}
-				],
-				onSubmit: onSubmitForm
-			});
-		} else {
 			// Simple default dialog
+			win = editor.windowManager.alert("TinyMCE Version 4.1.5");
+/*
 			win = editor.windowManager.open({
-				title: 'Hilfe / Help',
-				data: data,
-				body: generalFormItems,
-				onSubmit: onSubmitForm
+				title: 'Help',
+                                url: 'help.html',
+                                width: 50,
+                                height: 50
+				//data: data,
+				//body: generalFormItems,
+				//onSubmit: onSubmitForm
 			});
-		}
+*/
 	}
 
 	editor.addButton('help', {
