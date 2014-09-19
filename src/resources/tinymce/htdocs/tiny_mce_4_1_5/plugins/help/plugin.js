@@ -235,23 +235,6 @@ tinymce.PluginManager.add('help', function(editor) {
 			};
 		}
 
-		// General settings shared between simple and advanced dialogs
-/*
-		var generalFormItems = [
-			{
-				name: 'src',
-				type: 'filepicker',
-				filetype: 'help',
-				label: 'Source',
-				autofocus: true,
-				onchange: srcChange
-			},
-			helpListCtrl
-		];
-
-		generalFormItems.push(classListCtrl);
-*/
-
 		function updateStyle() {
 			function addPixelSuffix(value) {
 				if (value.length > 0 && /^[0-9]+$/.test(value)) {
@@ -297,14 +280,4 @@ tinymce.PluginManager.add('help', function(editor) {
 		onclick: createImageList(showDialog),
 		stateSelector: 'img:not([data-mce-object],[data-mce-placeholder])'
 	});
-
-	editor.addMenuItem('help', {
-		icon: 'help',
-		text: 'POINTInsert help',
-		onclick: createImageList(showDialog),
-		context: 'insert',
-		prependToContext: true
-	});
-
-	editor.addCommand('mceImage', createImageList(showDialog));
 });
