@@ -11,34 +11,6 @@
 /*global tinymce:true */
 
 tinymce.PluginManager.add('help', function(editor) {
-	function getImageSize(url, callback) {
-		var img = document.createElement('img');
-
-		function done(width, height) {
-			if (img.parentNode) {
-				img.parentNode.removeChild(img);
-			}
-
-			callback({width: width, height: height});
-		}
-
-		img.onload = function() {
-			done(img.clientWidth, img.clientHeight);
-		};
-
-		img.onerror = function() {
-			done();
-		};
-
-		var style = img.style;
-		style.visibility = 'hidden';
-		style.position = 'fixed';
-		style.bottom = style.left = 0;
-		style.width = style.height = 'auto';
-
-		document.body.appendChild(img);
-		img.src = url;
-	}
 
 	function buildListItems(inputList, itemCallback, startItems) {
 		function appendItems(values, output) {
@@ -84,7 +56,7 @@ tinymce.PluginManager.add('help', function(editor) {
 
 	function showDialog(helpList) {
 		var win, data = {}, dom = editor.dom, imgElm = editor.selection.getNode();
-		var width, height, helpListCtrl, classListCtrl, helpDimensions = editor.settings.help_dimensions !== false;
+		var width, height, helpListCtrl, classListCtrl;
 
 		function recalcSize() {
 			var widthCtrl, heightCtrl, newWidth, newHeight;
@@ -123,17 +95,6 @@ tinymce.PluginManager.add('help', function(editor) {
 						editor.nodeChanged();
 					}
 				}
-
-				imgElm.onload = function() {
-					if (!data.width && !data.height && helpDimensions) {
-						dom.setAttribs(imgElm, {
-							width: imgElm.clientWidth,
-							height: imgElm.clientHeight
-						});
-					}
-
-					selectImage();
-				};
 
 				imgElm.onerror = selectImage;
 			}
@@ -212,18 +173,6 @@ tinymce.PluginManager.add('help', function(editor) {
 			tinymce.each(meta, function(value, key) {
 				win.find('#' + key).value(value);
 			});
-
-			if (!meta.width && !meta.height) {
-				getImageSize(this.value(), function(data) {
-					if (data.width && data.height && helpDimensions) {
-						width = data.width;
-						height = data.height;
-
-						win.find('#width').value(width);
-						win.find('#height').value(height);
-					}
-				});
-			}
 		}
 
 		width = dom.getAttrib(imgElm, 'width');
@@ -301,23 +250,6 @@ tinymce.PluginManager.add('help', function(editor) {
 
 		if (editor.settings.help_description !== false) {
 			generalFormItems.push({name: 'alt', type: 'textbox', label: 'Image description'});
-		}
-
-		if (helpDimensions) {
-			generalFormItems.push({
-				type: 'container',
-				label: 'Dimensions',
-				layout: 'flex',
-				direction: 'row',
-				align: 'center',
-				spacing: 5,
-				items: [
-					{name: 'width', type: 'textbox', maxLength: 5, size: 3, onchange: recalcSize, ariaLabel: 'Width'},
-					{type: 'label', text: 'x'},
-					{name: 'height', type: 'textbox', maxLength: 5, size: 3, onchange: recalcSize, ariaLabel: 'Height'},
-					{name: 'constrain', type: 'checkbox', checked: true, text: 'Constrain proportions'}
-				]
-			});
 		}
 
 		generalFormItems.push(classListCtrl);
