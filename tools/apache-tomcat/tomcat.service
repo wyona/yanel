@@ -1,3 +1,5 @@
+# This file has not been tested yet and is just experimental.
+# TODO: Set USER AND JAVA_HOME (see tomcatctrl)
 # /usr/lib/systemd/system/tomcat.service
 # http://adam.younglogic.com/2011/06/tomcat-systemd/
 
