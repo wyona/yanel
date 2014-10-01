@@ -1,0 +1,14 @@
+# /usr/lib/systemd/system/tomcat.service
+# http://adam.younglogic.com/2011/06/tomcat-systemd/
+
+[Unit]
+Description=Tomcat Yanel
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/michi/src/yanel/local/apache-tomcat-7.0.25/bin/startup.sh
+ExecStop=/home/michi/src/yanel/local/apache-tomcat-7.0.25/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target
