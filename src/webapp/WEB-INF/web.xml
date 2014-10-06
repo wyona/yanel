@@ -33,6 +33,22 @@
   <display-name>Yanel</display-name>
   <description>Yanel</description>
 
+        <!-- Javamelody START -->
+<!--
+        <filter>
+          <filter-name>monitoring</filter-name>
+          <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        </filter>
+        <filter-mapping>
+          <filter-name>monitoring</filter-name>
+          <url-pattern>/*</url-pattern>
+        </filter-mapping>
+        <listener>
+          <listener-class>net.bull.javamelody.SessionListener</listener-class>
+        </listener>
+-->
+        <!-- Javamelody END -->
+
   <servlet>
     <servlet-name>YanelServlet</servlet-name>
     <servlet-class>org.wyona.yanel.servlet.YanelServlet</servlet-class>
