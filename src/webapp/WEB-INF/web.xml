@@ -34,7 +34,7 @@
   <description>Yanel</description>
 
         <!-- Javamelody START -->
-<!--
+<!-- See http://lists.wyona.org/pipermail/yanel-development/2014-March/006193.html
         <filter>
           <filter-name>monitoring</filter-name>
           <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
