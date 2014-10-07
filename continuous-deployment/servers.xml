@@ -2,7 +2,9 @@
 
 <cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
   <cd:production>
+    <cd:servers>
       <cd:server username="" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node1"></cd:server>
+    </cd:servers>
   </cd:production>
   <cd:staging>
     <cd:servers>
