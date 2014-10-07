@@ -2,6 +2,7 @@
 
 <cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
   <cd:tests>
+    <cd:test>most-recent-version</cd:test>
     <cd:test>default-login-screen</cd:test>
     <cd:test>max-file-size</cd:test>
     <cd:test>detect-mobile-device</cd:test>
