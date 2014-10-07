@@ -10,7 +10,7 @@
 <!--
   <cd:staging>
     <cd:servers>
-      <cd:server username="" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node2"></cd:server>
+      <cd:server username="TODO" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node2"></cd:server>
     </cd:servers>
   </cd:staging>
 -->
