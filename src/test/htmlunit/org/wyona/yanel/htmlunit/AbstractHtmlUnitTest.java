@@ -208,6 +208,9 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         this.currentPage = handlePage(page);
     }
 
+    /**
+     *
+     */
     protected void loadErrorPage(String pageURL, int expectedErrorCode) throws Exception {
         int statusCode;
         try {
@@ -216,10 +219,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         } catch (FailingHttpStatusCodeException e) {
             statusCode = e.getStatusCode();
         }
-        assertTrue("Response status for reserved "+pageURL+" error page not "+
-         expectedErrorCode+" but "+statusCode, statusCode == expectedErrorCode);
+        assertTrue("Response status for reserved "+pageURL+" error page not "+ expectedErrorCode+" but "+statusCode, statusCode == expectedErrorCode);
     }
 
+    /**
+     *
+     */
     protected void loadResource(String resourceURL) throws Exception {
         URL url = new URL(baseURL + resourceURL);
         Page resource = webClient.getPage(url);
@@ -321,8 +326,16 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
      */
     protected void assertPageContainsText(String expectedContent) {
         String page = currentPage.asText();
-        assertFalse("provided content \"" + expectedContent + "\" not found on this page", page
-                .indexOf(expectedContent) == -1);
+        assertFalse("provided content \"" + expectedContent + "\" not found on this page", page.indexOf(expectedContent) == -1);
     }
 
+    /**
+     * Asserts that the response of the resource contains the given content.
+     * 
+     * @param expectedContent Expected content
+     */
+    protected void assertResourceContainsText(String expectedContent) {
+        String content = response.getContentAsString();
+        assertFalse("Expected content \"" + expectedContent + "\" not found in the response!", content.indexOf(expectedContent) == -1);
+    }
 }
