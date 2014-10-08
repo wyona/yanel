@@ -24,4 +24,4 @@
     More Information
     ----------------
 
-    http://yanel.wyona.org
+    http://www.yanel.org
