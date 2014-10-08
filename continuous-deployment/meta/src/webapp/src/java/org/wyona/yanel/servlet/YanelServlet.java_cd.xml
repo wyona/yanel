@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
+  <cd:tests>
+    <cd:test>authorization</cd:test>
+  </cd:tests>
+  <cd:dependencies>
+  </cd:dependencies>
+</cd:cd>
