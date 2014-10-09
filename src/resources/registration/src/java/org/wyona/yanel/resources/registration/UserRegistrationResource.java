@@ -690,7 +690,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check gender (mandatory)
-            String gender = isGenderValid(getEnvironment().getRequest().getParameter(SALUTATION));
+            String gender = isGenderValid(getEnvironment().getRequest().getParameter(SALUTATION)); // INFO: Please note that the gender is determined based on the salutation parameter
             if (gender == null) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
                 inputsValid = false;
