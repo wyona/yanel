@@ -659,6 +659,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
+                log.error("Password not valid");
                 inputsValid = false;
             }
         // INFO: Check password confirmed
