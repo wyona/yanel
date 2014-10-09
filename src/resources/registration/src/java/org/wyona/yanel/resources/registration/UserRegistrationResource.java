@@ -24,7 +24,8 @@ import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +39,7 @@ import javax.xml.xpath.XPathFactory;
  */
 public class UserRegistrationResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(UserRegistrationResource.class);
+    private static Logger log = LogManager.getLogger(UserRegistrationResource.class);
 
     static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
