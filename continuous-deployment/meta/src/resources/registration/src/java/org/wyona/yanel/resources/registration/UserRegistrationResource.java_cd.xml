@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 
 <cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
-  <cd:tests>
-    <cd:test>http://continuous.wyona.com/en/index.html</cd:test>
-  </cd:tests>
-  <cd:dependencies>
-  </cd:dependencies>
+  <cd:environment id="development">
+    <cd:tests>
+      <cd:test>https://127.0.0.1:8443/yanel/continuous/en/index.html</cd:test>
+    </cd:tests>
+  </cd:environment>
+  <cd:environment id="staging"/>
+  <cd:environment id="production">
+    <cd:tests>
+      <cd:test>http://continuous.wyona.com/en/index.html</cd:test>
+    </cd:tests>
+  </cd:environment>
 </cd:cd>
