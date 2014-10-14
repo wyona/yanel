@@ -79,6 +79,7 @@
   </target>
 
   <target name="generate-resources-build-file" description="Generate resources build file" depends="init">
+    <echo>Generate resources build file 'build/build-resource-types.xml' based on '${classes.dir}/resource-types.xml' ...</echo>
     <xslt in="${classes.dir}/resource-types.xml" out="../../build/build-resource-types.xml" style="yanel2resources.xsl" force="true">
       <param name="servlet.context.prefix" expression="${servlet.context.prefix}"/>
       <param name="yanel.source.version" expression="${yanel.source.version}"/>
