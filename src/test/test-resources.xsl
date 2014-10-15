@@ -7,8 +7,7 @@
   <xsl:output method="xml" indent="yes"/>
 
   <xsl:template match="/">
-
-    <xsl:comment> NOTE: This file has been generated automatically from conf/yanel.xml! </xsl:comment>
+    <xsl:comment> NOTE: This file has been generated automatically from build/classes/resource-types.xml, see src/test/build.xml ...</xsl:comment>
     <project name="test-resources">
 
       <target name="init">
