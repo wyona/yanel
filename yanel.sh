@@ -3,14 +3,19 @@
 SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
-JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Home
-JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
-
+JAVA_HOME=`/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home`
+export JAVA_HOME
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
+#echo "yanel.sh: JAVA_HOME = $JAVA_HOME"
+
 if [ "$JAVA_HOME" = "" ];then
   echo "ERROR: No JAVA_HOME set!"
   echo "       Have you installed JDK (Java Development Kit)? If so, then set JAVA_HOME ..."
+  echo ""
+  echo "       Mac OS X Yosemite: The Java bin command is now located under"
+  echo "                          /System/Library/Frameworks/JavaVM.framework/Versions/Current/Commands"
+  echo "                          "
   echo ""
   echo "       Mac OS X : Depending on the shell you're using either use"
   echo "                  export JAVA_HOME=$JAVA_HOME_MACOSX"
@@ -42,8 +47,8 @@ fi
 # ----- Set Environment Variables
 unset ANT_HOME
 ANT_HOME=$SCRIPT_DIR/tools/apache-ant
-#echo $ANT_HOME
-OUR_ANT="ant -lib $SCRIPT_DIR/tools/apache-ant_extras -f src/build/build.xml"
+#echo "Which ANT: $ANT_HOME/bin"
+OUR_ANT="$ANT_HOME/bin/ant -lib $SCRIPT_DIR/tools/apache-ant_extras -f src/build/build.xml"
 
 unset CATALINA_HOME
 
@@ -52,7 +57,11 @@ PATH=$SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 
 # ----- Yanel subcommands:
 #mvn --version
+
+#echo "Going to call ANT Version..."
+
 $OUR_ANT -version
+echo "  ...using ant at $OUR_ANT"
 if [ "$1" = "start" ]; then
   echo "INFO: Starting Yanel..."
   $OUR_ANT start-tomcat
@@ -79,7 +88,7 @@ elif [ "$1" = "build" ]; then
 
 # One might want to use the option "-f" for building resources, e.g. "./yanel.sh build -f src/resources/xml/build.xml" instead having to build everything
 if [ "$1" = "-f" ];then
-  echo "INFO: Build using -f ..."
+  echo "yanel.sh: INFO: Build using -f ..."
   # TODO: Pass all parameters (not just 7 or rather 6)
   $OUR_ANT -f $2 $3 $4 $5 $6 $7 -Dyanel.source.home=$SCRIPT_DIR
   error=$?
@@ -95,6 +104,7 @@ fi
   $OUR_ANT "$@"
 
 elif [ "$1" = "cmdl" ]; then
+  echo "Going to execute Yanel command now..."
   $OUR_ANT run-yanel-cmdl -Dyanel.path=$2
 else
   echo "----------------------------------------------"
