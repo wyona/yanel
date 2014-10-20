@@ -4,6 +4,8 @@ SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
 JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Home
+# When using Yosemite
+#JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home
 
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
