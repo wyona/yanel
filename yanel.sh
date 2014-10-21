@@ -4,8 +4,7 @@ SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
 JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Home
-# When using Yosemite
-#JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home
+JAVA_HOME_MACOSX_YOSEMITE=/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home
 
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
@@ -13,12 +12,13 @@ if [ "$JAVA_HOME" = "" ];then
   echo "ERROR: No JAVA_HOME set!"
   echo "       Have you installed JDK (Java Development Kit)? If so, then set JAVA_HOME ..."
   echo ""
-  echo "       Mac OS X : Depending on the shell you're using either use"
-  echo "                  export JAVA_HOME=$JAVA_HOME_MACOSX"
-  echo "                  or"
-  echo "                  setenv JAVA_HOME $JAVA_HOME_MACOSX"
-  echo "       Linux    : export JAVA_HOME=/usr/local/jdk-1.6.0 (whereas '/usr/local/jdk-1.6.0' is just an example path)"
-  echo "       Windows  : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
+  echo "       Mac OS X          : Depending on the shell you're using either use"
+  echo "                           export JAVA_HOME=$JAVA_HOME_MACOSX"
+  echo "                           or"
+  echo "                           setenv JAVA_HOME $JAVA_HOME_MACOSX"
+  echo "       Mac OS X Yosemite : export JAVA_HOME=$JAVA_HOME_MACOSX_YOSEMITE"
+  echo "       Linux             : export JAVA_HOME=/usr/local/jdk-1.6.0 (whereas '/usr/local/jdk-1.6.0' is just an example path)"
+  echo "       Windows           : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
   echo ""
   if [ -d $JAVA_HOME_MACOSX ]; then
       echo "INFO: You seem to use Mac OS X as operating system. Do you want to set '$JAVA_HOME_MACOSX' as JAVA_HOME? (YES/no)"
@@ -29,6 +29,18 @@ if [ "$JAVA_HOME" = "" ];then
       else
           export JAVA_HOME=$JAVA_HOME_MACOSX
           echo "INFO: JAVA_HOME has been set to '$JAVA_HOME_MACOSX' while processing this shell script."
+          echo ""
+          sleep 3
+      fi
+  elif [ -d $JAVA_HOME_MACOSX_YOSEMITE ]; then
+      echo "INFO: You seem to use Mac OS X Yosemite as operating system. Do you want to set '$JAVA_HOME_MACOSX_YOSEMITE' as JAVA_HOME? (YES/no)"
+      read ANSWER
+      if [ "$ANSWER" = "no" ]; then
+          echo "WARNING: JAVA_HOME has not been set. Please make sure to set it manually and then re-run this script."
+          exit 1
+      else
+          export JAVA_HOME=$JAVA_HOME_MACOSX_YOSEMITE
+          echo "INFO: JAVA_HOME has been set to '$JAVA_HOME_MACOSX_YOSEMITE' while processing this shell script."
           echo ""
           sleep 3
       fi
