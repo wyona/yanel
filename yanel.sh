@@ -63,7 +63,7 @@ unset CATALINA_HOME
 PATH=$SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
-# ----- Yanel subcommands:
+# ----- Yanel subcommands
 #mvn --version
 $OUR_ANT -version
 if [ "$1" = "start" ]; then
