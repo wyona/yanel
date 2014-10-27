@@ -3,11 +3,16 @@
 SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
-JAVA_HOME=`/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home`
+#SE8: please note that the following line assigns the command output to the variable!! java_home is an executable!
+#JAVA_HOME=`/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home`
+#SE6 as required by Yanel: install http://support.apple.com/kb/DL1572?viewlocale=en_US&locale=en_US first!!
+JAVA_HOME=/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home
 export JAVA_HOME
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
-#echo "yanel.sh: JAVA_HOME = $JAVA_HOME"
+echo "yanel.sh: JAVA_HOME = $JAVA_HOME"
+
+java -version
 
 if [ "$JAVA_HOME" = "" ];then
   echo "ERROR: No JAVA_HOME set!"
