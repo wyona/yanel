@@ -61,8 +61,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * It is a base class for resources that generate XML. Subclasses must override getContentXML 
- * in order to pass XML for a view.
+ * It is a base class for resources that generate XML. Subclasses must override getContentXML in order to pass XML for a view.
+ * <p>
+ * Also see http://www.yanel.org/en/documentation/basic-xml-resource-type.html
+ * </p>
  * <p>
  * The class has its configuration for views ('default' and 'source' are built in). It resides in *.yanel-rc file, e.g.
  * <pre>
@@ -198,6 +200,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
      */
     public View getView(String viewId) throws Exception {
+        // INFO: Allows to override the view id inside the resource configuration
+        String overrideViewId = getResourceConfigProperty("viewid");
+        if (overrideViewId != null) {
+            viewId = overrideViewId;
+        }
+
         return getXMLView(viewId, getContentXML(viewId));
     }
 
