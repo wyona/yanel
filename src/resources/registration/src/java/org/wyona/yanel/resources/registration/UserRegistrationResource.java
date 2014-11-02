@@ -498,13 +498,19 @@ public class UserRegistrationResource extends BasicXMLResource {
                 registerUser(doc, urBean);
                 getRealm().getRepository().getNode(path).delete();
 
-                String homepageURL = getHomepageURL();
+                if (doNotifyAdministrator()) {
+                    StringBuilder body = new StringBuilder();
+                    body.append("The following user account has been activated:");
+                    body.append("\n\n" + urBean.getEmail());
+                    body.append("\n\nvia " + getHomepageURL());
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[Registration] User account has been created", body.toString());
+                }
 
                 if (sendNotificationsEnabled()) {
                     StringBuilder body = new StringBuilder();
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
-                    body.append("\n\n" + homepageURL);
+                    body.append("\n\n" + getHomepageURL());
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", body.toString());
                 }
 
@@ -575,6 +581,21 @@ public class UserRegistrationResource extends BasicXMLResource {
             log.error(e, e);
         }
         return true;
+    }
+
+    /**
+     * Check whether notification email should be sent to administrator
+     */
+    private boolean doNotifyAdministrator() {
+        try {
+            String value = getResourceConfigProperty("notify-administrator");
+            if (value != null && value.equals("true")) {
+                return true;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return false;
     }
 
     /**
