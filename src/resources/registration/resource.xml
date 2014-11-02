@@ -22,5 +22,8 @@ User registration
 
   <property name="min-password-length" default-value="5"/>
   <property name="max-password-length" default-value="15"/>
+
+  <property name="notify-administrator" default-value="false"/>
+  <property name="administrator-email"/> <!-- If 'notify-administrator' is set to true, then this property also needs to be set! -->
 </rtd>
 </resource>
