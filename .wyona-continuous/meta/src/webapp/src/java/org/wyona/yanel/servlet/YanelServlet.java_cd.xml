@@ -3,7 +3,7 @@
 <cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
   <cd:environment id="development">
     <cd:tests>
-      <cd:test>authorization</cd:test>
+      <cd:test type="human">authorization</cd:test>
     </cd:tests>
   </cd:environment>
   <cd:environment id="staging"/>
