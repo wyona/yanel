@@ -498,7 +498,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map.getRealm(request.getServletPath())).getUsername());
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentityFromRequest(request, map.getRealm(request.getServletPath())).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -1085,7 +1085,7 @@ public class YanelServlet extends HttpServlet {
         Identity identity;
         try {
             Realm realm = map.getRealm(request.getServletPath());
-            identity = getIdentity(request, realm);
+            identity = getIdentityFromRequest(request, realm);
             String stateOfView = StateOfView.AUTHORING;
             if (yanelUI.isToolbarEnabled(request)) { // TODO: Is this the only criteria?
                 stateOfView = StateOfView.AUTHORING;
@@ -1211,12 +1211,19 @@ public class YanelServlet extends HttpServlet {
         // INFO: Get identity, realm, path
         Identity identity;
         Realm realm;
-        String path;
+        String pathWithoutQS;
         try {
             realm = map.getRealm(request.getServletPath());
-            identity = getIdentity(request, realm);
-            //log.debug("Identity retrieved from request (for realm '" + realm.getID() + "'): " + identity);
-            path = map.getPath(realm, request.getServletPath());
+
+/* TBD: Check whether BASIC might be used and if so, then maybe handle things differently (also see https://github.com/wyona/yanel/issues/41)
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null) {
+            if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
+*/
+
+            identity = getIdentityFromRequest(request, realm);
+            //log.warn("DEBUG: Identity retrieved from request (for realm '" + realm.getID() + "'): " + identity);
+            pathWithoutQS = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }
@@ -1246,8 +1253,9 @@ public class YanelServlet extends HttpServlet {
         boolean authorized = false;
         Usecase usecase = getUsecase(request);
         try {
-            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity + ", Usecase: " + usecase.getName());
-            authorized = realm.getPolicyManager().authorize(path, identity, usecase);
+            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + pathWithoutQS + ", identity: " + identity + ", Usecase: " + usecase.getName());
+            // TODO: Also consider query string ...
+            authorized = realm.getPolicyManager().authorize(pathWithoutQS, identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
@@ -1267,7 +1275,7 @@ public class YanelServlet extends HttpServlet {
             }
             return null; // INFO: Return null in order to indicate that access is granted
         } else {
-            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + path + "; Identity: " + identity + "; Usecase: " + usecase + ")");
+            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + pathWithoutQS + "; Identity: " + identity + "; Usecase: " + usecase + ")");
             // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
             // INFO: If request is not via SSL and SSL is configured, then redirect to SSL connection.
@@ -1914,7 +1922,7 @@ public class YanelServlet extends HttpServlet {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap == null) {
                 identityMap = new IdentityMap();
-                session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+                session.setAttribute(IDENTITY_MAP_KEY, identityMap);
             }
             //log.debug("Firstname: " + identity.getFirstname());
             identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
@@ -1929,13 +1937,22 @@ public class YanelServlet extends HttpServlet {
      * @param realm Realm
      * @return Identity if one exist, or otherwise an empty identity (which is considered to be WORLD)
      */
-    private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
+    private Identity getIdentityFromRequest(HttpServletRequest request, Realm realm) throws Exception {
+
+        // INFO: Please note that the identity normally gets set inside a WebAuthenticator implementation
         //log.debug("Get identity for request '" + request.getServletPath() + "'.");
-        Identity identity = getIdentity(request.getSession(false), realm);
+        Identity identity = getIdentity(request.getSession(false), realm.getID());
         if (identity != null) { // INFO: Please note that the WORLD identity (or rather an empty identity) is not added to the session (please see further down)
             //log.debug("Identity from session: " + identity);
             return identity;
         }
+
+/* TODO: Make configurable!
+        if (true) {
+            log.warn("DEBUG: Do not check for BASIC authentication, but set identity to WORLD.");
+            return new Identity();
+        }
+*/
 
         // HTTP BASIC Authentication (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
@@ -1958,10 +1975,15 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
                         log.debug("User '" + user.getID() + "' successfully authenticated via BASIC authentication.");
-                        return new Identity(user, username);
+                        identity = new Identity(user, username);
+                        setIdentity(identity, request.getSession(true), realm);
+                        return identity;
                     } else {
                         log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "') and request '" + request.getServletPath() + "', hence set identity to WORLD!");
-                        return new Identity();
+                        identity = new Identity();
+                        setIdentity(identity, request.getSession(true), realm);
+                        return identity;
+
 /* INFO: Do not return unauthorized response, but rather just return 'WORLD' as identity...
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -2312,7 +2334,7 @@ public class YanelServlet extends HttpServlet {
                             try {
                                 Usecase usecase = new Usecase(TOOLBAR_USECASE);
                                 Realm realm = map.getRealm(request.getServletPath());
-                                Identity identity = getIdentity(request, realm);
+                                Identity identity = getIdentityFromRequest(request, realm);
                                 String path = map.getPath(realm, request.getServletPath());
                                 // NOTE: This extra authorization check is necessary within a multi-realm environment, because after activating the toolbar with a query string, the toolbar flag attached to the session will be ignored by doAccessControl(). One could possibly do this check within doAccessControl(), but could be a peformance issue! Or as an alternative one could refactor the code, such that the toolbar session flag is realm aware.
                                 if(realm.getPolicyManager().authorize(path, identity, usecase)) {
@@ -2857,7 +2879,7 @@ public class YanelServlet extends HttpServlet {
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
-            Identity identity = getIdentity(request, realm);
+            Identity identity = getIdentityFromRequest(request, realm);
             if (identity != null && identity.getUsername() != null) {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("u", identity.getUsername());
 
