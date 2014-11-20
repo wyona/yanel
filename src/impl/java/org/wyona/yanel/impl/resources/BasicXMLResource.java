@@ -481,8 +481,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Pass parameters to xslt transformer.
      * @param transformer Transformer for which various parameters (e.g. yanel.back2realm) will be set
      */
-    protected void passTransformerParameters(Transformer transformer) throws Exception {      
-        // Set general parameters
+    protected void passTransformerParameters(Transformer transformer) throws Exception {
+        // INFO: Set general parameters
+        transformer.setParameter("yanel.timestamp", new java.util.Date().getTime()); // INFO: timestamp can be used inside an XSLT to make for example URLs non-cacheable, by attaching a query string containing the timestamp
         transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
