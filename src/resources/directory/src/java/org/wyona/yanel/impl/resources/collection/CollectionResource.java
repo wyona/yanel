@@ -30,7 +30,8 @@ import org.wyona.yarep.core.Node;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.PathUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ import java.util.Calendar;
  */
 public class CollectionResource extends BasicXMLResource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(CollectionResource.class);
+    private static Logger log = LogManager.getLogger(CollectionResource.class);
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
@@ -135,6 +136,15 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     private StringBuilder getContentXMLOfYarepNode(String path) throws Exception {
         Repository repo = getRealm().getRepository();
         log.debug("Selected path: " + path);
+
+        if (!repo.existsNode(path)) {
+            log.warn("No such node '" + path + "'!");
+            StringBuilder sb = new StringBuilder();
+            sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + "TODO" + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+            sb.append("<yanel:exception>No such node: " + path + "</yanel:exception>");
+            sb.append("</dir:directory>");
+            return sb;
+        }
 
         // TODO: This doesn't seem to work ... (check on Yarep ...)
         if (repo.getNode(path).isResource()) {
