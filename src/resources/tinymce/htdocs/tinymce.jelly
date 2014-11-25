@@ -22,7 +22,7 @@
 -->
 
 <!--
-      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tiny_mce_4_1_5/tinymce.min.js"></script>
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce_4_1_5_jquery/tinymce.min.js"></script>
       <script language="javascript">
         var BACK2REALM = '${yanel.back2realm}';
       </script>        
