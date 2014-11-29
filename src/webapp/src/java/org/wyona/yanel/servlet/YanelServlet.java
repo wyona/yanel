@@ -1254,8 +1254,7 @@ public class YanelServlet extends HttpServlet {
         Usecase usecase = getUsecase(request);
         try {
             if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + pathWithoutQS + ", identity: " + identity + ", Usecase: " + usecase.getName());
-            // TODO: Also consider query string ...
-            authorized = realm.getPolicyManager().authorize(pathWithoutQS, identity, usecase);
+            authorized = realm.getPolicyManager().authorize(pathWithoutQS, request.getQueryString(), identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
@@ -2442,7 +2441,7 @@ public class YanelServlet extends HttpServlet {
     public void destroy() {
         super.destroy();
 
-        log.warn("DEBUG: Destroy Yanel instance...");
+        log.info("Destroy Yanel instance...");
         yanelInstance.destroy();
 
         if (scheduler != null) {
