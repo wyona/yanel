@@ -29,7 +29,9 @@ import java.io.File;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class is a singleton.
@@ -66,7 +68,7 @@ public class Yanel {
     // TODO: It would be good to have an administrative contact per Yanel instance
     //private String adminName, adminEmail;
 
-    private static Logger log = Logger.getLogger(Yanel.class);
+    private static Logger log = LogManager.getLogger(Yanel.class);
 
     /**
      * Private constructor
