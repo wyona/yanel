@@ -18,7 +18,8 @@ package org.wyona.yanel.core.workflow;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
@@ -43,7 +44,7 @@ import org.wyona.yarep.core.Revision;
  */
 public class WorkflowHelper {
     
-    private static Logger log = Logger.getLogger(WorkflowHelper.class);
+    private static Logger log = LogManager.getLogger(WorkflowHelper.class);
 
     protected static final String LIVE_REVISION_PROPERTY = "live-revision";
     protected static final String WORKFLOW_DATE_PROPERTY = "workflow-date";
