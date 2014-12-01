@@ -40,7 +40,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.validator.EmailValidator;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -62,7 +65,7 @@ import org.wyona.yarep.core.NodeType;
  */
 public class ForgotPassword extends BasicXMLResource {
 
-    private static Logger log = Logger.getLogger(ForgotPassword.class);
+    private static Logger log = LogManager.getLogger(ForgotPassword.class);
     private long totalValidHrs;
 
     private static final String PW_RESET_ID = "pwresetid";
