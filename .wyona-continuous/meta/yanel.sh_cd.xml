@@ -4,6 +4,7 @@
   <cd:environment id="development">
     <cd:tests>
       <cd:test type="human">build-yanel-on-yosemite</cd:test>
+      <cd:test type="auto" language="shell-script" file="build-yanel-and-run-canoo.sh">Build Yanel from scratch and run all Canoo tests</cd:test>
     </cd:tests>
   </cd:environment>
   <cd:environment id="staging"/>
