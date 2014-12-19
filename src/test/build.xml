@@ -219,6 +219,7 @@
 -->
 
     <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="htmlunit.tests.failed">
+      <test todir="${test.results.dir}" name="${test.class.name}" if="test.class.name"/>
       <batchtest todir="${test.results.dir}" unless="test.class.name">
         <fileset dir="${htmlunit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
       </batchtest>
