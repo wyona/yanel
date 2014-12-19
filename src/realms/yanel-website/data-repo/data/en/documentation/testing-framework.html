@@ -25,8 +25,21 @@ There are different kind of tests:
 whereas please make sure to have <a href="http://webtest.canoo.com">Canoo webtests</a> installed.
 <p>&#160;</p>
 <p>If you want to run the tests individually, then it's necessary to build and start yanel before running the tests.</p>
-<p><strong>IMPORTANT:</strong> If you want to run the htmlunit tests, you have to start tomcat and configure the host and url in</p>
+<p><strong>IMPORTANT:</strong> If you want to run the htmlunit tests, you have to start tomcat and configure the host and url inside</p>
 <pre>$YANEL_HOME/src/test/htmlunit/local.htmlunit-properties.xml
+</pre>
+<p>One can also set realm specific variables, like for example the realm prefix:</p>
+<pre>
+&lt;my-prefix&gt;my-realm&lt;/my-prefix&gt;
+</pre>
+<p>which then can be retrieved via the Java Test class:</p>
+<pre>
+    protected void setUp() throws Exception {
+        this.testName = "My Test";
+        super.setUp();
+        // INFO: Overwrite htmlunit configuration (src/test/htmlunit/local.htmlunit-properties.xml) and add element &lt;my-realm-prefix&gt;
+        REALM_PREFIX = config.getString("htmlunit.my-realm-prefix");
+    }
 </pre>
 <p>&#160;</p>
 <p>Then execute in $YANEL_HOME:</p>
