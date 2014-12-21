@@ -154,7 +154,7 @@ public interface Realm {
 
     /**
      * Please note that the root-dir element is optional
-     * @deprecated
+     * @deprecated Use new File(realm.getConfigFile().getParent()) instead
      */
     public File getRootDir();
 
