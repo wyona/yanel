@@ -16,7 +16,7 @@ import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.servlet.YanelServlet;
 
 /**
- *
+ * Generate menus of Yanel toolbar
  */
 abstract public class Menu {
 
