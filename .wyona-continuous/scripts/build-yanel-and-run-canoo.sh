@@ -2,8 +2,14 @@
 
 # Also see src/build/targets/continuous-integration/reCI
 
-YANEL_SRC=/home/wyonacontinuous/projects/yanel/repositories/yanel
-#YANEL_SRC=~/projects/yanel/repositories/yanel
+CURRENT_DIR=$( cd "$( dirname "$0" )" && pwd )
+echo "Current directory: $CURRENT_DIR"
+
+PARENT_DIR="$(dirname "$CURRENT_DIR")"
+echo "Parent directory: $PARENT_DIR"
+
+YANEL_SRC="$(dirname "$PARENT_DIR")"
+echo "Yanel source directory: $YANEL_SRC"
 
 echo "Build Yanel and run Canoo Web Tests."
 
