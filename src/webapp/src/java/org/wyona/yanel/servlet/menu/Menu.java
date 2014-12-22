@@ -6,7 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.map.Map;
@@ -18,7 +20,7 @@ import org.wyona.yanel.servlet.YanelServlet;
  */
 abstract public class Menu {
 
-    private static Logger log = Logger.getLogger(Menu.class);
+    private static Logger log = LogManager.getLogger(Menu.class);
     private String backToRealm;
     
     /**
