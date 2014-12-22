@@ -47,8 +47,11 @@ whereas please make sure to have <a href="http://webtest.canoo.com">Canoo webtes
 </pre>
 <p>&#160;</p>
 <p>To run single tests standalone:</p>
-<pre>cd $YANEL_HOME
+<pre>
+cd $YANEL_HOME
+
 ./build.sh -f src/test/build.xml junit -Dtest.class.name=org.wyona.yanel.impl.map.MapImplTest
+
 ./build.sh -f src/test/build.xml htmlunit -Dtest.class.name=org.wyona.yanel.htmlunit.yanelwebsite.SimpleWebTest
 </pre>
 <p>&#160;</p>
@@ -75,6 +78,14 @@ or to run a specific target
 src/realms/yanel-website/src/test/canoo/local.build.properties<br /></pre>
 <p>To run JMeter tests, use the "jmeter" target:</p>
 <pre>./build.sh [-f path/to/build.xml] jmeter<br /></pre>
+
+<p>&#160;</p>
+<h3>Debugging and Logging</h3>
+
+<p>
+The log level can be set inside <code>src/test/htmlunit/local.htmlunit-properties.xml</code> (<code>debugLevel</code>), whereas the log messages are written to standard output. The log is setup inside <code>src/test/htmlunit/org/wyona/yanel/htmlunit/AbstractHtmlUnitTest.java</code>.
+</p>
+
 <p>&#160;</p>
 <h3>How to write tests</h3>
 <p>Where to place core tests: <br />$YANEL_HOME/src/test/junit/ <br />$YANEL_HOME/src/test/htmlunit/ <br /><br />Where to place resource tests: <br />$YANEL_HOME/src/resources/MYRESOURCE/src/test/junit/ <br />$YANEL_HOME/src/resources/MYRESOURCE/src/test/htmlunit/</p>
