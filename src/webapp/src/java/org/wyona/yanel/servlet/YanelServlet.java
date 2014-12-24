@@ -537,8 +537,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response from view of resource
-     * @param TODO
-     * @param TODO
+     * @param request TODO
+     * @param response TODO
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // INFO: Generate "yanel" document in order to collect information in case something should go wrong or some meta information should be requested
