@@ -907,9 +907,10 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Perform the given transition on the indicated revision.
-     * @param request
-     * @param response
-     * @param transition
+     * @param request TODO
+     * @param response TODO
+     * @param revision TODO
+     * @param transition TODO
      * @throws ServletException
      * @throws IOException
      */
