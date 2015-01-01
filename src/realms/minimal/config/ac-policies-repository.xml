@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<repository class="org.wyona.yarep.impl.DefaultRepository">
+  <name>Minimal Realm Access Control Policies</name>
+
+  <paths class="org.wyona.yarep.impl.VFileSystemMapImpl" src="../repos/ac-policies"/>
+
+  <storage class="org.wyona.yarep.core.impl.vfs.VFileSystemStorage">
+    <content src="../repos/ac-policies"/>
+  </storage>
+</repository>
