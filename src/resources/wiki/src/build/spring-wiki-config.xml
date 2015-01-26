@@ -3,6 +3,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
+  <!-- INFO: See https://github.com/wyona/wiki-parser/blob/master/jspwiki-parser/src/java/org/wyona/jspwiki/WikiParser.java (jsp-wiki-parser-0.0.1-dev-r24881.jar) -->
   <bean id="jspWikiParser" class="org.wyona.jspwiki.WikiParser"/>
   <bean id="javaccWikiParser" class="org.wyona.wiki.Wiki2XML"/>
 </beans>
