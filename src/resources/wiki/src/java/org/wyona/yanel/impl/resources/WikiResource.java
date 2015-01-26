@@ -37,7 +37,9 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
@@ -70,7 +72,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class WikiResource extends Resource implements ViewableV1, CreatableV2, IntrospectableV1, ModifiableV2 {
 
-    private static Category log = Category.getInstance(WikiResource.class);
+    private static Logger log = LogManager.getLogger(WikiResource.class);
+
     private final String XML_MIME_TYPE = "application/xml";
     private DocumentBuilderFactory dbf = null;
     private HashMap properties = new HashMap();
