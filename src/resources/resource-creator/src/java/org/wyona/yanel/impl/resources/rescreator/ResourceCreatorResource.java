@@ -22,7 +22,9 @@ import org.wyona.yanel.core.transformation.XIncludeTransformer;
 import org.wyona.yanel.core.util.PathUtil;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
@@ -49,7 +51,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  */
 public class ResourceCreatorResource extends Resource implements ViewableV2{
-    private static Category log = Category.getInstance(ResourceCreatorResource.class);
+
+    private static Logger log = LogManager.getLogger(ResourceCreatorResource.class);
+
     private boolean ajaxBrowser = false;
 
     /**
@@ -693,7 +697,6 @@ public class ResourceCreatorResource extends Resource implements ViewableV2{
      */
     private StringBuilder getLookUp() {
         StringBuilder sb = new StringBuilder("");
-        //Sitetree sitetree = (Sitetree) getYanel().getBeanFactory().getBean("repo-navigation");
         Sitetree sitetree = getRealm().getRepoNavigation();
         Node node = null;
         String lookinPath = getRequest().getParameter("lookin");
