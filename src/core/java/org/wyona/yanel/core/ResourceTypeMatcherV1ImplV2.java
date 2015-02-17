@@ -15,7 +15,8 @@
  */
 package org.wyona.yanel.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.api.ResourceTypeMatcherV1;
 import org.wyona.yanel.core.map.Realm;
@@ -30,7 +31,7 @@ import java.io.Reader;
  */
 public class ResourceTypeMatcherV1ImplV2 implements ResourceTypeMatcherV1 {
 
-    private static Logger log = Logger.getLogger(ResourceTypeMatcherV1ImplV2.class);
+    private static Logger log = LogManager.getLogger(ResourceTypeMatcherV1ImplV2.class);
     
     /**
      * Get resource configuration for a given realm and for a given path.
