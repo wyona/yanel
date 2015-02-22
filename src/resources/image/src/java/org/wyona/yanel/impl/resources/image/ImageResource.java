@@ -34,6 +34,9 @@ public class ImageResource extends Resource implements ViewableV2  {
         return getRealm().getRepository().existsNode(getPath());
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getSize()
+     */
     public long getSize() throws Exception {
         // TODO Auto-generated method stub
         return 0;
