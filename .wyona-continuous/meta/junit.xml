@@ -3,7 +3,10 @@
 <cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
   <cd:environment id="development">
     <cd:tests>
-      <cd:test type="auto" language="shell-script" file="build-resource-and-run-junit-tests.sh" arguments="org.wyona.yanel.impl.resources.XMLResource">Build resource and run junit tests</cd:test>
+      <cd:test type="auto" language="shell-script" file="build-resource-and-run-junit-tests.sh" arguments="image org.wyona.yanel.impl.resources.image.ImageResource">Build resource and run junit tests</cd:test>
+<!--
+      <cd:test type="auto" language="shell-script" file="build-resource-and-run-junit-tests.sh" arguments="xml org.wyona.yanel.impl.resources.XMLResource">Build resource and run junit tests</cd:test>
+-->
     </cd:tests>
   </cd:environment>
   <cd:environment id="staging"/>
