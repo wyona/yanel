@@ -296,14 +296,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#write(java.io.InputStream)
      */
     public void write(InputStream in) throws Exception {
         log.warn("Not implemented yet!");
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getLastModified()
      */
     public long getLastModified() throws Exception {
         long lastModified;
