@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Wyona
+ * Copyright 2015 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
