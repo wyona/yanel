@@ -549,6 +549,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
 
+        // INFO: Yanel target environment
+        transformer.setParameter("yanel.target.environment", this.getYanel().getTargetEnvironment());
+
         // Add toolbar status
         String toolbarStatus = getToolbarStatus();
         if (toolbarStatus != null) {
