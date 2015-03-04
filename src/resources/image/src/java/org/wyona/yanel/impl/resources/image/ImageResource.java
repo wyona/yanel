@@ -138,6 +138,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Get scale factor
+     * @param sourceWidth TODO
      */
     private double getScaleFactor(double sourceWidth, double sourceHeight, double destWidth, double destHeight) {
         if (destWidth > 0 && destHeight <= 0) {
