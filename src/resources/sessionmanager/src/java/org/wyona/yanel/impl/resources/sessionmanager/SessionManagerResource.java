@@ -99,10 +99,15 @@ public class SessionManagerResource extends BasicXMLResource {
                     sessionEl.appendChild(lastAccessedURLEl);
                 }
             } catch (Exception e) {
-                log.error(e.getMessage());
                 Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
                 exceptionEl.setAttribute("session-id", hashSessionID(activeSessions[i].getId()));
-                exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+                if (e.getMessage() != null) {
+                    log.error(e.getMessage());
+                    exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+                } else {
+                    log.error(e, e);
+                    exceptionEl.appendChild(doc.createTextNode("Exception message is null, please see stacktrace inside log file."));
+                }
                 rootEl.appendChild(exceptionEl);
             }
         }
