@@ -209,6 +209,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Check whether cache node exists and if so, then compare last modified
+     * @return TODO
      */
     private boolean existsMoreRecentCacheNode() throws Exception {
         String cacheRootPath = getResourceConfigProperty("cache-root-path");
