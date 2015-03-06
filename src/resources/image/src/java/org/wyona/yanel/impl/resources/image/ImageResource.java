@@ -104,6 +104,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Get destination width
+     * @return TODO
      */
     private int getDestWidth() throws Exception {
         // TODO: Get destination width from query string: getEnvironment().getRequest().getParameter("width")
