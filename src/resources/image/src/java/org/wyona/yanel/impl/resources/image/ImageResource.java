@@ -11,7 +11,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yarep.core.Node;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.AffineTransformOp;
@@ -23,7 +24,7 @@ import javax.imageio.ImageIO;
  */
 public class ImageResource extends Resource implements ViewableV2  {
     
-    private static Logger log = Logger.getLogger(ImageResource.class);
+    private static Logger log = LogManager.getLogger(ImageResource.class);
 
     private String DEFAULT_CACHE_DIRECTORY = "/cached-images";
 
