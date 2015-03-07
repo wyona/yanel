@@ -1,7 +1,6 @@
 /*
  * Copyright 2011 Wyona
  */
-
 package org.wyona.yanel.impl.resources.image;
 
 import org.wyona.yanel.core.Resource;
