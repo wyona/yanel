@@ -9,6 +9,7 @@ echo "Parent directory: $PARENT_DIR"
 YANEL_SRC="$(dirname "$PARENT_DIR")"
 echo "Yanel source directory: $YANEL_SRC"
 
+#COMMIT_ID=$1
 YANEL_REVISION=338f86612628fdd883ecd4cb541d054c184c5769
 
 cd $YANEL_SRC
