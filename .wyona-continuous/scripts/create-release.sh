@@ -12,3 +12,5 @@ echo "Yanel source directory: $YANEL_SRC"
 cd $YANEL_SRC
 ./build.sh source-snapshot
 #./build.sh bin-snapshot
+
+#TODO: Secure copy releases to Yanel website http://www.yanel.org/en/download/unix.html
