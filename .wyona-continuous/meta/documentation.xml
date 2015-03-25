@@ -4,7 +4,9 @@
   <cd:environment id="development">
     <cd:tests>
       <cd:test type="wyona-auto">well-formedness</cd:test>
+<!-- TODO: Implement spellchecker
       <cd:test type="auto">spellchecker-en</cd:test>
+-->
       <cd:test type="human">proofreading</cd:test>
     </cd:tests>
   </cd:environment>
