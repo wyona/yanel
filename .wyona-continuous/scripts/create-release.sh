@@ -9,10 +9,11 @@ echo "Parent directory: $PARENT_DIR"
 YANEL_SRC="$(dirname "$PARENT_DIR")"
 echo "Yanel source directory: $YANEL_SRC"
 
-YANEL_REVISION=c76b2afc69489824bc8f9c1f05ffdcffcfa07c04
+YANEL_REVISION=338f86612628fdd883ecd4cb541d054c184c5769
 
 cd $YANEL_SRC
 
+rm -rf build/source-snapshots
 ./build.sh source-snapshot -Dyanel.revision=$YANEL_REVISION
 #./build.sh bin-snapshot
 
