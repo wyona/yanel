@@ -18,4 +18,10 @@ cd $YANEL_SRC
 
 scp build/source-snapshots/wyona-yanel-3.0.0-r${YANEL_REVISION}-src.zip wyona@www.yanel.org:src/yanel-node1/src/realms/yanel-website/data-repo/data/download/source-snapshots/.
 
-#TODO: Update Yanel website http://www.yanel.org/en/download/unix.html
+# TODO: Update Yanel website http://www.yanel.org/en/download/unix.html
+# src/realms/yanel-website/data-repo/data/en/download/unix.html
+# src/realms/yanel-website/data-repo/data/en/download/windows.html
+# src/realms/yanel-website/data-repo/data/index.html
+# src/realms/yanel-website/data-repo/data/homepage.xml
+
+# TODO: Delete old release on server www.yanel.org
