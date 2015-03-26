@@ -19,6 +19,7 @@ rm -rf build/source-snapshots
 ./build.sh source-snapshot -Dyanel.revision=$YANEL_REVISION
 #./build.sh bin-snapshot
 
+# TODO: Add public key to remote server
 #scp build/source-snapshots/wyona-yanel-3.0.0-r${YANEL_REVISION}-src.zip wyona@www.yanel.org:src/yanel-node1/src/realms/yanel-website/data-repo/data/download/source-snapshots/.
 
 # TODO: Update Yanel website http://www.yanel.org/en/download/unix.html
