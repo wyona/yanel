@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <xsl:stylesheet version="1.0"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns="http://www.w3.org/1999/xhtml"
@@ -25,8 +26,7 @@
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title><i18n:text key="collection"/>: <xsl:value-of select="/dir:directory/@yanel:path"/>
-        </title>
+        <title>Download (UNIX)</title>
         <script src="{$yanel.htdocs}yanel-js/sorttable.js" type="text/javascript"/>
       </head>
       <body>
@@ -39,7 +39,7 @@
 <table border="1" cellspacing="0" cellpadding="0" bgcolor="#dddddd">
 <tbody>
 <tr>
-<th>Package</th><th>Size</th><th>Date</th><th>Issues</th>
+<th>Package</th><th>File&#160;Size</th><th>Date</th><th>Issues</th>
 </tr>
 <tr>
 <td valign="top"><a href="../../download/source-snapshots/wyona-yanel-3.0.0-rc76b2afc69489824bc8f9c1f05ffdcffcfa07c04-src.zip">wyona-yanel-3.0.0-rc76b2afc69489824bc8f9c1f05ffdcffcfa07c04-src.zip</a></td>
@@ -93,7 +93,7 @@
       </xsl:when>
       <!-- mega -->
       <xsl:when test="$bytes &gt;= 1048576">
-        <xsl:value-of select="round($bytes div 1048576)"/> MB
+        <xsl:value-of select="round($bytes div 1048576)"/>&#160;MB
       </xsl:when>
       <!-- kilo -->
       <xsl:when test="$bytes &gt;= 1024">
