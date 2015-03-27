@@ -69,26 +69,26 @@ public class ResourceTypeDefinition {
      * @param in InputStream containing resource type definition
      */
     public ResourceTypeDefinition(java.io.InputStream in) {
-        initRTD(in);
+        try {
+            initRTD(in);
+        } catch(Exception e) {
+            log.error(e, e);
+        }
     }
 
     /**
      *
      */
-    private void initRTD(java.io.InputStream in) {
+    private void initRTD(java.io.InputStream in) throws Exception {
         // TODO: Set configURL
         DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
         Configuration config;
-        try {
-            config = builder.build(in);
-            String localName = config.getAttribute("name", null);
-            String namespace= config.getAttribute("namespace", null);
-            uname = "<{" + namespace + "}" + localName + "/>";
-            classname = config.getAttribute("class", null);
-            description = config.getChild("description").getValue();
-        } catch(Exception e) {
-            log.error(e, e);
-        }
+        config = builder.build(in);
+        String localName = config.getAttribute("name", null);
+        String namespace= config.getAttribute("namespace", null);
+        uname = "<{" + namespace + "}" + localName + "/>";
+        classname = config.getAttribute("class", null);
+        description = config.getChild("description").getValue();
     }
 
     /**
