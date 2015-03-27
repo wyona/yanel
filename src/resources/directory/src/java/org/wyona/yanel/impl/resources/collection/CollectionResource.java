@@ -103,6 +103,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         StringBuilder sb = new StringBuilder();
         sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + new File(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
 
+        // TODO: Make ordering/sorting configurable!
+        log.warn("TODO: Make order/sorting configurable!");
         File[] children = new File(path).listFiles();
         Calendar calendar = Calendar.getInstance();
         if (children != null) {
@@ -110,6 +112,12 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                 if (children[i].isFile()) {
                     calendar.setTimeInMillis(children[i].lastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
+                    log.warn("DEBUG: File last modified: " + lastModified);
+                    if (getResourceConfigProperty("date-format") != null) {
+                        java.text.DateFormat df = new java.text.SimpleDateFormat(getResourceConfigProperty("date-format"));
+                        lastModified = df.format(children[i].lastModified());
+                        log.warn("DEBUG: File last modified (formatted): " + lastModified);
+                    }
                     sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].lastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].length() + "\"/>");
                 } else if (children[i].isDirectory()) {
                     calendar.setTimeInMillis(children[i].lastModified());
@@ -170,6 +178,12 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                 if (children[i].isResource()) {
                     calendar.setTimeInMillis(children[i].getLastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
+                    log.warn("DEBUG: File last modified: " + lastModified);
+                    if (getResourceConfigProperty("date-format") != null) {
+                        java.text.DateFormat df = new java.text.SimpleDateFormat(getResourceConfigProperty("date-format"));
+                        lastModified = df.format(children[i].getLastModified());
+                        log.warn("DEBUG: File last modified (formatted): " + lastModified);
+                    }
                     sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
                 } else if (children[i].isCollection()) {
                     sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
@@ -249,6 +263,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             return new StreamSource(getRealm().getRepository().getNode(customDefaultXSLT).getInputStream());
         }
 
+        // INFO: If no property 'default-xslt' set, then fallback to XSLT part of this resource
         File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
         if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
         return new StreamSource(defaultXSLTFile);
