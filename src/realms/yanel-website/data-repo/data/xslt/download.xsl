@@ -23,15 +23,17 @@
   <xsl:param name="yarep.parent" select="'YAREPPARENT_IS_NULL'"/>
   <xsl:param name="yanel.htdocs" select="'YANELHTDOCS_IS_NULL'"/>
 
+  <xsl:variable name="operating.system"><xsl:choose><xsl:when test="$yanel.path.name = 'windows.html'">Windows</xsl:when><xsl:otherwise>UNIX</xsl:otherwise></xsl:choose></xsl:variable>
+
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
-        <title>Download (UNIX)</title>
+        <title>Download (<xsl:value-of select="$operating.system"/>)</title>
         <script src="{$yanel.htdocs}yanel-js/sorttable.js" type="text/javascript"/>
       </head>
       <body>
 
-<h1>Download (UNIX)</h1>
+<h1>Download (<xsl:value-of select="$operating.system"/>)</h1>
 <p>You can select to download a source code snapshot from below, or get the latest version of Yanel through our <a href="../../download/source-repository.html">Git repository</a>. Please note that we have a strong focus on keeping the <a href="../../download/source-repository.html">Git repository</a> stable, and source code snapshots can become out of date rather quickly. If you are interested in our development methodology, see the <a href="../development/processes/index.html">page on processes</a>.</p>
 <p><span style="font-size: 15px; font-weight: bold;">Source Code Snapshots</span></p>
 
