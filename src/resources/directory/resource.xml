@@ -10,5 +10,6 @@ Collection (resp. Directory, resp. Folder) resource
   <property name="xslt"/> <!-- Can be used multiple times (see XML resource), for example to apply a global XSLT generating a global header and navigation -->
   <property name="mime-type"/>
   <property name="yanel-path"/> <!-- OPTIONAL: Set a specific yarep collection path, whereas one can also use the file protocol (e.g. file:/home/USER) in order to access the file system instead a yarep repository -->
+  <property name="date-format"/> <!-- OPTIONAL: Set a specific date format, e.g. 'dd MM yyyy' or 'yyyy-MM-dd'T'HH:mm:ssZ' -->
 </rtd>
 </resource>
