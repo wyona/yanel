@@ -41,12 +41,14 @@
 <tr>
 <th>Package</th><th>File&#160;Size</th><th>Date</th><th>Issues</th>
 </tr>
+<!-- TODO: Remove hard coded example
 <tr>
 <td valign="top"><a href="../../download/source-snapshots/wyona-yanel-3.0.0-rc76b2afc69489824bc8f9c1f05ffdcffcfa07c04-src.zip">wyona-yanel-3.0.0-rc76b2afc69489824bc8f9c1f05ffdcffcfa07c04-src.zip</a></td>
 <td valign="top">14MB</td>
 <td valign="top">March 25, 2015</td>
 <td valign="top">No issues reported so far</td>
 </tr>
+-->
 <xsl:for-each select="/dir:directory/dir:file">
   <xsl:if test="starts-with(@name, 'wyona-yanel')">
   <xsl:apply-templates select="." mode="hugo"/>
