@@ -30,7 +30,9 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFilter;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.commons.io.FileUtil;
 import org.wyona.yanel.core.map.RealmManager;
@@ -40,7 +42,7 @@ import org.wyona.yanel.core.map.RealmManager;
  */
 public class ResourceTypeRegistry {
 
-    private static Category log = Category.getInstance(ResourceTypeRegistry.class);
+    private static Logger log = LogManager.getLogger(ResourceTypeRegistry.class);
 
     public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
@@ -192,7 +194,8 @@ public class ResourceTypeRegistry {
                                 //URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
                                 log.info("Resource config URL: " + resourceURL);
                                 try {
-                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
+                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL);
+                                    //ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
                                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                                     log.debug("Classname: " + rtd.getResourceTypeClassname());
                                     hm.put(rtd.getResourceTypeUniversalName(), rtd);
