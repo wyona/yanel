@@ -63,6 +63,34 @@
 <h2>Source Code from Git Repository</h2>
 <p>See&#160;<a href="../../download/source-repository.html">Wyona's Git repository</a>.</p>
 
+<!--
+<h2>Binary Snapshots</h2>
+<p>There are no snapshots available yet.</p>
+-->
+<!--
+<p>
+<table width="526" height="66" cellspacing="0" cellpadding="0" border="1" bgcolor="#dddddd">
+<tbody>
+<tr>
+<th>Package</th><th>Size</th><th>Date</th><th>Issues</th>
+</tr>
+<tr>
+<td valign="top">i<a href="../../download/binary-snapshots/windows/install-yanel-1.0-dev-r25247.exe" mce_href="../../download/binary-snapshots/windows/install-yanel-1.0-dev-r25247.exe" shape="rect" mce_shape="rect">nstall-yanel-1.0-dev-r25247.exe</a></td>
+<td valign="top">33MB</td>
+<td valign="top">June 21, 2007</td>
+<td valign="top">No issues reported so far</td>
+</tr>
+<tr>
+<td valign="top"><a shape="rect" mce_shape="rect" href="../../download/binary-snapshots/windows/install-yanel-1.0-dev-r24441.exe" mce_href="../../download/binary-snapshots/windows/install-yanel-1.0-dev-r24441.exe">install-yanel-1.0-dev-r24441.exe</a></td>
+<td valign="top">33MB</td>
+<td valign="top">May 14, 2007</td>
+<td valign="top"><a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5338" mce_href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5338">5338</a>, <a href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5340" mce_href="http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=5340">5340</a></td>
+</tr>
+</tbody>
+</table>
+</p>
+-->
+
       </body>
     </html>
   </xsl:template>
