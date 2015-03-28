@@ -1,9 +1,27 @@
 <?xml version="1.0"?>
 
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
-  <yanel:rti name="xml" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+  <yanel:rti name="directory" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="yanel-path" value="/download/source-snapshots"/>
 
   <yanel:property name="mime-type" value="application/xhtml+xml"/>
+  <yanel:property name="default-xslt" value="/xslt/download.xsl"/>
   <yanel:property name="xslt" value="/xslt/global.xsl"/>
-  <yanel:property name="workflow-schema" value="/workflow/workflow-with-review.xml"/>
+  <yanel:property name="date-format" value="dd MM yyyy HH:mm:ssZ"/>
+
+<!--
+  <yanel:custom-config>
+    <views xmlns="http://www.wyona.org/yanel/rti/1.0">
+      <view id="default">
+        <xslt>/xslt/global.xsl</xslt>
+        <mime-type>text/html</mime-type>
+        <serializer key="HTML_TRANSITIONAL"/>
+      </view>
+      <view id="xml">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
+-->
 </yanel:resource-config>
