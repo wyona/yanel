@@ -898,6 +898,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             log.debug("Redirect to original request with refresh query string attached: " + urlWithoutLogoutQS);
 
             response.setHeader("Location", urlWithoutLogoutQS.toString());
+            // 307 SC_TEMPORARY_REDIRECT
             response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_TEMPORARILY); // INFO: We use 302 instead 301, because otherwise a proxy server, which might be in between might cache the response of Yanel, which means a second logout won't work, because the request won't be forwarded to Yanel by the proxy server
 
             return true;
