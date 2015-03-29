@@ -203,6 +203,8 @@ public class ResourceTypeRegistry {
                                     log.error("Exception re registring resource with package '" + packageName + "' and resource definition URL '" + resourceURL + "'!");
                                     log.error(exception, exception);
                                 }
+                            } else {
+                                log.warn("Package '" + packageURL.getFile() + "' does not contain a resource configuration!");
                             }
                         }
                     } else if (new File(packageURL.getPath()).isDirectory()) {
