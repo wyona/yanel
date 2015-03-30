@@ -5,6 +5,7 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0" version="2012012400">
 
   <changes>
+    <change version="20150330">Generic mail.smtp properties enabled, like for example mail.smtp.localhost</change>
     <change version="20120124">target environment configuration added</change>
     <change version="20100126">smtp configuration added</change>
   </changes>
@@ -32,6 +33,9 @@
   -->
 <!--
   <smtp host="mail.foo.bar" port="25" username="foo" password="bar"/>
+-->
+<!-- INFO: About mail.smtp properties see for example https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+  <smtp host="localhost" port="25" mail.smtp.localhost="www.foo.bar"/>
 -->
 
   <!-- # Target environment configuration (Please note that one is free to choose the name of a target environment, but it's recommended to use the below names by convention: prod = production, ua-test = user acceptance test, ci-test = continuous integration test, dev = development) -->
