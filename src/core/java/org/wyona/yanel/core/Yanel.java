@@ -306,23 +306,34 @@ public class Yanel {
      */
     private void configureSMTP(Configuration config, File configFile) throws Exception {
        if (config.getChild("smtp", false) != null) {
-
-           String smtpPortSt = config.getChild("smtp").getAttribute("port");
+           Configuration smtpConfig = config.getChild("smtp");
+           String smtpPortSt = smtpConfig.getAttribute("port");
            try {
                smtpPort = Integer.parseInt(smtpPortSt);
            } catch(NumberFormatException e) {
                log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
            }
 
-           smtpHost = config.getChild("smtp").getAttribute("host");
+           smtpHost = smtpConfig.getAttribute("host");
 
            // INFO: SMTP Authentication (optional), which is normally necessary in order to relay messages to other hosts/domains
-           smtpUsername = config.getChild("smtp").getAttribute("username", null);
-           smtpPassword = config.getChild("smtp").getAttribute("password", null);
+           smtpUsername = smtpConfig.getAttribute("username", null);
+           smtpPassword = smtpConfig.getAttribute("password", null);
 
            java.util.Properties props = new java.util.Properties();
            props.put("mail.smtp.host", smtpHost);
            props.put("mail.smtp.port", smtpPortSt);
+
+           // INFO: Set generic mail.smtp.* attributes, like for example 'mail.smtp.localhost'
+           String[] mailSmtpAttrNames = smtpConfig.getAttributeNames();
+           if (mailSmtpAttrNames != null && mailSmtpAttrNames.length > 0) {
+               for (int i = 0; i < mailSmtpAttrNames.length; i++) {
+                   if (mailSmtpAttrNames[i].startsWith("mail.smtp.")) {
+                       props.put(mailSmtpAttrNames[i], smtpConfig.getAttribute(mailSmtpAttrNames[i]));
+                   }
+               } 
+           }
+
            // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
            javax.mail.Session session = null;
            if (smtpUsername != null && smtpPassword != null) {
