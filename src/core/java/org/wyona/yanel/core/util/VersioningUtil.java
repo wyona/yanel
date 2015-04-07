@@ -23,14 +23,15 @@ import org.wyona.yanel.core.api.attributes.VersionableV3;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility class in order to roll-back to a particular revision
  */
 public class VersioningUtil {
 
-    private static Logger log = Logger.getLogger(VersioningUtil.class);
+    private static Logger log = LogManager.getLogger(VersioningUtil.class);
 
     /**
      * Revert to a previous revision
