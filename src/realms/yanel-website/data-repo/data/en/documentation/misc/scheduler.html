@@ -7,10 +7,18 @@
 </head>
 <body>
 <h1>Scheduler<br /></h1>
-<p>The scheduler is currently based on <a href="http://www.quartz-scheduler.org/">Quartz</a>.</p>
+<p>The scheduler is currently based on <a href="http://www.quartz-scheduler.org/">Quartz</a>, whereas it is turned off by default. In order to enable it, one has to set
 
-<p>One can configure jobs per realm (e.g. src/realms/from-scratch-realm-template/data-repo/data/scheduler-jobs.xml), whereas the configuration is read during startup. An example can be found below:</p>
+<pre>
+&lt;scheduler enabled="true"/&gt;
+</pre>
 
+inside the Yanel configuration <a href="../configuration/yanel_xml.html">yanel.xml</a>
+</p>
+
+<p>One can configure jobs per realm (e.g. <code>src/realms/from-scratch-realm-template/data-repo/data/scheduler-jobs.xml</code>), whereas the configuration is read during startup. An example can be found below:</p>
+
+<p>
 <pre>
 &lt;?xml version=&quot;1.0&quot;?&gt;
 
@@ -26,6 +34,11 @@
   &lt;/jobs&gt;
 &lt;/scheduler&gt;<br/>
 </pre>
+</p>
+
+<p>
+In case you want to prevent that the same job is running concurrently multiple times, for example because the interval is configured shorter than it takes to complete the job, then you might want to implement <a href="http://quartz-scheduler.org/api/2.2.0/org/quartz/StatefulJob.html">StatefulJob</a> instead <a href="http://quartz-scheduler.org/api/2.2.0/org/quartz/Job.html">Job</a>.
+</p>
 
 </body>
 </html>
