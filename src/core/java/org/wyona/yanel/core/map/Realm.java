@@ -80,7 +80,7 @@ public interface Realm {
     public boolean isProxySet();
 
     /**
-     *
+     * TODO: What is the difference to getReverseProxyConfig().getHostName()?
      */
     public String getProxyHostName();
 
