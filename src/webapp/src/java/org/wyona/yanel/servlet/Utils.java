@@ -49,7 +49,6 @@ public class Utils {
             int proxyPort = realm.getProxyPort();
             String proxyPrefix = realm.getProxyPrefix();
             ReverseProxyConfig reverseProxyConfig = realm.getReverseProxyConfig();
-            log.warn("DEBUG BILLY: Hostname: " + realm.getProxyHostName() + ", " + reverseProxyConfig.getHostName());
 
             URL url = new URL(request.getRequestURL().toString());
 
