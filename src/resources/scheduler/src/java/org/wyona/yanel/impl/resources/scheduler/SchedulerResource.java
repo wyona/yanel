@@ -46,7 +46,8 @@ public class SchedulerResource extends BasicXMLResource {
         rootEl.setAttribute("current-time", "" + new java.util.Date());
 
         if (schedulers == null || schedulers.isEmpty()) {
-            rootEl.appendChild(doc.createElement("no-schedulers-running"));
+            Element noSchedulerRunningEl = (Element) rootEl.appendChild(doc.createElement("no-schedulers-running"));
+            noSchedulerRunningEl.appendChild(doc.createTextNode("Scheduler is probably disabled inside yanel.xml"));
         } else {
             Element numberOfSchedulersEl = (Element)rootEl.appendChild(doc.createElement("number-of-schedulers"));
             numberOfSchedulersEl.appendChild(doc.createTextNode("" + schedulers.size()));
