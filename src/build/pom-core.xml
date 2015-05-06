@@ -16,19 +16,19 @@
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-core</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.4.1-r818646b44a7a0b3a68e3e4f732a6b888dc03116b</version>
+      <version>1.5.0-rd50d2e5f4f88a38f3b6dd5f65f6dad5381099a9d</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-impl</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.4.1-r818646b44a7a0b3a68e3e4f732a6b888dc03116b</version>
+      <version>1.5.0-rd50d2e5f4f88a38f3b6dd5f65f6dad5381099a9d</version>
     </dependency>
     <dependency>
       <groupId>wyona-org-security</groupId>
       <artifactId>wyona-org-security-util</artifactId>
       <!-- IMPORTANT: Please make sure to update dependencies.xml as well! -->
-      <version>1.4.1-r818646b44a7a0b3a68e3e4f732a6b888dc03116b</version>
+      <version>1.5.0-rd50d2e5f4f88a38f3b6dd5f65f6dad5381099a9d</version>
     </dependency>
     <dependency>
       <groupId>yarep</groupId>
