@@ -178,6 +178,18 @@
      
     <xsl:call-template name="process-all-groups"/>         
 -->
+
+    <h2>History</h2>
+    <table>
+      <tr>
+        <th>Usecase</th><th>Description</th><th>Date</th>
+      </tr>
+    <xsl:for-each select="history/event">
+      <tr>
+        <td><xsl:value-of select="@usecase"/></td><td><xsl:value-of select="@description"/></td><td><xsl:value-of select="@date"/></td>
+      </tr>
+    </xsl:for-each>
+    </table>
   
 
 <!-- One shouldn't be able to delete oneself! -->
