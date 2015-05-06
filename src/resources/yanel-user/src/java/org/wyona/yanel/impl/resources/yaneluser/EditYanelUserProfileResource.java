@@ -117,6 +117,18 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
             }
 
+            org.wyona.security.core.UserHistory history = user.getHistory();
+            if (history != null) {
+                java.util.List<org.wyona.security.core.UserHistory.HistoryEntry> entries = history.getHistory();
+                for (org.wyona.security.core.UserHistory.HistoryEntry entry: entries) {
+                    Element historyEl = (Element) rootEl.appendChild(doc.createElement("history"));
+                    Element eventEl = (Element) historyEl.appendChild(doc.createElement("event"));
+                    eventEl.setAttribute("usecase", entry.getUsecase());
+                    eventEl.setAttribute("description", entry.getDescription());
+                    eventEl.setAttribute("date", "" + entry.getDate());
+                }
+            }
+
             return doc;
     }
 
