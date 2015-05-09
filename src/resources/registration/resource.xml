@@ -15,6 +15,7 @@ User registration
 
   <!-- Optional -->
   <property name="email-confirmation" default-value="true"/> <!-- INFO: Set to false if no email confirmation/activation should re required. -->
+  <property name="subject" default-value="Activate User Registration (sent by Yanel)"/> <!-- INFO: Subject of confirmation/activation email. -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->
   <property name="include-activation-link" default-value="false"/> <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
 
