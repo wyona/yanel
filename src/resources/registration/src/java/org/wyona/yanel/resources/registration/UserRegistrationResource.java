@@ -242,7 +242,11 @@ public class UserRegistrationResource extends BasicXMLResource {
                 body.append("\n\nTo activate your account, you need to click on the following link:");
                 body.append("\n\n" + getActivationURL(userRegBean));
                 body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration (sent by Yanel)", body.toString());
+                String subject = "Activate User Registration (sent by Yanel)";
+                if (getResourceConfigProperty("subject") != null) {
+                    subject = getResourceConfigProperty("subject");
+                }
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), subject, body.toString());
                 element.setAttribute("sent-by-yanel", "true");
             } else {
                 element.setAttribute("sent-by-yanel", "false");
