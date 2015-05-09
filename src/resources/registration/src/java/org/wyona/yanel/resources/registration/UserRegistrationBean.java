@@ -20,6 +20,7 @@ public class UserRegistrationBean {
     private String phone;
 
     private boolean confirmedByAdministrator = false;
+    private String adminConfirmationKey = null;
 
     /**
      *
@@ -42,10 +43,31 @@ public class UserRegistrationBean {
     }
 
     /**
+     * Set flag whether administrator has confirmed registration request
+     */
+    public void setAdministratorConfirmed(boolean hasConfirmed) {
+        this.confirmedByAdministrator = hasConfirmed;
+    }
+
+    /**
      *
      */
     public boolean hasAdministratorConfirmedRegistration() {
         return confirmedByAdministrator;
+    }
+
+    /**
+     *
+     */
+    public void setAdministratorConfirmationKey(String key) {
+        this.adminConfirmationKey = key;
+    }
+
+    /**
+     *
+     */
+    public String getAdministratorConfirmationKey() {
+        return adminConfirmationKey;
     }
 
     /**
