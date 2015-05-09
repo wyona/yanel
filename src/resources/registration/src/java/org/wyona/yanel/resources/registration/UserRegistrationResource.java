@@ -771,7 +771,15 @@ public class UserRegistrationResource extends BasicXMLResource {
                     if (getRealm().getRepository().existsNode(path)) {
                         Node registrationRequestNode = getRealm().getRepository().getNode(path);
                         UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
-                        StringBuilder body = new StringBuilder("TODO");
+
+                        Element adminConfirmedEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "administrator-confirmed"));
+                        adminConfirmedEl.setAttribute("user-email", urBean.getEmail());
+
+                        StringBuilder body = new StringBuilder("Administrator has confirmed your registration request.");
+                        body.append("\n\nTo activate your account, you need to click on the following link:");
+                        body.append("\n\n" + getActivationURL(urBean));
+                        // TODO: Calculate remaining time
+                        //body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
                         MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
