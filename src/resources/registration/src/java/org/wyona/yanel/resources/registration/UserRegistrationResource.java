@@ -243,6 +243,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
                 }
+
                 StringBuilder body = new StringBuilder();
                 body.append("Thank you for your registration.");
                 body.append("\n\nTo activate your account, you need to click on the following link:");
@@ -253,6 +254,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     subject = getResourceConfigProperty("subject");
                 }
                 MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), subject, body.toString());
+
                 element.setAttribute("sent-by-yanel", "true");
             } else {
                 element.setAttribute("sent-by-yanel", "false");
@@ -607,6 +609,24 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Set attribute that administrator has confirmed registration request
+     * @param requestUUID UUID of registration request
+     */
+    private void setAdminConfirmed(String requestUUID) throws Exception {
+        String path = getActivationNodePath(requestUUID);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node node = getRealm().getRepository().getNode(path);
+            Document doc = XMLHelper.readDocument(node.getInputStream());
+            doc.getDocumentElement().setAttribute(ADMINISTRATOR_CONFIRMED, "true");
+            java.io.OutputStream out = node.getOutputStream();
+            XMLHelper.writeDocument(doc, out);
+            out.close();
+        } else {
+            log.warn("No such reqgistration request '" + path + "'!");
+        }
+    }
+
+    /**
      * Add administrator confirmation key to registration request
      * @param requestUUID UUID of registration request
      * @param adminKey Administrator confirmation key
@@ -745,8 +765,15 @@ public class UserRegistrationResource extends BasicXMLResource {
             if (adminConfirmationKey != null) {
                 log.warn("DEBUG: Administrator confirms registration request.");
                 if (adminKeyMatches(adminConfirmationKey, uuid, doc)) {
-                    log.warn("TODO: Set attribute ADMINISTRATOR_CONFIRMED");
-                    log.warn("TODO: Send email to user that administrator has confirmed registration request");
+                    setAdminConfirmed(uuid);
+
+                    String path = getActivationNodePath(uuid);
+                    if (getRealm().getRepository().existsNode(path)) {
+                        Node registrationRequestNode = getRealm().getRepository().getNode(path);
+                        UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
+                        StringBuilder body = new StringBuilder("TODO");
+                        MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
+                    }
                 } else {
                     log.warn("Administrator key did not match!");
                 }
