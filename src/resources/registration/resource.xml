@@ -24,6 +24,8 @@ User registration
   <property name="max-password-length" default-value="15"/>
 
   <property name="notify-administrator" default-value="false"/> <!-- INFO: If set to true, then email will be sent to administrator when user has activated/confirmed the account or rather the provided email address -->
-  <property name="administrator-email"/> <!-- If 'notify-administrator' is set to true, then this property also needs to be set! -->
+  <property name="administrator-email"/> <!-- INFO: If 'notify-administrator' is set to true, then this property also needs to be set! -->
+
+  <property name="administrator-confirmation-required" default-value="false"/> <!-- INFO: If set to true, then user only gets activated when administrator also confirms registration request -->
 </rtd>
 </resource>
