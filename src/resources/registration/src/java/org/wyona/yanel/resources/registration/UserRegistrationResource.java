@@ -229,9 +229,17 @@ public class UserRegistrationResource extends BasicXMLResource {
         try {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
             if (sendNotificationsEnabled()) {
+                if (administratorConfirmationRequired()) {
+                    StringBuilder body = new StringBuilder();
+                    body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
+                    body.append("\n\nPlease confirm the request by clicking on the following link:");
+                    body.append("\n\n" + getActivationURL(userRegBean) + "TODO");
+                    body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
+                }
                 StringBuilder body = new StringBuilder();
                 body.append("Thank you for your registration.");
-                body.append("\n\nTo activate your account, you need to  click on the following link:");
+                body.append("\n\nTo activate your account, you need to click on the following link:");
                 body.append("\n\n" + getActivationURL(userRegBean));
                 body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
                 MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration (sent by Yanel)", body.toString());
@@ -283,6 +291,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Activate user
      * @param userRegBean User registration bean containing gender, firstname, etc.
+     * @return activated user
      */
     protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
         long customerID = new java.util.Date().getTime();
@@ -484,8 +493,19 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Check whether administrator needs to confirm registration request
+     */
+    private boolean administratorConfirmationRequired() throws Exception {
+        if (getResourceConfigProperty("administrator-confirmation-required") != null && getResourceConfigProperty("administrator-confirmation-required").equals("true")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Try to activate user registration
      * @param uuid UUID of user registration activation request
+     * @param doc Document containing response to user trying to activate account
      * @return true if user registration activation was successful, otherwise return false if actication failed
      */
     protected boolean activateRegistration(String uuid, Document doc) {
@@ -495,8 +515,15 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                 UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
 
-                registerUser(doc, urBean);
-                getRealm().getRepository().getNode(path).delete();
+                Element rootElement = doc.getDocumentElement();
+
+                if (administratorConfirmationRequired() && !urBean.hasAdministratorConfirmedRegistration()) {
+                    log.warn("Administrator has not confirmed registration request yet!");
+                    rootElement.appendChild(doc.createElement("administrator-not-confirmed-yet"));
+                    return false;
+                } else {
+                    registerUser(doc, urBean);
+                    getRealm().getRepository().getNode(path).delete();
 
                 if (doNotifyAdministrator()) {
                     StringBuilder body = new StringBuilder();
@@ -514,8 +541,6 @@ public class UserRegistrationResource extends BasicXMLResource {
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", body.toString());
                 }
 
-                Element rootElement = doc.getDocumentElement();
-
                 // TODO: Add gender/salutation
 
                 Element emailE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, EMAIL));
@@ -528,6 +553,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
 
                 return true;
+                }
             } else {
                 log.error("No such activation request node: " + path);
                 return false;
