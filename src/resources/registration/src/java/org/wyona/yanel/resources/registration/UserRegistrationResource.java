@@ -51,6 +51,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     private static final String ONE_OR_MORE_INPUTS_NOT_VALID = "one-or-more-inputs-not-valid";
 
+    private static final String ADMIN_CONFIRMATION_KEY = "admin-confirmation-key";
+    private static final String ADMINISTRATOR_CONFIRMED = "administrator-confirmed";
+
     protected static final String EMAIL = "email";
     protected static final String FIRSTNAME = "firstname";
     protected static final String LASTNAME = "lastname";
@@ -230,10 +233,13 @@ public class UserRegistrationResource extends BasicXMLResource {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
             if (sendNotificationsEnabled()) {
                 if (administratorConfirmationRequired()) {
+                    String adminConfirmationKey = java.util.UUID.randomUUID().toString();
+                    setAdminConfirmationKey(userRegBean.getUUID(), adminConfirmationKey);
+
                     StringBuilder body = new StringBuilder();
                     body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
                     body.append("\n\nPlease confirm the request by clicking on the following link:");
-                    body.append("\n\n" + getActivationURL(userRegBean) + "TODO");
+                    body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
                     body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
                 }
@@ -507,6 +513,29 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Check whether administrator key matches
+     * @param adminConfirmationKey Confirmation key as UUID
+     * @param uuid UUID of user registration activation request
+     * @param doc Document containing response to administrator trying to confirm registration request
+     * @return true if administrator key matches, otherwise return false
+     */
+    private boolean adminKeyMatches(String adminConfirmationKey, String uuid, Document doc) throws Exception {
+        String path = getActivationNodePath(uuid);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node registrationRequestNode = getRealm().getRepository().getNode(path);
+            UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
+            if (adminConfirmationKey.equals(urBean.getAdministratorConfirmationKey())) {
+                return true;
+            } else {
+                log.warn("Keys did not match!");
+            }
+        } else {
+            log.error("No such activation request node: " + path);
+        }
+        return false;
+    }
+
+    /**
      * Try to activate user registration
      * @param uuid UUID of user registration activation request
      * @param doc Document containing response to user trying to activate account
@@ -517,13 +546,15 @@ public class UserRegistrationResource extends BasicXMLResource {
             String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
 
-                UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
+                Node registrationRequestNode = getRealm().getRepository().getNode(path);
+                UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
 
                 Element rootElement = doc.getDocumentElement();
 
                 if (administratorConfirmationRequired() && !urBean.hasAdministratorConfirmedRegistration()) {
                     log.warn("Administrator has not confirmed registration request yet!");
                     rootElement.appendChild(doc.createElement("administrator-not-confirmed-yet"));
+                    setConfirmedByUser(registrationRequestNode);
                     return false;
                 } else {
                     registerUser(doc, urBean);
@@ -576,6 +607,38 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Add administrator confirmation key to registration request
+     * @param requestUUID UUID of registration request
+     * @param adminKey Administrator confirmation key
+     */
+    private void setAdminConfirmationKey(String requestUUID, String adminKey) throws Exception {
+        String path = getActivationNodePath(requestUUID);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node node = getRealm().getRepository().getNode(path);
+            Document doc = XMLHelper.readDocument(node.getInputStream());
+            doc.getDocumentElement().setAttribute(ADMIN_CONFIRMATION_KEY, adminKey);
+            java.io.OutputStream out = node.getOutputStream();
+            XMLHelper.writeDocument(doc, out);
+            out.close();
+        } else {
+            log.warn("No such reqgistration request '" + path + "'!");
+        }
+    }
+
+    /**
+     * Set flag that user confirmed email address
+     * @param node Repository node containing registration request (firstname, lastname, etc.)
+     */
+    private void setConfirmedByUser(Node node) throws Exception {
+        Document doc = XMLHelper.readDocument(node.getInputStream());
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        doc.getDocumentElement().setAttribute("date-confirmed-by-user", df.format(new Date().getTime()));
+        java.io.OutputStream out = node.getOutputStream();
+        XMLHelper.writeDocument(doc, out);
+        out.close();
+    }
+
+    /**
      * Read user registration request from repository node
      * @param node Repository node containing firstname, lastname, etc.
      */
@@ -593,7 +656,20 @@ public class UserRegistrationResource extends BasicXMLResource {
         String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
 
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
+
         urBean.setUUID(uuid);
+
+        if (doc.getDocumentElement().hasAttribute(ADMINISTRATOR_CONFIRMED)) {
+            if (doc.getDocumentElement().getAttribute(ADMINISTRATOR_CONFIRMED).equals("true")) {
+                urBean.setAdministratorConfirmed(true);
+            }
+        } else {
+            urBean.setAdministratorConfirmed(false);
+        }
+
+        if (doc.getDocumentElement().hasAttribute(ADMIN_CONFIRMATION_KEY)) {
+            urBean.setAdministratorConfirmationKey(doc.getDocumentElement().getAttribute(ADMIN_CONFIRMATION_KEY));
+        }
 
         return urBean;
     }
@@ -662,13 +738,24 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element rootElement = doc.getDocumentElement();
         String email = getEnvironment().getRequest().getParameter(EMAIL);
         String uuid = getEnvironment().getRequest().getParameter("uuid");
+        String adminConfirmationKey = getEnvironment().getRequest().getParameter(ADMIN_CONFIRMATION_KEY);
         if (email != null) { // INFO: Somebody tries to register (Please note that the email can also be empty in case somebody forgets to enter an email, but the query string parameter 'email' will exist anyway)
             processRegistrationRequest(doc, email);
-        } else if (uuid != null) { // INFO: Somebody tries to activate registration
-            if(activateRegistration(uuid, doc)) {
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
+        } else if (uuid != null) { // INFO: Somebody (user or administrator) tries to activate registration
+            if (adminConfirmationKey != null) {
+                log.warn("DEBUG: Administrator confirms registration request.");
+                if (adminKeyMatches(adminConfirmationKey, uuid, doc)) {
+                    log.warn("TODO: Set attribute ADMINISTRATOR_CONFIRMED");
+                    log.warn("TODO: Send email to user that administrator has confirmed registration request");
+                } else {
+                    log.warn("Administrator key did not match!");
+                }
             } else {
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
+                if(activateRegistration(uuid, doc)) {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
+                } else {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
+                }
             }
         } else {
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
