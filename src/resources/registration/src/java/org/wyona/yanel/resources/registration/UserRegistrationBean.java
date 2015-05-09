@@ -19,6 +19,8 @@ public class UserRegistrationBean {
     private String city;
     private String phone;
 
+    private boolean confirmedByAdministrator = false;
+
     /**
      *
      */
@@ -37,6 +39,13 @@ public class UserRegistrationBean {
      */
     public void setUUID(String uuid) {
         this.uuid = uuid;
+    }
+
+    /**
+     *
+     */
+    public boolean hasAdministratorConfirmedRegistration() {
+        return confirmedByAdministrator;
     }
 
     /**
