@@ -308,7 +308,7 @@ public abstract class Resource {
     /**
      * Get property value from resource configuration
      * @param name Name of resource property
-     * @return value of resource property
+     * @return value of resource property and null when property not set
      */
     public String getResourceConfigProperty(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();
