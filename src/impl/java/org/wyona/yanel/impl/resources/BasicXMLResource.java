@@ -639,19 +639,26 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Get client
+     * Get 'simple' client name
+     * @param userAgent User agent, e.g. 'Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)' or 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+     * @return 'simple' client name, e.g. 'firefox' or 'MSIE'
      */
-    protected String getClient(String userAgent) {
-        if (userAgent.indexOf("Firefox") > 0) {
-            return "firefox";
-        } else if (userAgent.indexOf("MSIE") > 0) {
-            return "msie";
-        } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
-            return "chrome";
-        } else if (userAgent.indexOf("Safari") > 0) {
-            return "safari";
+    public static String getClient(String userAgent) {
+        if (userAgent != null) {
+            if (userAgent.indexOf("Firefox") > 0) {
+                return "firefox";
+            } else if (userAgent.indexOf("MSIE") > 0) {
+                return "msie";
+            } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
+                return "chrome";
+            } else if (userAgent.indexOf("Safari") > 0) {
+                return "safari";
+            } else {
+                if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
+                return null;
+            }
         } else {
-            if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
+            log.warn("No user agent specified");
             return null;
         }
     }
