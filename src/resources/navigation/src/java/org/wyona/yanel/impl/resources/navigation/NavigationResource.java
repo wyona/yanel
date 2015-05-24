@@ -51,7 +51,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 
@@ -71,7 +73,7 @@ import org.apache.avalon.framework.configuration.ConfigurationUtil;
  */
 public class NavigationResource extends Resource implements ViewableV2, ModifiableV2 {
 
-    private static Logger log = Logger.getLogger(NavigationResource.class);
+    private static Logger log = LogManager.getLogger(NavigationResource.class);
 
     /**
      *
@@ -428,27 +430,12 @@ public class NavigationResource extends Resource implements ViewableV2, Modifiab
     }
 
     /**
-     * Get client
-     * @param userAgent User agent
+     * Get 'simple' client name
+     * @param userAgent User agent, e.g. 'Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)' or 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+     * @return 'simple' client name, e.g. 'firefox' or 'MSIE'
      */
     public String getClient(String userAgent) {
-        if (userAgent != null) {
-            if (userAgent.indexOf("Firefox") > 0) {
-                return "firefox";
-            } else if (userAgent.indexOf("MSIE") > 0) {
-                return "msie";
-            } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
-                return "chrome";
-            } else if (userAgent.indexOf("Safari") > 0) {
-                return "safari";
-            } else {
-                log.warn("Client could not be recognized: " + userAgent);
-                return null;
-            }
-        } else {
-            log.warn("No user agent specified");
-            return null;
-        }
+        return org.wyona.yanel.impl.resources.BasicXMLResource.getClient(userAgent);
     }
     
     /**
