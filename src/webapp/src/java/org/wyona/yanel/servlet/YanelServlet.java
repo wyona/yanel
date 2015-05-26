@@ -142,6 +142,7 @@ public class YanelServlet extends HttpServlet {
     private Yanel yanelInstance;
     private Sitetree sitetree;
 
+    private long MEMORY_GROWTH_THRESHOLD = 300;
     private File xsltInfoAndException;
     private String xsltLoginScreenDefault;
     private boolean displayMostRecentVersion = true;
@@ -207,6 +208,10 @@ public class YanelServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
+
+        if (config.getInitParameter("memory.growth.threshold") != null) {
+            MEMORY_GROWTH_THRESHOLD = new Long(config.getInitParameter("memory.growth.threshold")).longValue();
+        }
 
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
         xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
@@ -326,6 +331,10 @@ public class YanelServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
         try {
+            Runtime rt = Runtime.getRuntime();
+            long usedMBefore = getUsedMemory(rt);
+            //log.debug("Memory usage before request processed: " + usedMBefore);
+
             ThreadContext.put("id", getFishTag(request));
             //String httpAcceptMediaTypes = request.getHeader("Accept");
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
@@ -413,6 +422,11 @@ public class YanelServlet extends HttpServlet {
                 log.error("No such method implemented: " + method);
                 response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
             }
+            long usedMAfter = getUsedMemory(rt);
+            //log.debug("Memory usage after request processed: " + usedMAfter);
+            if ((usedMAfter - usedMBefore) > MEMORY_GROWTH_THRESHOLD) {
+                log.warn("Memory usage increased by '" + MEMORY_GROWTH_THRESHOLD + "' while request '" + getRequestURLQS(request, null, false) + "' was processed!");
+            }
         } catch (ServletException e) {
             log.error(e, e);
             throw new ServletException(e.getMessage(), e);
@@ -422,6 +436,13 @@ public class YanelServlet extends HttpServlet {
         } finally {
             ThreadContext.clear();
         } // NOTE: This was our last chance to log an exception, hence do not add code outside the try-catch block
+    }
+
+    /**
+     * Get currently used memory
+     */
+    private long getUsedMemory(Runtime rt) {
+        return (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
     }
 
     /**
