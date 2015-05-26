@@ -56,6 +56,11 @@
 <!-- NOTE: ssl-port parameter is being added during build process (see src/build/add-ssl-port.xsl) -->
 
     <init-param>
+      <param-name>memory.growth.threshold</param-name>
+      <param-value>150</param-value>
+    </init-param>
+
+    <init-param>
       <param-name>exception-and-info-screen-xslt</param-name>
       <param-value>xslt/xmlInfo2xhtml.xsl</param-value>
     </init-param>
