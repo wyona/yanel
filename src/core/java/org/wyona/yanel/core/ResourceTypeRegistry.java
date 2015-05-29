@@ -170,8 +170,7 @@ public class ResourceTypeRegistry {
                 if (hasPackageAttribute && packageName != null && packageName.trim().length() > 0) {
                     log.info("Loading resource(s) from package: " + packageName);
 
-                    // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml (What does that TODO mean?!)
-
+                    // WARN: Please note that when there are two jars containing the same package, then the loading of the resource configuration is likely to fail! See for example the problem with yanel-HtmlUnitTests.jar or yanel-JunitTests.jar
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
                     if (packageURL == null) { // TODO: Make more fault tolerant!
                         throw new ConfigurationException("Could not determine package URL for package name: " + packageName + " (Probably package name is wrong/misspelt (check WEB-INF/classes/resource-types.xml) or corresponding library/resource does not exists (check WEB-INF/lib))!)");
@@ -285,7 +284,7 @@ public class ResourceTypeRegistry {
      */
     public ResourceTypeDefinition getResourceTypeDefinition(String universalName) throws Exception {
         if (!hm.containsKey(universalName)) {
-            throw new Exception("Unknown resource type: " + universalName);
+            throw new Exception("Unknown resource type '" + universalName + "'! Either jar not available or more than one jar contains the same package associated with.");
         }
         return (ResourceTypeDefinition) hm.get(universalName);
     }
