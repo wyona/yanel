@@ -155,8 +155,9 @@ public class ResourceTypeRegistry {
             
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
+            log.debug("Try to register " + resourceTypes.length + " resource types ...");
+
             for (int i = 0; i < resourceTypes.length; i++) {
-                log.debug("Try to register resource type(s)...");
                 boolean hasPackageAttribute = false;
                 String packageName = null;
                 try {
@@ -185,10 +186,12 @@ public class ResourceTypeRegistry {
                         log.debug("Jar file: " + jarFile);
                         java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile(jarFile);
                         java.util.Enumeration entries = zipFile.entries();
+                        boolean containsResourceConfig = false;
                         while (entries.hasMoreElements()) {
                             String entryName = ((java.util.zip.ZipEntry) entries.nextElement()).getName();
                             //log.debug("Entry: " + entryName);
                             if (entryName.indexOf("resource.xml") >= 0 || entryName.indexOf("resource-") >= 0) { // INFO: see for example src/resources/user-mgmt/
+                                containsResourceConfig = true;
                                 log.info("Resource definition: " + entryName);
                                 URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(entryName);
                                 //URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
@@ -204,8 +207,11 @@ public class ResourceTypeRegistry {
                                     log.error(exception, exception);
                                 }
                             } else {
-                                log.warn("Package '" + packageURL.getFile() + "' does not contain a resource configuration!");
+                                log.debug("Entry '" + entryName + "' of package '" + packageURL.getFile() + "' is not a resource configuration!");
                             }
+                        }
+                        if (!containsResourceConfig) {
+                            log.error("Package '" + packageURL.getFile() + "' does not contain a resource configuration associated with the package name '" + packageName + "'!");
                         }
                     } else if (new File(packageURL.getPath()).isDirectory()) {
                         log.debug("Library seems to be extracted: " + packageURL.getPath());
