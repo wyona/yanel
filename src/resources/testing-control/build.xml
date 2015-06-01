@@ -3,10 +3,17 @@
 <project name="yanel-resource-testing-control" default="deploy-jar">
   <import file="${yanel.source.home}/src/build/resource-types/resource-type.build.xml"/>
 
-  <target name="copy-dependencies" depends="yanel-resource-type.copy-dependencies, test2webapp"/>
+  <target name="copy-dependencies" depends="yanel-resource-type.copy-dependencies, tests2webapp"/>
 
   <!-- INFO: Do not create/copy the testing libraries when copy.resource-type-configs.to.webapp=true because of ambi... -->
-  <target name="test2webapp" depends="build-testframework-test">
+  <target name="tests2webapp">
+    <condition property="generate-and-copy-test-libs">
+      <equals arg1="${copy.resource-type-configs.to.webapp}" arg2="false"/>
+    </condition>
+    <antcall target="generate.copy.test.libs"/>
+  </target>
+    
+  <target name="generate.copy.test.libs" depends="build-testframework-test" if="generate-and-copy-test-libs">
     <echo>Copy libraries containing tests</echo>
     <jar destfile="${build.dir}/webapps/${servlet.context.prefix}/WEB-INF/lib/yanel-HtmlUnitTests.jar"
       basedir="${build.dir}/test/htmlunit"/>
@@ -14,7 +21,7 @@
       basedir="${build.dir}/test/junit"/>
   </target>
 
-  <target name="build-testframework-test" description="builds tests" depends="init">
+  <target name="build-testframework-test" description="Build JUnit and HtmlUnit tests" depends="init">
     <ant dir="${build.dir}/../src/test" target="build" inheritall="false"/>
   </target>
 
