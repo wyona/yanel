@@ -325,8 +325,30 @@ public class ForgotPassword extends BasicXMLResource {
     /**
      * Get user which is associated with an email address
      * @param email Email address of user
+     * @return user associated with email
      */
     protected User getUser(String email) throws Exception {
+        java.util.Iterator<User> it = realm.getIdentityManager().getUserManager().getUsers(email);
+        if (it.hasNext()) {
+            log.warn("DEBUG: Found at least one user for email '" + email + "' ...");
+            User uniqueUser  = null;
+            while (it.hasNext()) {
+                User user = (User) it.next();
+                if (email.equals(user.getEmail())) {
+                    if (uniqueUser != null) {
+                        log.warn("There seems to be more than one user with the email '" + email + "'!");
+                    }
+                    uniqueUser = user;
+                }
+            }
+            if (uniqueUser != null) {
+                return uniqueUser;
+            }
+        }
+        log.warn("No user found with email '" + email + "'!");
+        return null;
+
+/*
         log.warn("TODO: Checking every user by her/his email does not scale!");
         User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
         for(int i=0; i< userList.length; i++) {
@@ -334,8 +356,9 @@ public class ForgotPassword extends BasicXMLResource {
                 return userList[i];
             }
         }
-        log.warn("No user found with email addres: " + email);
+        log.warn("No user found with email addres '" + email + "'!'!");
         return null;
+*/
     }
 
     /**
