@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user xmlns="http://www.wyona.org/security/1.0" id="test">
+<name>Test</name>
+<email>michaelwechner@gmail.com</email>
+<password algorithm="bcrypt">$2a$12$mjpkca3jc4sU/w.WTwvK2OULsXt..tSCETaEfsR.XrhfqCGv2VKBq</password>
+<aliases/>
+<groups/>
+</user>
