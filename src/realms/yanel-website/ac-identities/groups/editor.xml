@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<group id="editor">
-<name>My Editors</name>
-<members>
-<member id="alice" type="user"/>
-<member id="lenya" type="user"/>
-</members>
-<parent-groups/>
-</group>
