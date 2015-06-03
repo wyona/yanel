@@ -145,7 +145,7 @@ public class ForgotPassword extends BasicXMLResource {
             Element cpeElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "change-password-email"));
             cpeElement.setAttribute("submitted-email", email);
             try {
-                String uuid = generateForgotPasswordRequest(email);
+                String uuid = generateForgotPasswordRequest(email, messageElement, cpeElement);
                 if (uuid != null) {
                     messageElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
                     cpeElement.setAttribute("status", "200");
@@ -315,7 +315,7 @@ public class ForgotPassword extends BasicXMLResource {
      * @param email E-Mail address of user
      * @return request UUID if user with specific email address exists and email was sent, return null or throw an exception otherwise
      */
-    private String generateForgotPasswordRequest(String email) throws Exception {
+    private String generateForgotPasswordRequest(String email, Element messageEl, Element cpeElement) throws Exception {
         String exceptionMsg;
         if (email == null || ("").equals(email)) {
             exceptionMsg = "E-mail address is empty.";
@@ -324,7 +324,7 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             User user = getUser(email);
             if (user == null) {
-                exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
+                exceptionMsg = "Unable to find user for email address '" + email + "'.";
             } else {
                 String uuid = UUID.randomUUID().toString();
                 uuid = sendEmail(uuid, user.getEmail());
@@ -334,13 +334,13 @@ public class ForgotPassword extends BasicXMLResource {
                     return uuid;
                 } else {
                     exceptionMsg = "No forgot password request UUID was generated (please check log file to check what went wrong)";
-                    log.warn(exceptionMsg);
-                    throw new Exception(exceptionMsg);
                 }
             }
         }
         log.warn(exceptionMsg);
-        throw new Exception(exceptionMsg);
+        messageEl.setTextContent(exceptionMsg);
+        cpeElement.setAttribute("status", "400");
+        return null;
     }
 
     /**
