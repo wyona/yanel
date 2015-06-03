@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
+  <yanel:rti name="forgotpw" namespace="http://www.wyona.org/yanel/resource/1.0"/>
+
+  <yanel:property name="change-password-requests-path" value="change-password-requests"/>
+  <yanel:property name="num-hrs-valid" value="1"/>
+
+  <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
+  <yanel:property name="include-change-password-link" value="true" target-environment="ci-test"/>
+  <yanel:property name="include-change-password-link" value="true" target-environment="dev"/>
+
+  <yanel:property name="smtpFrom" value="contact@wyona.com"/>
+
+  <yanel:custom-config>
+    <views>
+      <view id="default" type="XML">
+        <xslt>rthtdocs:/forgotpw.xsl</xslt>
+        <xslt>yanelhtdocs:/html.xslt</xslt>
+        <mime-type>application/xhtml+xml</mime-type>
+      </view>
+      <view id="xml" type="XML">
+        <mime-type>application/xml</mime-type>
+      </view>
+    </views>
+  </yanel:custom-config>
+</yanel:resource-config>
