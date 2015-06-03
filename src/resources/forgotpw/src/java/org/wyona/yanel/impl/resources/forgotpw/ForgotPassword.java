@@ -102,7 +102,15 @@ public class ForgotPassword extends BasicXMLResource {
             totalValidHrs = DEFAULT_TOTAL_VALID_HRS;
         }
         Document adoc = XMLHelper.createDocument(NAMESPACE, "yanel-forgotpw");
-        processUserAction(request, adoc);
+
+        try {
+            processUserAction(request, adoc);
+        } catch(Exception e) {
+            log.error(e, e);
+            Element exceptionEl = (Element) adoc.getDocumentElement().appendChild(adoc.createElement("exception"));
+            exceptionEl.setTextContent(getStackTrace(e));
+        }
+
         DOMSource source = new DOMSource(adoc);
         StringWriter xmlAsWriter = new StringWriter();
         StreamResult result = new StreamResult(xmlAsWriter);
@@ -110,6 +118,16 @@ public class ForgotPassword extends BasicXMLResource {
         // write changes
         ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlAsWriter.toString().getBytes("UTF-8"));
         return inputStream;
+    }
+
+    /**
+     * Get stack trace of exception
+     * @param e The exception to handle.
+     */
+    private String getStackTrace(Exception e) {
+        java.io.StringWriter sw = new java.io.StringWriter();
+        e.printStackTrace(new java.io.PrintWriter(sw));
+        return sw.toString();
     }
 
     /**
@@ -143,6 +161,9 @@ public class ForgotPassword extends BasicXMLResource {
                 log.warn(e.getMessage());
                 messageElement.setTextContent(e.getMessage());
                 cpeElement.setAttribute("status", "400");
+
+                Element exceptionEl = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
+                exceptionEl.setTextContent(getStackTrace(e));
             }
 
         } else if (resetPasswordRequestUUID != null && !resetPasswordRequestUUID.equals("") && !action.equals(SUBMITNEWPW)){
