@@ -94,7 +94,9 @@ public class YanelCommandLine {
                 System.out.println("The following value has been entered: " + value);
                 url = value;
             } catch (Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             url = args[0];
@@ -157,7 +159,7 @@ public class YanelCommandLine {
             System.out.println("Resource path: " + res.getPath());
         } catch(Exception e) {
             System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
-            log.error(e.getMessage(), e);
+            log.error(e, e);
             return;
         }
 
@@ -185,7 +187,9 @@ public class YanelCommandLine {
                     System.out.println("Line " + k + ": " + line);
                 }
             } catch(Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement viewable V1 interface!");
@@ -218,7 +222,9 @@ public class YanelCommandLine {
                     System.out.println("Line " + k + ": " + line);
                 }
             } catch(Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement viewable V2 interface!");
@@ -228,7 +234,9 @@ public class YanelCommandLine {
             try {
                 java.io.Reader reader = ((ModifiableV1) res).getReader(new Path(url));
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement modifiable V1 interface!");
@@ -248,7 +256,8 @@ public class YanelCommandLine {
                 return;
             }
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable", "1")) {
@@ -275,7 +284,8 @@ public class YanelCommandLine {
             rtd = rtr.getResourceTypeDefinition(rti);
             invoiceRes.setRTD(rtd);
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
 
@@ -288,7 +298,9 @@ public class YanelCommandLine {
                     String value = br.readLine();
                     System.out.println("The following value has been entered: " + value);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                    log.error(e, e);
+                    return;
                 }
                 if (i == names.length -1) {
                     propNames = propNames + names[i];
@@ -312,7 +324,8 @@ public class YanelCommandLine {
             websearchRes.setRTD(rtd);
             if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
 */
