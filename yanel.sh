@@ -113,9 +113,13 @@ elif [ "$1" = "cmdl" ]; then
 else
   echo "----------------------------------------------"
   echo ""
-  echo "WARNING: No such command '$1' implemented!"
+  if [ "$1" = "" ]; then
+    echo "WARNING: Please make sure to use an option!"
+  else
+    echo "WARNING: No such option '$1' available!"
+  fi
   echo ""
-  echo "The following commands exist:"
+  echo "The following options exist:"
   echo ""
   echo "start        - Startup yanel webapp"
   echo "stop         - Shutdown yanel webapp"
