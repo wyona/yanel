@@ -121,14 +121,22 @@ public class YanelCommandLine {
         //PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
         PolicyManager pm = realm.getPolicyManager();
     
-
-        String[] groupnames = {"admin", "accounting"};
-        Identity identity = new Identity("lenya", groupnames, "lenya");
-        if (pm.authorize(path, identity, new Role("view"))) {
-            System.out.println("Access granted: " + path + " (Realm ID: " + realm.getID() + ")");
+        Identity identity = null;
+        if (pm.authorize(path, new Identity(), new Role("view"))) {
+            identity = new Identity();
+            System.out.println("Access granted for WORLD: " + path + " (Realm ID: " + realm.getID() + ")");
         } else {
-            // TODO: Deny access resp. start login process!
-            System.out.println("Access denied: " + path);
+            String[] groupnames = {"admin", "accounting"};
+            identity = new Identity("lenya", groupnames, "lenya");
+            System.out.println("Access denied for WORLD, hence let's try user '" + identity.getUsername() + "' ...");
+            if (pm.authorize(path, identity, new Role("view"))) {
+                System.out.println("Access granted for user '" + identity.getUsername() + "': " + path + " (Realm ID: " + realm.getID() + ")");
+            } else {
+                System.out.println("Access denied for user '" + identity.getUsername() + "' as well: " + path);
+
+                // TODO: Abort or start login process!
+                System.out.println("Let's continue anyway ...");
+            }
         }
 
         Resource res = null;
@@ -190,6 +198,14 @@ public class YanelCommandLine {
             for (int i = 0; i < vds.length; i++) {
                 System.out.println(" - Id: " + vds[i].getId() + ", Mime-Type: " + vds[i].getMimeType());
             }
+            if (viewId == null && vds.length > 0) {
+                if (vds.length > 0) {
+                    viewId = vds[0].getId();
+                } else {
+                    log.error("No view ID set!");
+                }
+            }
+            System.out.println("View ID: " + viewId);
             try {
                 View view = ((ViewableV2) res).getView(viewId);
                 System.out.println("mime-type: " + view.getMimeType());
