@@ -84,7 +84,7 @@ public class YanelCommandLine {
 
         String url = null;
         if (args.length != 1 || args[0].length() == 0) { // INFO: Check whether an argument has been set
-            System.out.println("\nPlease enter a path (e.g. /index.html):");
+            System.out.println("\nPlease enter a path (including the realm prefix), e.g. '/index.html' or '/yanel-website/en/documentation/misc/yanel-command-line.html':");
             try {
                 String value = br.readLine();
                 if (value.equals("")) {
