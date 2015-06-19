@@ -28,6 +28,7 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -42,13 +43,16 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Yanel command line interface, in order to execute requests/resources from the command line
  */
 public class YanelCommandLine {
 
     private static Category log = Category.getInstance(YanelCommandLine.class);
+    //private static Logger log = LogManager.getLogger(YanelCommandLine.class);
 
     /**
      *
@@ -181,7 +185,11 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
             System.out.println(res.getClass().getName() + " does implement viewable V2 interface!");
-            System.out.println("View Descriptors: " + ((ViewableV2) res).getViewDescriptors());
+            ViewDescriptor[] vds = ((ViewableV2) res).getViewDescriptors();
+            System.out.println("View Descriptors: ");
+            for (int i = 0; i < vds.length; i++) {
+                System.out.println(" - Id: " + vds[i].getId() + ", Mime-Type: " + vds[i].getMimeType());
+            }
             try {
                 View view = ((ViewableV2) res).getView(viewId);
                 System.out.println("mime-type: " + view.getMimeType());
