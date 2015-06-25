@@ -6,7 +6,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.MissingResourceException;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -18,7 +21,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class I18nTransformer extends DefaultHandler {
 
-    private static Category log = Category.getInstance(I18nTransformer.class);
+    private static Logger log = LogManager.getLogger(I18nTransformer.class);
     private Locale currentLocale = null;
     private ResourceBundle messageBundle = null;
     private ByteArrayInputStream byteArrayInputStream = null;
