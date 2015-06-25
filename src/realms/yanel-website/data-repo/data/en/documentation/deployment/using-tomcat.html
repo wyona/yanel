@@ -6,5 +6,34 @@
   </head>
   <body>
     <h1>Using Tomcat</h1>
+    <h2>Session Persistence</h2>
+
+    <p>
+Tomcat has Session Persistence ENABLED per default. 
+</p>
+
+<p>
+This means that during shutdown, all sessions get serialized into the file 
+</p>
+
+<p>
+<code>work/Catalina/localhost/_/SESSIONS.ser</code>
+</p>
+
+<p>
+and get restored into memory at startup.
+</p>
+
+<p>
+If you run an application with thousands of sessions, shutdown and startup time can become quite long.
+</p>
+
+<p>
+To disable session persistence, just uncomment this line in <code>conf/context.xml</code>:
+</p>
+
+<p>
+&lt;Manager pathname=""/&gt;
+    </p>
   </body>
 </html>
