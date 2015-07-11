@@ -2,8 +2,13 @@
 
 <xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<!-- INFO: Asynchronous tracking code -->
+<!-- INFO: Universal tracking code -->
+<xsl:import href="yanelhtdocs:/Google-Analytics/GA-universal.xslt"/>
+
+<!-- INFO: Asynchronous tracking code
 <xsl:import href="yanelhtdocs:/Google-Analytics/GA-asynchronous.xslt"/>
+-->
+
 <!-- INFO: Traditional tracking code
 <xsl:import href="yanelhtdocs:/Google-Analytics/GA.xslt"/>
 -->
