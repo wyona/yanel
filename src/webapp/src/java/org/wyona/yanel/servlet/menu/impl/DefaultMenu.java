@@ -17,14 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class DefaultMenu extends Menu {
 
-    private static Logger log = Logger.getLogger(DefaultMenu.class);
+    private static Logger log = LogManager.getLogger(DefaultMenu.class);
 
     /**
      * Get toolbar menus
@@ -56,7 +57,7 @@ public class DefaultMenu extends Menu {
             sb.append("<li>Edit page with tinyMCE&#160;&#160;&#160;</li>");
             sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
         }
-        sb.append(getMenuItem("http://www.yulup.org", "Edit page with Yulup&#160;&#160;&#160;"));
+        sb.append(getMenuItem("https://addons.mozilla.org/de/firefox/addon/wyona-yulup/", "Edit page with Yulup&#160;&#160;&#160;"));
         sb.append("</ul>");
         sb.append("</li>");
         sb.append("<li>Source editor</li>");

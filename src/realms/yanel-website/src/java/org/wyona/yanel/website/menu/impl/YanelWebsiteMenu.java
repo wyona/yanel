@@ -1,6 +1,8 @@
 package org.wyona.yanel.website.menu.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
@@ -21,7 +23,7 @@ import java.util.List;
  */
 public class YanelWebsiteMenu extends Menu {
     
-    private static Logger log = Logger.getLogger(YanelWebsiteMenu.class);
+    private static Logger log = LogManager.getLogger(YanelWebsiteMenu.class);
 
     /**
      * Get toolbar menus
@@ -82,7 +84,7 @@ public class YanelWebsiteMenu extends Menu {
             sb.append("<li><a>Edit page with Xinha&#160;&#160;&#160;</a></li>");
             sb.append("<li><a>Edit page with tinyMCE&#160;&#160;&#160;</a></li>");
         }
-        sb.append("<li><a href=\"http://www.yulup.org\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
+        sb.append("<li><a href=\"https://addons.mozilla.org/de/firefox/addon/wyona-yulup/\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
         sb.append("</ul></li>"); // End of WYSIWYG editor
         sb.append("</ul></li>");
 
