@@ -499,7 +499,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
-            log.warn("One or more inputs are not valid...");
+            log.warn("One or more inputs are not valid...see returned XML for more details!");
             rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
         }
     }
@@ -900,6 +900,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String street = getEnvironment().getRequest().getParameter(STREET);
         if (!isStreetValid(street)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+            log.warn("'" + STREET + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, STREET));
@@ -933,6 +934,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             String city = getEnvironment().getRequest().getParameter(CITY);
             if (!isCityValid(city)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
+                log.warn("'" + CITY + "' not valid!");
                 inputsValid = false;
             } else {
                 Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
@@ -943,6 +945,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String phone = getEnvironment().getRequest().getParameter(PHONE);
         if (!isPhoneValid(phone)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
+            log.warn("'" + PHONE + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, PHONE));
