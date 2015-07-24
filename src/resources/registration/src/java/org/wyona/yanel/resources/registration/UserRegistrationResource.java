@@ -281,13 +281,21 @@ public class UserRegistrationResource extends BasicXMLResource {
      * @param url Email confirmation link
      * @return body of confirmation email
      */
-    private String getConfirmationEmailBody(String url) {
-        StringBuilder body = new StringBuilder();
-        body.append("Thank you for your registration.");
-        body.append("\n\nTo activate your account, you need to click on the following link:");
-        body.append("\n\n" + url);
-        body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
-        return body.toString();
+    private String getConfirmationEmailBody(String url) throws Exception {
+        if (getResourceConfigProperty("email-body-template-path") != null) {
+            Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
+            InputStream in = templateNode.getInputStream();
+            String body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
+            return body;
+        } else {
+            StringBuilder body = new StringBuilder();
+            body.append("Thank you for your registration.");
+            body.append("\n\nTo activate your account, you need to click on the following link:");
+            body.append("\n\n" + url);
+            body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+            return body.toString();
+        }
     }
 
     /**
