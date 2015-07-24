@@ -242,7 +242,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
                     body.append("\n\nPlease confirm the request by clicking on the following link:");
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
-                    body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+                    body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
                 }
 
@@ -252,7 +252,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             } else {
                 element.setAttribute("sent-by-yanel", "false");
             }
-            element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
+            element.setAttribute("hours-valid", "" + getHoursValid());
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
                 element.setAttribute("activation-link", getActivationURL(userRegBean));
@@ -282,20 +282,33 @@ public class UserRegistrationResource extends BasicXMLResource {
      * @return body of confirmation email
      */
     private String getConfirmationEmailBody(String url) throws Exception {
+        String body = null;
         if (getResourceConfigProperty("email-body-template-path") != null) {
             Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
             InputStream in = templateNode.getInputStream();
-            String body = org.apache.commons.io.IOUtils.toString(in);
+            body = org.apache.commons.io.IOUtils.toString(in);
             in.close();
-            return body;
         } else {
-            StringBuilder body = new StringBuilder();
-            body.append("Thank you for your registration.");
-            body.append("\n\nTo activate your account, you need to click on the following link:");
-            body.append("\n\n" + url);
-            body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
-            return body.toString();
+            String htdocsPath = "rthtdocs:/registration-confirmation-email-template.txt";
+            org.wyona.yanel.core.source.SourceResolver resolver = new org.wyona.yanel.core.source.SourceResolver(this);
+            javax.xml.transform.Source source = resolver.resolve(htdocsPath, null);
+            InputStream in = ((javax.xml.transform.stream.StreamSource) source).getInputStream();
+            body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
         }
+        body = body.replace("@CONFIRMATION_LINK@", url);
+        body= body.replace("@VALID_HRS@", "" + getHoursValid());
+        return body;
+    }
+
+    /**
+     * Get hours valid
+     */
+    private long getHoursValid() throws Exception {
+        if (getResourceConfigProperty("hours-valid") != null) {
+            return new Long(getResourceConfigProperty("hours-valid")).longValue();
+        }
+        return DEFAULT_TOTAL_VALID_HRS;
     }
 
     /**
@@ -805,7 +818,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                         body.append("\n\nTo activate your account, you need to click on the following link:");
                         body.append("\n\n" + getActivationURL(urBean));
                         // TODO: Calculate remaining time
-                        //body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+                        //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                         MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
