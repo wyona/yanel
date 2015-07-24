@@ -21,6 +21,7 @@ User registration
   <property name="include-activation-link" default-value="false"/> <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
 
   <property name="send-notification-emails" default-value="true"/> <!-- INFO: In the case of a continuous integration environment one might want to set this property to 'false' -->
+  <property name="send-activation-successful-email" default-value="true"/> <!-- INFO: When 'send-notification-emails' is set to 'false', then the value of this parameter does not apply at all -->
 
   <property name="hours-valid" default-value="24"/>
 
