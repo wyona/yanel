@@ -609,7 +609,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[Registration] User account has been created", body.toString());
                 }
 
-                if (sendNotificationsEnabled()) {
+                if (sendNotificationsEnabled() && sendActivationSuccessfulEmail()) {
                     StringBuilder body = new StringBuilder();
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
@@ -739,6 +739,21 @@ public class UserRegistrationResource extends BasicXMLResource {
     private boolean sendNotificationsEnabled() {
         try {
             String value = getResourceConfigProperty("send-notification-emails");
+            if (value != null && value.equals("false")) {
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return true;
+    }
+
+    /**
+     * Check whether an email should be sent when activation was successful
+     */
+    private boolean sendActivationSuccessfulEmail() {
+        try {
+            String value = getResourceConfigProperty("send-activation-successful-email");
             if (value != null && value.equals("false")) {
                 return false;
             }
