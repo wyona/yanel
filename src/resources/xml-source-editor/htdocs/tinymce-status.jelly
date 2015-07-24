@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <title>TinyMCE</title>
+    </head>
+    <body>
+      <j:if test="${resource.getErrorMessages() != null &amp;&amp; resource.getErrorMessages().length() > 0}">
+        <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
+      </j:if>
+      <j:if test="${resource.getInfoMessages() != null &amp;&amp; resource.getInfoMessages().length() > 0}">
+        <p>Info: ${resource.getInfoMessages()}</p>
+      </j:if>
+      <form action="">
+        <input type="button" name="finish" value="Finish" onclick="window.location.href='${resource.getParameterAsString('continue-path')}'"/>
+      </form>
+    </body>
+  </html>
+</j:jelly>

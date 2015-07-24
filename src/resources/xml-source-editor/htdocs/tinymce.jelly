@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<j:jelly xmlns:j="jelly:core">
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+      <title>Edit ${resource.getEditPath()} with tinyMCE</title>
+      <link rel="stylesheet" type="text/css" href="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/css/tinymce-resource.css"/>
+
+      <!-- INFO: TinyMCE 3.2.1.1 -->
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+      <script language="javascript">
+        var BACK2REALM = '${yanel.back2realm}';
+      </script>        
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit.js"></script>
+
+      <!-- INFO: TinyMCE 3.3.5.1 -->
+<!-- QUESTION: Why is 3.2.1.1 still used and not 3.3.5.1? (IMPORTANT: Also update src/resources/tinymce/src/build/dependencies.xml)
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce_3_3_5_1/jscripts/tiny_mce/tiny_mce.js"></script>
+      <script language="javascript">
+        var BACK2REALM = '${yanel.back2realm}';
+      </script>        
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit_3_3_5_1.js"></script>
+-->
+
+<!--
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/tinymce_4_1_5_jquery/tinymce.min.js"></script>
+      <script language="javascript">
+        var BACK2REALM = '${yanel.back2realm}';
+      </script>        
+      <script language="javascript" type="text/javascript" src="${yanel.back2realm}${yanel.reservedPrefix}/resource-types/http://www.wyona.org/yanel/resource/1.0::tinymce/js/tinymceinit_4_1_5.js"></script>
+-->
+
+    </head>
+    <body>
+      <j:if test="${resource.getInfoMessages() != null &amp;&amp; resource.getInfoMessages().length() > 0}">
+        <p>Info: ${resource.getInfoMessages()}</p>
+      </j:if>
+      <j:if test="${resource.getErrorMessages() != null &amp;&amp; resource.getErrorMessages().length() > 0}">
+        <p class="yanel-usecase-error"><span style="color: red;">Exception:</span> ${resource.getErrorMessages()}</p>
+      </j:if>
+      <j:choose>
+        <j:when test="${resource.getEditPath() != null &amp;&amp; !resource.getEditPath().equals('')}">
+          <form method="post" action="">
+            <input type="hidden" name="edit-path" value="${resource.getEditPath()}"/>
+            <textarea id="${resource.getEditPath()}" name="${resource.getEditPath()}" rows="15" cols="80" style="width: 100%">
+              ${resource.escapeXML(resource.getContentToEdit())}
+            </textarea>
+            <br />
+            <input type="submit" id="submit" name="submit" value="Save" />
+            <input type="submit" id="cancel" name="cancel" value="Cancel" />
+          </form>
+        </j:when>
+        <j:otherwise>
+          ${resource.getLookup()}
+        </j:otherwise>
+      </j:choose>
+      
+
+    </body>
+  </html>
+</j:jelly>

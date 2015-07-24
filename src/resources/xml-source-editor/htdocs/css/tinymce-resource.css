@@ -1,0 +1,24 @@
+#resourceCreatorSaveAsTable {
+  width:100%;
+}
+
+#lookupfilesTable {
+  width:100%;
+}
+
+#lookupfiles {
+  height:160px;
+  overflow:auto;
+  position:relative;
+}
+
+/* kind a hack. had to overwrite definitions, made in global.css but not in tinymce.css, disturbing the editors style */
+
+#content .mceEditor table  { 
+  border-collapse:separate;
+} 
+
+#content .mceEditor td { 
+  border:0px;
+  padding:0px;
+}

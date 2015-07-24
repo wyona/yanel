@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<project name="xml-source-editor-dependencies" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <target name="dependencies" description="Dependencies">
+    <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
+
+    
+    <!-- INFO: Get tinyMCE by maven (also see src/resources/tinymce/htdocs/tinymce.jelly) -->
+    <artifact:dependencies filesetId="maven2.tinymce.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="moxiecode" artifactId="tinymce" version="3.2.1.1" scope="provided" type="zip"/>
+<!--
+      <dependency groupId="moxiecode" artifactId="tinymce" version="3.3.5.1" scope="provided" type="zip"/>
+-->
+<!--
+      <dependency groupId="moxiecode" artifactId="tinymce" version="4.1.5" scope="provided" type="zip"/>
+-->
+    </artifact:dependencies>
+    <unzip dest="htdocs">
+      <fileset refid="maven2.tinymce.fileset"/>
+    </unzip>
+    
+    
+    <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-impl" version="${yanel.source.version}"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-webapp" version="${yanel.source.version}"/>
+    </artifact:dependencies>
+
+    <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
+      <remoteRepository refid="wyona.remote.repository"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-lang" version="2.1"/>
+      <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
+      <dependency groupId="org.hibernate" artifactId="jtidy" version="r8-20060801"/>
+      <dependency groupId="xml-resolver" artifactId="xml-resolver" version="1.1"/>
+    </artifact:dependencies>
+
+    <property name="maven2.cp" refid="maven2.classpath"/>
+    <property name="maven2.resource.cp" refid="maven2.resource.classpath"/>
+    <echo>Maven2 classpath: ${maven2.cp}</echo>
+  </target>
+
+</project>
