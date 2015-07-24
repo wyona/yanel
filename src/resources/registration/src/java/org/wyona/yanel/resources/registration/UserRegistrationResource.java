@@ -64,6 +64,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String SALUTATION = "salutation";
     protected static final String PHONE = "phone";
     protected static final String COMPANY = "company";
+    protected static final String PASSWORD = "password";
+    protected static final String PASSWORD_CONFIRMED = "password2";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -836,7 +838,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check password
-            String password = getEnvironment().getRequest().getParameter("password");
+            String password = getEnvironment().getRequest().getParameter(PASSWORD);
             int minPwdLength = getMinPwdLength();
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
@@ -845,7 +847,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 inputsValid = false;
             }
         // INFO: Check password confirmed
-            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
+            String confirmedPassword = getEnvironment().getRequest().getParameter(PASSWORD_CONFIRMED);
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
                 log.warn("Passwords do not match!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
