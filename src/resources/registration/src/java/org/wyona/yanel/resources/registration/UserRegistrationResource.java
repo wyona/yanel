@@ -246,16 +246,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
                 }
 
-                StringBuilder body = new StringBuilder();
-                body.append("Thank you for your registration.");
-                body.append("\n\nTo activate your account, you need to click on the following link:");
-                body.append("\n\n" + getActivationURL(userRegBean));
-                body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
-                String subject = "Activate User Registration (sent by Yanel)";
-                if (getResourceConfigProperty("subject") != null) {
-                    subject = getResourceConfigProperty("subject");
-                }
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), subject, body.toString());
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
 
                 element.setAttribute("sent-by-yanel", "true");
             } else {
@@ -272,6 +263,31 @@ public class UserRegistrationResource extends BasicXMLResource {
             element.setAttribute(EMAIL, userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
         }
+    }
+
+    /**
+     * Get subject of confirmation email
+     */
+    private String getSubject() throws Exception {
+        String subject = "Activate User Registration (sent by Yanel)";
+        if (getResourceConfigProperty("subject") != null) {
+            subject = getResourceConfigProperty("subject");
+        }
+        return subject;
+    }
+
+    /**
+     * Get body of confirmation email
+     * @param url Email confirmation link
+     * @return body of confirmation email
+     */
+    private String getConfirmationEmailBody(String url) {
+        StringBuilder body = new StringBuilder();
+        body.append("Thank you for your registration.");
+        body.append("\n\nTo activate your account, you need to click on the following link:");
+        body.append("\n\n" + url);
+        body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+        return body.toString();
     }
 
     /**
