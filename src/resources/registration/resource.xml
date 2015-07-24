@@ -22,6 +22,8 @@ User registration
 
   <property name="send-notification-emails" default-value="true"/> <!-- INFO: In the case of a continuous integration environment one might want to set this property to 'false' -->
 
+  <property name="hours-valid" default-value="24"/>
+
   <property name="min-password-length" default-value="5"/>
   <property name="max-password-length" default-value="15"/>
 
