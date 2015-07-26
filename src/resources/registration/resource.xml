@@ -16,10 +16,14 @@ User registration
   <!-- Optional -->
   <property name="email-confirmation" default-value="true"/> <!-- INFO: Set to false if no email confirmation/activation should re required. -->
   <property name="subject" default-value="Activate User Registration (sent by Yanel)"/> <!-- INFO: Subject of confirmation/activation email. -->
+  <property name="email-body-template-path"/> <!-- INFO: Optional body template path, e.g. '/registration-confirmation-email-template.txt' -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->
   <property name="include-activation-link" default-value="false"/> <!-- WARN: Because of security reasons please do not enable this property for a productive environment, but only set to 'true' for development or a continuous integration environment! -->
 
   <property name="send-notification-emails" default-value="true"/> <!-- INFO: In the case of a continuous integration environment one might want to set this property to 'false' -->
+  <property name="send-activation-successful-email" default-value="true"/> <!-- INFO: When 'send-notification-emails' is set to 'false', then the value of this parameter does not apply at all -->
+
+  <property name="hours-valid" default-value="24"/>
 
   <property name="min-password-length" default-value="5"/>
   <property name="max-password-length" default-value="15"/>

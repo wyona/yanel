@@ -64,6 +64,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String SALUTATION = "salutation";
     protected static final String PHONE = "phone";
     protected static final String COMPANY = "company";
+    protected static final String PASSWORD = "password";
+    protected static final String PASSWORD_CONFIRMED = "password2";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -240,26 +242,17 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
                     body.append("\n\nPlease confirm the request by clicking on the following link:");
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
-                    body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+                    body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
                 }
 
-                StringBuilder body = new StringBuilder();
-                body.append("Thank you for your registration.");
-                body.append("\n\nTo activate your account, you need to click on the following link:");
-                body.append("\n\n" + getActivationURL(userRegBean));
-                body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
-                String subject = "Activate User Registration (sent by Yanel)";
-                if (getResourceConfigProperty("subject") != null) {
-                    subject = getResourceConfigProperty("subject");
-                }
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), subject, body.toString());
+                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
 
                 element.setAttribute("sent-by-yanel", "true");
             } else {
                 element.setAttribute("sent-by-yanel", "false");
             }
-            element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
+            element.setAttribute("hours-valid", "" + getHoursValid());
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
                 element.setAttribute("activation-link", getActivationURL(userRegBean));
@@ -270,6 +263,52 @@ public class UserRegistrationResource extends BasicXMLResource {
             element.setAttribute(EMAIL, userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
         }
+    }
+
+    /**
+     * Get subject of confirmation email
+     */
+    private String getSubject() throws Exception {
+        String subject = "Activate User Registration (sent by Yanel)";
+        if (getResourceConfigProperty("subject") != null) {
+            subject = getResourceConfigProperty("subject");
+        }
+        return subject;
+    }
+
+    /**
+     * Get body of confirmation email
+     * @param url Email confirmation link
+     * @return body of confirmation email
+     */
+    private String getConfirmationEmailBody(String url) throws Exception {
+        String body = null;
+        if (getResourceConfigProperty("email-body-template-path") != null) {
+            Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
+            InputStream in = templateNode.getInputStream();
+            body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
+        } else {
+            String htdocsPath = "rthtdocs:/registration-confirmation-email-template.txt";
+            org.wyona.yanel.core.source.SourceResolver resolver = new org.wyona.yanel.core.source.SourceResolver(this);
+            javax.xml.transform.Source source = resolver.resolve(htdocsPath, null);
+            InputStream in = ((javax.xml.transform.stream.StreamSource) source).getInputStream();
+            body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
+        }
+        body = body.replace("@CONFIRMATION_LINK@", url);
+        body= body.replace("@VALID_HRS@", "" + getHoursValid());
+        return body;
+    }
+
+    /**
+     * Get hours valid
+     */
+    private long getHoursValid() throws Exception {
+        if (getResourceConfigProperty("hours-valid") != null) {
+            return new Long(getResourceConfigProperty("hours-valid")).longValue();
+        }
+        return DEFAULT_TOTAL_VALID_HRS;
     }
 
     /**
@@ -499,7 +538,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
-            log.warn("One or more inputs are not valid...");
+            log.warn("One or more inputs are not valid...see returned XML for more details!");
             rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
         }
     }
@@ -570,7 +609,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[Registration] User account has been created", body.toString());
                 }
 
-                if (sendNotificationsEnabled()) {
+                if (sendNotificationsEnabled() && sendActivationSuccessfulEmail()) {
                     StringBuilder body = new StringBuilder();
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
@@ -710,6 +749,21 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Check whether an email should be sent when activation was successful
+     */
+    private boolean sendActivationSuccessfulEmail() {
+        try {
+            String value = getResourceConfigProperty("send-activation-successful-email");
+            if (value != null && value.equals("false")) {
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return true;
+    }
+
+    /**
      * Check whether notification email should be sent to administrator
      */
     private boolean doNotifyAdministrator() {
@@ -779,7 +833,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                         body.append("\n\nTo activate your account, you need to click on the following link:");
                         body.append("\n\n" + getActivationURL(urBean));
                         // TODO: Calculate remaining time
-                        //body.append("\n\nNote that this confirmation link is valid only for the next " + DEFAULT_TOTAL_VALID_HRS + " hours.");
+                        //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                         MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
@@ -836,7 +890,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check password
-            String password = getEnvironment().getRequest().getParameter("password");
+            String password = getEnvironment().getRequest().getParameter(PASSWORD);
             int minPwdLength = getMinPwdLength();
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
@@ -845,7 +899,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 inputsValid = false;
             }
         // INFO: Check password confirmed
-            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
+            String confirmedPassword = getEnvironment().getRequest().getParameter(PASSWORD_CONFIRMED);
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
                 log.warn("Passwords do not match!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
@@ -900,6 +954,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String street = getEnvironment().getRequest().getParameter(STREET);
         if (!isStreetValid(street)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+            log.warn("'" + STREET + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, STREET));
@@ -933,6 +988,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             String city = getEnvironment().getRequest().getParameter(CITY);
             if (!isCityValid(city)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
+                log.warn("'" + CITY + "' not valid!");
                 inputsValid = false;
             } else {
                 Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
@@ -943,6 +999,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String phone = getEnvironment().getRequest().getParameter(PHONE);
         if (!isPhoneValid(phone)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
+            log.warn("'" + PHONE + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, PHONE));
