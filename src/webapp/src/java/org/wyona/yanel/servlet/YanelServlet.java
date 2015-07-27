@@ -1869,8 +1869,19 @@ public class YanelServlet extends HttpServlet {
                 Identity identity = (Identity)identityMap.get(realmID);
                 if (identity != null && !identity.isWorld()) {
                     return identity;
+                } else {
+                    log.warn("No identity yet for realm '" + realmID + "'.");
+                    if (identity != null && identity.isWorld()) {
+                        log.debug("Identity is set to world.");
+                    } else {
+                        log.debug("No identity set at all.");
+                    }
                 }
+            } else {
+                log.debug("No identity map yet.");
             }
+        } else {
+            log.debug("No session yet.");
         }
         return null; 
     }
