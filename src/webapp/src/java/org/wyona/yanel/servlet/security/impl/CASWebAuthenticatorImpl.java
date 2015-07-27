@@ -108,7 +108,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             // TODO: Add loginURL such that one does not have to add it to the XSLT
             // TODO: Add service such that one does not have to add it to the XSLT
             org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
-            new DefaultWebAuthenticatorImpl().getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc);
+            DefaultWebAuthenticatorImpl.getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc, this.getClass());
         } catch(Exception e) {
             log.error(e, e);
             throw new ServletException(e);
@@ -124,7 +124,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @param map TODO
      */
     protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
-        return new DefaultWebAuthenticatorImpl().generateAuthenticationScreenXML(request, realm, message, sslPort, map);
+        return DefaultWebAuthenticatorImpl.generateAuthenticationScreenXML(request, realm, message, sslPort, map);
     }
 
     /**
