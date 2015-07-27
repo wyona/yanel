@@ -1870,7 +1870,7 @@ public class YanelServlet extends HttpServlet {
                 if (identity != null && !identity.isWorld()) {
                     return identity;
                 } else {
-                    log.warn("No identity yet for realm '" + realmID + "'.");
+                    log.debug("No identity yet for realm '" + realmID + "'.");
                     if (identity != null && identity.isWorld()) {
                         log.debug("Identity is set to world.");
                     } else {
@@ -2235,7 +2235,7 @@ public class YanelServlet extends HttpServlet {
             return response;
         }
             
-        // Set mime type and encoding
+        // INFO: Set mime type and encoding
         String mimeType = view.getMimeType();
         if (view.getEncoding() != null) {
             mimeType = patchMimeType(mimeType, request);
