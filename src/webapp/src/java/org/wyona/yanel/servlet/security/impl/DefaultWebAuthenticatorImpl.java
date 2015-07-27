@@ -396,8 +396,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
         try {
-            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
-            getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc);
+            if (getRealmLoginScreenXSLT(realm, xsltLoginScreenDefault).isFile()) {
+                // INFO: Backwards compatible
+                org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
+                getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc, this.getClass());
+            } else {
+                getXHTMLAuthenticationFormViaLoginResource(request, response, realm, message, reservedPrefix, servletContextRealPath, sslPort);
+            }
         } catch(Exception e) {
             log.error(e, e);
             throw new ServletException(e);
@@ -405,10 +410,106 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
+     *
+     */
+    private void getXHTMLAuthenticationFormViaLoginResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String servletContextRealPath, String sslPort) throws Exception {
+        org.wyona.yanel.core.ResourceConfiguration loginRC = org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher.getGlobalResourceConfiguration("login_yanel-rc.xml", realm, servletContextRealPath);
+
+        org.wyona.yanel.core.Yanel yanelInstance = org.wyona.yanel.core.Yanel.getInstance();
+        yanelInstance.init();
+        String path = yanelInstance.getMap().getPath(realm, request.getServletPath());
+        org.wyona.yanel.core.Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(request, response, realm), realm, path, loginRC);
+
+                // INFO: Set no cache parameters
+                try {
+                    if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
+                        log.debug("Set no-cache headers...");
+                        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                        response.setDateHeader("Expires", 0); // Proxies.
+                    }
+                } catch(Exception e) {
+                    log.error(e, e);
+                }
+
+                // INFO: Get view of resource
+                String viewId = null;
+                org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
+
+                // INFO: Set mime type
+                String mimeType = view.getMimeType();
+                mimeType = YanelServlet.patchMimeType(mimeType, request);
+                response.setContentType(mimeType);
+
+                // INFO: Set response body
+                java.io.InputStream is = view.getInputStream();
+                try {
+                    // INFO: Check whether InputStream is empty and try to Write content into response
+                    byte buffer[] = new byte[8192];
+                    int bytesRead;
+                    bytesRead = is.read(buffer);
+                    if (bytesRead != -1) {
+                        java.io.OutputStream os = response.getOutputStream();
+                        os.write(buffer, 0, bytesRead);
+                        while ((bytesRead = is.read(buffer)) != -1) {
+                            os.write(buffer, 0, bytesRead);
+                        }
+                        os.close();
+                    } else {
+                        log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
+                    }
+                } catch(Exception e) {
+                    log.error("Writing into response failed for request '" + request.getRequestURL()); // INFO: For example in the case of ClientAbortException
+                    //log.error("Writing into response failed for request '" + request.getRequestURL() + "' (Client: " + getClientAddressOfUser(request) + ")"); // INFO: For example in the case of ClientAbortException
+                    log.error(e, e);
+                    throw new ServletException(e);
+                } finally {
+                    //log.debug("Close InputStream in any case!");
+                    is.close(); // INFO: Make sure to close InputStream, because otherwise we get bugged with open files
+                }
+    }
+
+    /**
+     * Create environment containing request, etc.
+     */
+    private org.wyona.yanel.core.Environment getEnvironment(HttpServletRequest request, HttpServletResponse response, Realm realm) throws Exception {
+        Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
+        if (identity == null) {
+            // INFO: When no identity set yet, then set it to WORLD
+            identity = new Identity();
+        }
+        return new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null);
+    }
+
+    /**
+     * Get XSLT to generate login screen
+     */
+    private static File getLoginScreenXSLT(Realm realm, String xsltLoginScreenDefault, String servletContextRealPath) {
+        // INFO: Try to get login XSLT from realm
+        File xsltLoginScreen = getRealmLoginScreenXSLT(realm, xsltLoginScreenDefault);
+        // INFO: When login XSLT does not exist inside realm, then fallback to login XSLT of Yanel
+        if (!xsltLoginScreen.isFile()) {
+            xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
+        }
+        return xsltLoginScreen;
+    }
+
+    /**
+     * Get custom XSLT of realm to generate login screen
+     */
+    private static File getRealmLoginScreenXSLT(Realm realm, String xsltLoginScreenDefault) {
+        File realmDir = realm.getRootDir();
+        if (realmDir == null) {
+            realmDir = new File(realm.getConfigFile().getParent());
+        }
+        return org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + xsltLoginScreenDefault);
+    }
+
+    /**
      * Generate custom XHTML form for authentication, which allows to overwrite the input document
      * @param adoc Document containing information about authentication
      */
-    void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map, org.w3c.dom.Document adoc) throws ServletException, IOException {
+    static void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map, org.w3c.dom.Document adoc, Class clazz) throws ServletException, IOException {
 
         // TODO: Enhance as global resource, which will make it more flexible
 
@@ -426,7 +527,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     return;
                 } else if (yanelFormat.equals("error")) {
                     response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
-                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + clazz.getName() + "'");
                     //log.debug("Returned status code: " + response.getStatus());
                     return;
                 } else {
@@ -443,12 +544,8 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
 */
 
-                File realmDir = realm.getRootDir();
-                if (realmDir == null) realmDir = new File(realm.getConfigFile().getParent());
-                File xsltLoginScreen = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + xsltLoginScreenDefault);
-                if (!xsltLoginScreen.isFile()) xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
 
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(getLoginScreenXSLT(realm, xsltLoginScreenDefault, servletContextRealPath)));
 
                 String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
                 transformer.setParameter("yanel.path", pathRelativeToRealm);
@@ -729,13 +826,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Generate XML of authentication/login screen
-     * @param request
-     * @param realm
+     * @param request TODO
+     * @param realm TODO
      * @param message Error message, e.g. "Login failed"
-     * @param sslPort
-     * @param map
+     * @param sslPort TODO
+     * @param map TODO
      */
-    protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
+    static protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
         log.debug("Generate authentication screen XML...");
         org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
         Element rootElement = adoc.getDocumentElement();
@@ -821,7 +918,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * 2. 'global'
      * @return i18n catalogue name
      */
-    private String[] getI18NCatalogueNames(Realm realm) throws Exception {
+    private static String[] getI18NCatalogueNames(Realm realm) throws Exception {
         ArrayList<String> catalogues = new ArrayList<String>();
         String realmCatalogue = realm.getI18nCatalogue();
         if (realmCatalogue != null) {
@@ -834,7 +931,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Get language accepted by browser
      */
-    private String getBrowserLanguage(HttpServletRequest request) {
+    private static String getBrowserLanguage(HttpServletRequest request) {
         String language = request.getHeader("Accept-Language");
         if (language != null) {
             if (language.indexOf(",") > 0) {
