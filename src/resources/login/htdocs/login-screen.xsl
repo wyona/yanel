@@ -21,14 +21,14 @@
   <xsl:template match="/">
     <html>
       <head>
-        <title>Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@yanel:name"/>" - Yanel</title>
+        <title>Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@name"/>" - Yanel</title>
         <link rel="stylesheet" href="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-css/global.css" type="text/css"/>
       </head>
       <body>
         <table cellspacing="0" cellpadding="0" id="bodytable">
           <tr>
             <td id="title">
-              Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@yanel:name"/>"
+              Login to realm "<xsl:value-of select="/yanel:yanel-auth-screen/yanel:realm/@name"/>"
             </td>
             <td id="logo">  
                <img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/>
@@ -108,8 +108,8 @@
     <p>
     Realm info:
        <ul>
-        <li>Name: <xsl:value-of select="@yanel:name"/></li>
-        <li>Mount Point: <xsl:value-of select="@yanel:mount-point"/></li>
+        <li>Name: <xsl:value-of select="@name"/></li>
+        <li>Mount Point: <xsl:value-of select="@mount-point"/></li>
        </ul>
     </p>
   </xsl:template>
