@@ -10,14 +10,15 @@ import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.core.map.Realm;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Resource type matcher for all global resources
  */
-class YanelGlobalResourceTypeMatcher {
+public class YanelGlobalResourceTypeMatcher {
 
-    private static Logger log = Logger.getLogger(YanelGlobalResourceTypeMatcher.class);
+    private static Logger log = LogManager.getLogger(YanelGlobalResourceTypeMatcher.class);
 
     private String pathPrefix;
     private String globalRCsBasePath;
@@ -83,10 +84,11 @@ class YanelGlobalResourceTypeMatcher {
     /**
      * Get resource configuration from global location of the realm or if not available there, then from global location of Yanel
      *
-     * @param resConfigName Filename of resource configuration
+     * @param resConfigName Filename of resource configuration, e.g. '404_yanel-rc.xml'
      * @param realm Current realm
+     * @param globalRCsBasePath Directory containing directory 'global-resource-configs' containing default/generic global resource configs, e.g. '/path/to/tomcat/webapps/yanel'
      */
-    static ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm, String globalRCsBasePath) {
+    public static ResourceConfiguration getGlobalResourceConfiguration(String resConfigName, Realm realm, String globalRCsBasePath) {
         log.debug("Get global resource config, whereas check within realm first ...");
 
         // TODO: Introduce a repository for the Yanel webapp
