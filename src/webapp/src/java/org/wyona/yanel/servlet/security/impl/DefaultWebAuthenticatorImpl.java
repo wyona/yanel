@@ -429,17 +429,17 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
         res.setParameters(resParams);
 
-                // INFO: Set no cache parameters
-                try {
-                    if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
-                        log.debug("Set no-cache headers...");
-                        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-                        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-                        response.setDateHeader("Expires", 0); // Proxies.
-                    }
-                } catch(Exception e) {
-                    log.error(e, e);
-                }
+        // INFO: Set no cache parameters
+        try {
+            if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
+                log.debug("Set no-cache headers...");
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                response.setDateHeader("Expires", 0); // Proxies.
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
 
         // INFO: Get view of resource
         String viewId = null;
@@ -448,10 +448,10 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
         org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
 
-                // INFO: Set mime type
-                String mimeType = view.getMimeType();
-                mimeType = YanelServlet.patchMimeType(mimeType, request);
-                response.setContentType(mimeType);
+        // INFO: Set mime type
+        String mimeType = view.getMimeType();
+        mimeType = YanelServlet.patchMimeType(mimeType, request);
+        response.setContentType(mimeType);
 
                 // INFO: Set response body
                 java.io.InputStream is = view.getInputStream();
