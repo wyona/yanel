@@ -61,7 +61,7 @@
         <p>
         <xsl:choose>
           <xsl:when test="/yanel:yanel-auth-screen/yanel:request/@qs">
-            <a href="?{/yanel:yanel-auth-screen/yanel:request/@qs}&amp;yanel.login.format=xml">Show XML source</a>
+            <a href="?{/yanel:yanel-auth-screen/yanel:request/@qs}&amp;yanel.resource.viewid=xml">Show XML source</a>
           </xsl:when>
           <xsl:otherwise>
             <a href="?&amp;yanel.login.format=xml">Show XML source</a>
