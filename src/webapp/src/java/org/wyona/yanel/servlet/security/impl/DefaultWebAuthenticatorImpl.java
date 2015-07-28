@@ -448,37 +448,59 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         }
         org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
 
-        // INFO: Set mime type
+        // INFO: Set mime type and encoding
         String mimeType = view.getMimeType();
-        mimeType = YanelServlet.patchMimeType(mimeType, request);
-        response.setContentType(mimeType);
+        if (view.getEncoding() != null) {
+            mimeType = YanelServlet.patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + view.getEncoding());
+        } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
+            mimeType = YanelServlet.patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + res.getConfiguration().getEncoding());
+        } else {
+            // try to guess if we have to set the default encoding
+            if (mimeType != null && mimeType.startsWith("text") ||
+                mimeType.equals("application/xml") ||
+                mimeType.equals("application/xhtml+xml") ||
+                mimeType.equals("application/atom+xml") ||
+                mimeType.equals("application/x-javascript")) {
 
-                // INFO: Set response body
-                java.io.InputStream is = view.getInputStream();
-                try {
-                    // INFO: Check whether InputStream is empty and try to Write content into response
-                    byte buffer[] = new byte[8192];
-                    int bytesRead;
-                    bytesRead = is.read(buffer);
-                    if (bytesRead != -1) {
-                        java.io.OutputStream os = response.getOutputStream();
-                        os.write(buffer, 0, bytesRead);
-                        while ((bytesRead = is.read(buffer)) != -1) {
-                            os.write(buffer, 0, bytesRead);
-                        }
-                        os.close();
-                    } else {
-                        log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
-                    }
-                } catch(Exception e) {
-                    log.error("Writing into response failed for request '" + request.getRequestURL()); // INFO: For example in the case of ClientAbortException
-                    //log.error("Writing into response failed for request '" + request.getRequestURL() + "' (Client: " + getClientAddressOfUser(request) + ")"); // INFO: For example in the case of ClientAbortException
-                    log.error(e, e);
-                    throw new ServletException(e);
-                } finally {
-                    //log.debug("Close InputStream in any case!");
-                    is.close(); // INFO: Make sure to close InputStream, because otherwise we get bugged with open files
+                mimeType = YanelServlet.patchMimeType(mimeType, request);
+                response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
+            } else {
+                // probably binary mime-type, don't set encoding
+                mimeType = YanelServlet.patchMimeType(mimeType, request);
+                response.setContentType(mimeType);
+            }
+        }
+
+        // TODO: Set HTTP headers, see YanelServlet#generateResponse(View ...)
+
+        // INFO: Set response body
+        java.io.InputStream is = view.getInputStream();
+        try {
+            // INFO: Check whether InputStream is empty and try to Write content into response
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+            bytesRead = is.read(buffer);
+            if (bytesRead != -1) {
+                java.io.OutputStream os = response.getOutputStream();
+                os.write(buffer, 0, bytesRead);
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
                 }
+                os.close();
+            } else {
+                log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
+            }
+        } catch(Exception e) {
+            log.error("Writing into response failed for request '" + request.getRequestURL()); // INFO: For example in the case of ClientAbortException
+            //log.error("Writing into response failed for request '" + request.getRequestURL() + "' (Client: " + getClientAddressOfUser(request) + ")"); // INFO: For example in the case of ClientAbortException
+            log.error(e, e);
+            throw new ServletException(e);
+        } finally {
+            //log.debug("Close InputStream in any case!");
+            is.close(); // INFO: Make sure to close InputStream, because otherwise we get bugged with open files
+        }
     }
 
     /**
