@@ -9,6 +9,8 @@ import org.wyona.yanel.servlet.YanelServlet;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import javax.servlet.http.Cookie;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -21,6 +23,11 @@ import org.w3c.dom.Document;
  * Login resource
  */
 public class LoginResource extends BasicXMLResource {
+
+    private static String LOGIN_DEFAULT_COOKIE_NAME = "_yanel-login-default";
+    private static String LOGIN_OPENID_COOKIE_NAME = "_yanel-login-openid";
+
+    private static final String LOGIN_USER_REQUEST_PARAM_NAME = "yanel.login.username";
     
     private static Logger log = LogManager.getLogger(LoginResource.class);
     
@@ -36,9 +43,64 @@ public class LoginResource extends BasicXMLResource {
         Document doc = XMLHelper.createDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
         Element rootElement = doc.getDocumentElement();
 
+        java.util.Map resParams = getParameters();
+
+        if (resParams.containsKey("message")) {
+            Element messageElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "message"));
+            messageElement.appendChild(doc.createTextNode((String) resParams.get("message")));
+        }
+
+        Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "request"));
+        //TODOrequestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+
+        if (request.getQueryString() != null) {
+            requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
+        }
+
         Element realmElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "realm"));
         realmElement.setAttributeNS(YanelServlet.NAMESPACE, "name", realm.getName());
         realmElement.setAttributeNS(YanelServlet.NAMESPACE, "mount-point", realm.getMountPoint().toString());
+
+        String currentUserId = null;
+        org.wyona.security.core.api.Identity identity = getEnvironment().getIdentity();
+        if (identity != null) {
+            currentUserId = identity.getUsername();
+            //log.debug("Identity from session: " + identity);
+        } else {
+            //log.debug("Session contains no identity yet.");
+        }
+        if (currentUserId != null) {
+            Element userElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "user"));
+            userElement.setAttributeNS(YanelServlet.NAMESPACE, "id", currentUserId);
+        }
+
+        Element sslElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "ssl"));
+        if(resParams.containsKey("sslPort")) {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "ON");
+        } else {
+            sslElement.setAttributeNS(YanelServlet.NAMESPACE, "status", "OFF");
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) { // INFO: Check cookies if login name was set to be remembered
+            for (int i = 0; i < cookies.length; i++) {
+                log.debug("Cookie: " + cookies[i].getName() + ", " + cookies[i].getValue());
+                // TODO: Parse realm and login name (see method doRememberMyLoginName())
+                if (cookies[i].getName().equals(LOGIN_DEFAULT_COOKIE_NAME)) {
+                    Element loginDefaultElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "login-default"));
+                    loginDefaultElement.setAttributeNS(YanelServlet.NAMESPACE, "username", cookies[i].getValue());
+                } else if (cookies[i].getName().equals(LOGIN_OPENID_COOKIE_NAME)) {
+                    Element loginOpenIDElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "login-openid"));
+                    loginOpenIDElement.setAttributeNS(YanelServlet.NAMESPACE, "openid", cookies[i].getValue());
+                }
+            }
+        }
+
+        String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME); // INFO: Check request parameter for login name
+        if (loginUsername != null) {
+            Element presetLoginElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "login-preset"));
+            presetLoginElement.setAttributeNS(YanelServlet.NAMESPACE, "username", loginUsername);
+        }
 
         return XMLHelper.getInputStream(doc, false, true, null);
     }
