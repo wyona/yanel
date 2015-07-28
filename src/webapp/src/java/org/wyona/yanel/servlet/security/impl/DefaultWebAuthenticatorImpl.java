@@ -441,9 +441,12 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                     log.error(e, e);
                 }
 
-                // INFO: Get view of resource
-                String viewId = null;
-                org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
+        // INFO: Get view of resource
+        String viewId = null;
+        if (request.getParameter("yanel.resource.viewid") != null) {
+            viewId = request.getParameter("yanel.resource.viewid");
+        }
+        org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
 
                 // INFO: Set mime type
                 String mimeType = view.getMimeType();
