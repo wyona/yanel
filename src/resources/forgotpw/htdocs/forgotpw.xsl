@@ -49,7 +49,7 @@
           <tr>
             <td>Your E-Mail address:</td>
             <td>
-              <input type="text" name="email"/>
+              <input type="text" name="email" value="{.}"/>
             </td>
           </tr>
           <tr>
