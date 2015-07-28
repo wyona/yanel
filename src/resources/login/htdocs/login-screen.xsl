@@ -41,7 +41,7 @@
         <p>Authorization was denied. Please, enter your username and password.</p>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:message"/>
           <form method="POST">
-            Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@yanel:username}"/></xsl:when><xsl:when test="/yanel:yanel-auth-screen/yanel:login-preset"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-preset/@yanel:username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
+            Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@username}"/></xsl:when><xsl:when test="/yanel:yanel-auth-screen/yanel:login-preset"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-preset/@username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
             <i18n:text key="password"/>: <input type="password" name="yanel.login.password"/>(<a id="forgotpw" href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html"><i18n:text key="forgot.password"/></a>)<br/>
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
             <br/><input type="checkbox" name="auto-login"/> Keep me signed in (<a href="?yanel.usecase=logout">Logout</a> explicitely in order to remove auto login cookie and hence disable auto login)
@@ -51,7 +51,7 @@
 	<p>
 	or login with <a href="http://www.openid.net">OpenID</a>:
 	<form method="POST">
-          <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-openid"><input type="text" name="yanel.login.openid" value="{/yanel:yanel-auth-screen/yanel:login-openid/@yanel:openid}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.openid"/></xsl:otherwise></xsl:choose>
+          <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-openid"><input type="text" name="yanel.login.openid" value="{/yanel:yanel-auth-screen/yanel:login-openid/@openid}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.openid"/></xsl:otherwise></xsl:choose>
           <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-openid"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my OpenID (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
           <input type="submit" value="Login" name="openid-login"/>
 	</form>
@@ -60,8 +60,8 @@
         <hr/>
         <p>
         <xsl:choose>
-          <xsl:when test="/yanel:yanel-auth-screen/yanel:request/@yanel:qs">
-            <a href="?{/yanel:yanel-auth-screen/yanel:request/@yanel:qs}&amp;yanel.login.format=xml">Show XML source</a>
+          <xsl:when test="/yanel:yanel-auth-screen/yanel:request/@qs">
+            <a href="?{/yanel:yanel-auth-screen/yanel:request/@qs}&amp;yanel.login.format=xml">Show XML source</a>
           </xsl:when>
           <xsl:otherwise>
             <a href="?&amp;yanel.login.format=xml">Show XML source</a>
@@ -84,7 +84,7 @@
   </xsl:template>
 
   <xsl:template match="yanel:request">
-    Request: <xsl:value-of select="@yanel:urlqs"/>
+    Request: <xsl:value-of select="@urlqs"/>
     <br/>
     Path starting at realm: <xsl:value-of select="$yanel.path"/>
     <br/>
@@ -95,7 +95,7 @@
 
   <xsl:template match="yanel:ssl">
       <xsl:choose>
-        <xsl:when test="contains(@yanel:status, 'ON')">
+        <xsl:when test="contains(@status, 'ON')">
           <p><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/ssl_on.png" alt="ssl on"/> SSL support is ON</p>
         </xsl:when>
         <xsl:otherwise>
@@ -118,7 +118,7 @@
     <p>
     Currently signed in into this realm as:
        <ul>
-        <li>User ID: <xsl:value-of select="@yanel:id"/></li>
+        <li>User ID: <xsl:value-of select="@id"/></li>
        </ul>
     </p>
   </xsl:template>
