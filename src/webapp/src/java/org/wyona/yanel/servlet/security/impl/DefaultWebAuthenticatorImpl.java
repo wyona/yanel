@@ -410,7 +410,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
-     *
+     * @param message TODO
      */
     private void getXHTMLAuthenticationFormViaLoginResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String servletContextRealPath, String sslPort) throws Exception {
         org.wyona.yanel.core.ResourceConfiguration loginRC = org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher.getGlobalResourceConfiguration("login_yanel-rc.xml", realm, servletContextRealPath);
@@ -419,6 +419,15 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         yanelInstance.init();
         String path = yanelInstance.getMap().getPath(realm, request.getServletPath());
         org.wyona.yanel.core.Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(request, response, realm), realm, path, loginRC);
+
+        java.util.Map resParams = new java.util.HashMap();
+        if (message != null) {
+            resParams.put("message", message);
+        }
+        if (sslPort != null) {
+            resParams.put("sslPort", sslPort);
+        }
+        res.setParameters(resParams);
 
                 // INFO: Set no cache parameters
                 try {
@@ -825,6 +834,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
+     * @deprecated Use org.wyona.yanel.impl.resources.login.LoginResource#getContentXML(String) instead
      * Generate XML of authentication/login screen
      * @param request TODO
      * @param realm TODO
