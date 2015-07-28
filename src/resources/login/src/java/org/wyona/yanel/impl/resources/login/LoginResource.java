@@ -51,7 +51,7 @@ public class LoginResource extends BasicXMLResource {
         }
 
         Element requestElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "request"));
-        //TODOrequestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", getRequestURLQS(request, null, true, map));
+        requestElement.setAttributeNS(YanelServlet.NAMESPACE, "urlqs", org.wyona.yanel.servlet.Utils.getRequestURLQS(getRealm(), request, null, true));
 
         if (request.getQueryString() != null) {
             requestElement.setAttributeNS(YanelServlet.NAMESPACE, "qs", request.getQueryString().replaceAll("&", "&amp;"));
