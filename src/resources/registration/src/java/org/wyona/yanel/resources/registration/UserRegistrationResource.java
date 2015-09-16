@@ -615,6 +615,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
                     body.append("\n\n" + getHomepageURL());
+                    // TODO: Improve subject, e.g. use realm name as prefix
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", body.toString());
                 }
 
