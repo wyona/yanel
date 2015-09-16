@@ -244,7 +244,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("\n\nPlease confirm the request by clicking on the following link:");
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
                     body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] Confirm User Registration Request", body.toString());
                     Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
                 }
 
