@@ -836,6 +836,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                         body.append("\n\n" + getActivationURL(urBean));
                         // TODO: Calculate remaining time
                         //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
+                        // TODO: Improve subject, e.g. use realm name as prefix
                         MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
