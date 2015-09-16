@@ -607,7 +607,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("The following user account has been activated:");
                     body.append("\n\n" + urBean.getEmail());
                     body.append("\n\nvia " + getHomepageURL());
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[Registration] User account has been created", body.toString());
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] User account has been created", body.toString());
                 }
 
                 if (sendNotificationsEnabled() && sendActivationSuccessfulEmail()) {
