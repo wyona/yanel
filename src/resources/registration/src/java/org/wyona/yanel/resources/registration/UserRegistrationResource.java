@@ -233,6 +233,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         try {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
+            element.setAttribute("sent-by-yanel", "false");
             if (sendNotificationsEnabled()) {
                 if (administratorConfirmationRequired()) {
                     String adminConfirmationKey = java.util.UUID.randomUUID().toString();
@@ -244,14 +245,14 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
                     body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                     MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "Confirm User Registration Request", body.toString());
+                    Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
                 }
 
                 MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
 
                 element.setAttribute("sent-by-yanel", "true");
-            } else {
-                element.setAttribute("sent-by-yanel", "false");
             }
+
             element.setAttribute("hours-valid", "" + getHoursValid());
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
