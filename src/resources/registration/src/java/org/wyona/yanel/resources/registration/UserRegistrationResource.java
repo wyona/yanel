@@ -102,8 +102,9 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     * Check whether firstname is valid
-     * @param firstname Firstname
+     * Check whether first name is valid
+     * @param firstname First name
+     * @return true when first name is valid and false otherwise
      */
     private boolean isFirstnameValid(String firstname) {
         if (firstname != null && firstname.length() > 0) {
