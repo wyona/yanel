@@ -23,7 +23,7 @@ public class UserRegistrationBean {
     private String adminConfirmationKey = null;
 
     /**
-     *
+     * @param firstname First name
      */
     public UserRegistrationBean(String gender, String firstname, String lastname, String email, String password, String city, String phone) {
         this.gender = gender;
@@ -85,7 +85,7 @@ public class UserRegistrationBean {
     }
 
     /**
-     *
+     * Get first name
      */
     public String getFirstname() {
         return firstname;
