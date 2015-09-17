@@ -330,6 +330,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             addUserToGroups(user);
 
+            // TODO: getUserManager().existsAlias(userRegBean.getEmail())
             getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
