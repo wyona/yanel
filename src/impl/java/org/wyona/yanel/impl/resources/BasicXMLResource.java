@@ -44,7 +44,10 @@ import org.apache.xml.serializer.Serializer;
 import org.apache.xml.utils.ListingErrorHandler;
 import org.w3c.dom.Document;
 import org.wyona.commons.io.MimeTypeUtil;
+
 import org.wyona.security.core.api.Identity;
+import org.wyona.security.core.api.User;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -340,6 +343,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             Repository repo = getRealm().getRepository();
             // TBD: Introduce javax.xml.transform.Templates in order to cache transformers (see for example http://www.javaworld.com/article/2073394/java-xml/transparently-cache-xsl-transformations-with-jaxp.html)
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
+            Identity identity = getEnvironment().getIdentity();
+            User user = null;
+            String userID = identity.getUsername();
+            if (userID != null) {
+                user = getRealm().getIdentityManager().getUserManager().getUser(userID);
+                //log.debug("User ID: " + userID + ", " + user.getID());
+            }
             for (int i = 0; i < xsltPaths.length; i++) {
                 String xsltPath = xsltPaths[i];
                 int schemeEndIndex = xsltPath.indexOf(':');
@@ -366,11 +376,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 xsltHandlers[i].getTransformer().setErrorListener(errorListener);
                 //log.debug("Requested view ID: " + viewDescriptor.getId());
-                passTransformerParameters(xsltHandlers[i].getTransformer());
+                passTransformerParameters(xsltHandlers[i].getTransformer(), identity, user);
             }
 
             // create i18n transformer:
-            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(), getRealm().getDefaultLanguage(), uriResolver);
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(identity, user), getRealm().getDefaultLanguage(), uriResolver);
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create xinclude transformer:
@@ -481,7 +491,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Pass parameters to xslt transformer.
      * @param transformer Transformer for which various parameters (e.g. yanel.back2realm) will be set
      */
-    protected void passTransformerParameters(Transformer transformer) throws Exception {
+    protected void passTransformerParameters(Transformer transformer, Identity identity, User user) throws Exception {
         // INFO: Set general parameters
         transformer.setParameter("yanel.timestamp", new java.util.Date().getTime()); // INFO: timestamp can be used inside an XSLT to make for example URLs non-cacheable, by attaching a query string containing the timestamp
         transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
@@ -544,7 +554,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("content-language", getContentLanguage());
 
         // INFO: user ID, firstname, etc.
-        addUserInfo(transformer);
+        addUserInfo(transformer, identity, user);
 
         // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
@@ -667,11 +677,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Add user ID, firstname, etc. as parameters to transformer
      * @param transformer Transformer to which user information as parameters will be added
      */
-    private void addUserInfo(Transformer transformer) throws Exception {
-        Identity identity = getEnvironment().getIdentity();
+    private void addUserInfo(Transformer transformer, Identity identity, User user) throws Exception {
         if (identity != null) {
-            String userID = identity.getUsername();
-            if (userID != null) {
+            if (user != null) {
+                String userID = identity.getUsername();
                 transformer.setParameter("username", userID);
 
                 String firstname = identity.getFirstname(); // INFO: Please note that org.wyona.security.core.api.Identity(User, String) is using User#getName() as firstname!
@@ -688,7 +697,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     log.warn("No lastname (user ID: " + userID + ")!");
                 }
 
-                String email = getRealm().getIdentityManager().getUserManager().getUser(userID).getEmail();
+                String email = user.getEmail();
                 if (email != null) {
                     transformer.setParameter("email", email);
                 } else {
@@ -756,14 +765,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     /**
      * Get user language (order: profile, browser, ...)
      */
-    private String getUserLanguage() throws Exception {
+    private String getUserLanguage(Identity identity, User user) throws Exception {
         String language = getRequestedLanguage();
 
-        Identity identity = getEnvironment().getIdentity();
         String userID = identity.getUsername(); // WARN: Do not use the protected method getUsername(), because it might be overwritten and hence backwards compatibility might fail!
-        if (userID != null) {
+        if (user != null) {
             if (getRealm().getIdentityManager().getUserManager().existsUser(userID)) { // INFO: It might be possible that a user ID is still referenced by a session, but has been deleted "persistently" in the meantime
-                String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+                String userLanguage = user.getLanguage();
                 //log.debug("User language: " + userLanguage);
                 if(userLanguage != null) {
                     language = userLanguage;
