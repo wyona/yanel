@@ -228,20 +228,34 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 String userId = getUserId();
                 org.wyona.security.core.api.UserManager userManager = realm.getIdentityManager().getUserManager();
                 User user = userManager.getUser(userId);
-                String previousEmailAddress = user.getEmail();
-                user.setEmail(email);
-                //user.setName(getEnvironment().getRequest().getParameter("userName"));
-                //user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
-                user.save();
+                user.setName(getEnvironment().getRequest().getParameter("userName"));
+                user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
 
-                String[] aliases = user.getAliases();
-                for (int i = 0; i < aliases.length; i++) {
-                    if (aliases[i].equals(previousEmailAddress)) {
-                        userManager.createAlias(email, userId);
+                String previousEmailAddress = user.getEmail();
+                if (!previousEmailAddress.equals(email)) {
+                    user.setEmail(email);
+
+                    if (hasAlias(user, previousEmailAddress)) {
+                        if (!hasAlias(user, email)) {
+                            if (!userManager.existsAlias(email)) {
+                                userManager.createAlias(email, userId);
+                            } else {
+                                throw new Exception("Alias '" + email + "' already exists!");
+                            }
+                        }
                         userManager.removeAlias(previousEmailAddress);
                         log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
+                    } else {
+                        log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
+                    }
+                } else {
+                    log.warn("DEBUG: Current email and new email are the same.");
+                    if (!hasAlias(user, email)) {
+                        log.warn("Email '" + email + "' is not used as alias yet!");
                     }
                 }
+
+                user.save();
 
                 setTransformerParameter("success", "E-Mail (and alias) updated successfully");
                 return true;
@@ -251,6 +265,20 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 return false;
             }
         }
+    }
+
+    /**
+     * Check whether user has a specific alias
+     * @return true when user has a specific alias
+     */
+    private boolean hasAlias(User user, String alias) throws Exception {
+        String[] aliases = user.getAliases();
+        for (int i = 0; i < aliases.length; i++) {
+            if (aliases[i].equals(alias)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
