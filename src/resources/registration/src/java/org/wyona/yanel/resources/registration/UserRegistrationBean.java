@@ -92,10 +92,24 @@ public class UserRegistrationBean {
     }
 
     /**
-     *
+     * Set first name
+     */
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    /**
+     * Get last name
      */
     public String getLastname() {
         return lastname;
+    }
+
+    /**
+     * Set last name
+     */
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     /**
