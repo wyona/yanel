@@ -128,6 +128,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
     private static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
 
+    private Identity identity = null;
+    private User user = null;
+
     /**
      * Get view descriptor for a particular view id
      * @param viewId View id
@@ -343,8 +346,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             Repository repo = getRealm().getRepository();
             // TBD: Introduce javax.xml.transform.Templates in order to cache transformers (see for example http://www.javaworld.com/article/2073394/java-xml/transparently-cache-xsl-transformations-with-jaxp.html)
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
-            Identity identity = getEnvironment().getIdentity();
-            User user = null;
+            identity = getEnvironment().getIdentity();
+            user = null;
             String userID = identity.getUsername();
             if (userID != null) {
                 user = getRealm().getIdentityManager().getUserManager().getUser(userID);
@@ -376,7 +379,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
                 xsltHandlers[i].getTransformer().setErrorListener(errorListener);
                 //log.debug("Requested view ID: " + viewDescriptor.getId());
-                passTransformerParameters(xsltHandlers[i].getTransformer(), identity, user);
+                passTransformerParameters(xsltHandlers[i].getTransformer());
             }
 
             // create i18n transformer:
@@ -491,7 +494,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Pass parameters to xslt transformer.
      * @param transformer Transformer for which various parameters (e.g. yanel.back2realm) will be set
      */
-    protected void passTransformerParameters(Transformer transformer, Identity identity, User user) throws Exception {
+    protected void passTransformerParameters(Transformer transformer) throws Exception {
         // INFO: Set general parameters
         transformer.setParameter("yanel.timestamp", new java.util.Date().getTime()); // INFO: timestamp can be used inside an XSLT to make for example URLs non-cacheable, by attaching a query string containing the timestamp
         transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
