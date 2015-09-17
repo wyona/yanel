@@ -13,7 +13,8 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,7 +26,7 @@ import org.wyona.commons.xml.XMLHelper;
  */
 public class EditYanelUserProfileResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(EditYanelUserProfileResource.class);
+    private static Logger log = LogManager.getLogger(EditYanelUserProfileResource.class);
 
     private String transformerParameterName;
     private String transformerParameterValue;
