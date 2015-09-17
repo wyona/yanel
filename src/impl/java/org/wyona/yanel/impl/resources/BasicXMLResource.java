@@ -667,7 +667,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Add user ID, firstname, etc. as parameters to transformer
      * @param transformer Transformer to which user information as parameters will be added
      */
-    private void addUserInfo(Transformer transformer) {
+    private void addUserInfo(Transformer transformer) throws Exception {
         Identity identity = getEnvironment().getIdentity();
         if (identity != null) {
             String userID = identity.getUsername();
@@ -686,6 +686,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                     transformer.setParameter("lastname", lastname);
                 } else {
                     log.warn("No lastname (user ID: " + userID + ")!");
+                }
+
+                String email = getRealm().getIdentityManager().getUserManager().getUser(userID).getEmail();
+                if (email != null) {
+                    transformer.setParameter("email", email);
+                } else {
+                    log.warn("No email (user ID: " + userID + ")!");
                 }
             }
         }
