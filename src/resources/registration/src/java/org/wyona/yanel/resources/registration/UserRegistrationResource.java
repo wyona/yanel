@@ -349,11 +349,22 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
         long customerID = new java.util.Date().getTime();
         // TODO: Use encrypted password
-        User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
+        User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty(GENDER, gender);
         user.setLanguage(getContentLanguage());
         user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
        return user;
+    }
+
+    /**
+     * Get name of user
+     */
+    private String getName(String firstname, String lastname) {
+        if (firstname == null && lastname == null) {
+            return null;
+        } else {
+            return firstname + " " + lastname;
+        }
     }
 
     /**
