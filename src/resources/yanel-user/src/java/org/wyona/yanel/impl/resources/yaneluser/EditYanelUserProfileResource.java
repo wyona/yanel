@@ -235,13 +235,11 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 if (!previousEmailAddress.equals(email)) {
                     user.setEmail(email);
 
-                    if (hasAlias(user, previousEmailAddress)) {
-                        if (!hasAlias(user, email)) {
-                            if (!userManager.existsAlias(email)) {
-                                userManager.createAlias(email, userId);
-                            } else {
-                                throw new Exception("Alias '" + email + "' already exists!");
-                            }
+                    if (userManager.existsAlias(previousEmailAddress)) {
+                        if (!userManager.existsAlias(email)) {
+                            userManager.createAlias(email, userId);
+                        } else {
+                            throw new Exception("Alias '" + email + "' already exists!");
                         }
                         userManager.removeAlias(previousEmailAddress);
                         log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
@@ -250,7 +248,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                     }
                 } else {
                     log.warn("DEBUG: Current email and new email are the same.");
-                    if (!hasAlias(user, email)) {
+                    if (!userManager.existsAlias(email)) {
                         log.warn("Email '" + email + "' is not used as alias yet!");
                     }
                 }
@@ -271,6 +269,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      * Check whether user has a specific alias
      * @return true when user has a specific alias
      */
+/*
     private boolean hasAlias(User user, String alias) throws Exception {
         String[] aliases = user.getAliases();
         for (int i = 0; i < aliases.length; i++) {
@@ -280,6 +279,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         }
         return false;
     }
+*/
 
     /**
      *
