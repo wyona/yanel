@@ -118,6 +118,17 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 }
             }
 
+            String[] aliases = user.getAliases();
+            if (aliases != null && aliases.length > 0) {
+                Element aliasesEl = (Element) rootEl.appendChild(doc.createElement("aliases"));
+                for (int i = 0; i < aliases.length; i++) {
+                    Element aliasEl = (Element) aliasesEl.appendChild(doc.createElement("alias"));
+                    aliasEl.appendChild(doc.createTextNode(aliases[i]));
+                }
+            } else {
+                rootEl.appendChild(doc.createElement("no-aliases"));
+            }
+
             org.wyona.security.core.UserHistory history = user.getHistory();
             if (history != null) {
                 java.util.List<org.wyona.security.core.UserHistory.HistoryEntry> entries = history.getHistory();
