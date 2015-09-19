@@ -179,6 +179,20 @@
     <xsl:call-template name="process-all-groups"/>         
 -->
 
+    <h2>Aliases</h2>
+    <xsl:choose>
+      <xsl:when test="aliases">
+    <ul>
+      <xsl:for-each select="aliases/alias">
+      <li><xsl:value-of select="."/></li>
+      </xsl:for-each>
+    </ul>
+      </xsl:when>
+      <xsl:otherwise>
+        <p>No aliases yet.</p>
+      </xsl:otherwise>
+    </xsl:choose>
+
     <h2>History</h2>
     <table>
       <tr>
