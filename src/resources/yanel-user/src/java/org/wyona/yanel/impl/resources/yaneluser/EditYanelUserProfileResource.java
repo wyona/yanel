@@ -253,10 +253,16 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                         if (!userManager.existsAlias(email)) {
                             userManager.createAlias(email, userId);
                         } else {
-                            throw new Exception("Alias '" + email + "' already exists!");
+                            if (hasAlias(user, email)) {
+                                log.warn("DEBUG: User '" + userId + "' already has alias '" + email + "'.");
+                            } else {
+                                throw new Exception("Alias '" + email + "' already exists, but is not associated with user '" + userId + "'!");
+                            }
                         }
-                        userManager.removeAlias(previousEmailAddress);
-                        log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
+                        if (hasAlias(user, previousEmailAddress)) {
+                            userManager.removeAlias(previousEmailAddress);
+                            log.warn("Previous alias '" + previousEmailAddress + "' removed, which means user needs to use new email '" + email + "' to login.");
+                        }
                     } else {
                         log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
                     }
@@ -281,7 +287,6 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
      * Check whether user has a specific alias
      * @return true when user has a specific alias
      */
-/*
     private boolean hasAlias(User user, String alias) throws Exception {
         String[] aliases = user.getAliases();
         for (int i = 0; i < aliases.length; i++) {
@@ -291,7 +296,6 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
         }
         return false;
     }
-*/
 
     /**
      *
