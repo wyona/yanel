@@ -239,12 +239,15 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 String userId = getUserId();
                 org.wyona.security.core.api.UserManager userManager = realm.getIdentityManager().getUserManager();
                 User user = userManager.getUser(userId);
+
                 user.setName(getEnvironment().getRequest().getParameter("userName"));
                 user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
+                user.save();
 
                 String previousEmailAddress = user.getEmail();
                 if (!previousEmailAddress.equals(email)) {
                     user.setEmail(email);
+                    user.save();
 
                     if (userManager.existsAlias(previousEmailAddress)) {
                         if (!userManager.existsAlias(email)) {
@@ -263,8 +266,6 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                         log.warn("Email '" + email + "' is not used as alias yet!");
                     }
                 }
-
-                user.save();
 
                 setTransformerParameter("success", "E-Mail (and alias) updated successfully");
                 return true;
