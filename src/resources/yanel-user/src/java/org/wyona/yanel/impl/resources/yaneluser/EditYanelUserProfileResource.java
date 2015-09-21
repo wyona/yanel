@@ -4,6 +4,7 @@
 package org.wyona.yanel.impl.resources.yaneluser;
 
 import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.util.MailUtil;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import org.wyona.security.core.api.Identity;
@@ -266,7 +267,8 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                         if (hasAlias(user, previousEmailAddress)) {
                             userManager.removeAlias(previousEmailAddress);
                             log.warn("Previous alias '" + previousEmailAddress + "' removed, which means user needs to use new email '" + email + "' to login.");
-                            // TODO: Logout user and send email to new and previous email address
+                            sendNotification(previousEmailAddress, email);
+                            // TODO/TBD: Logout user
                         }
                     } else {
                         log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
@@ -285,6 +287,29 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 setTransformerParameter("error", e.getMessage());
                 return false;
             }
+        }
+    }
+
+    /**
+     * Send notifications to previous and new emails that login alias has changed
+     */
+    private void sendNotification(String previousEmail, String newEmail) throws Exception {
+        String from = getResourceConfigProperty("fromEmail");
+        if (from != null) {
+            String subject = "[" + getRealm().getName() + "] Username changed";
+            String body = "Please note that you must use '" + newEmail + "' instead '" + previousEmail + "' to login.";
+            try {
+                MailUtil.send(from, previousEmail, subject, body);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+            try {
+                MailUtil.send(from, newEmail, subject, body);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        } else {
+            log.warn("No 'from' email address inside resource configuration set, hence no notifications about changed username will be sent!");
         }
     }
 
