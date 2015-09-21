@@ -6,7 +6,10 @@ package org.wyona.yanel.impl.resources.yaneluser;
 import org.wyona.yanel.core.ResourceConfiguration;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
+import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
+
+import org.wyona.yanel.servlet.YanelServlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -243,6 +246,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 user.setName(getEnvironment().getRequest().getParameter("userName"));
                 user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
                 user.save();
+                updateSession(user);
 
                 String previousEmailAddress = user.getEmail();
                 if (!previousEmailAddress.equals(email)) {
@@ -262,6 +266,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                         if (hasAlias(user, previousEmailAddress)) {
                             userManager.removeAlias(previousEmailAddress);
                             log.warn("Previous alias '" + previousEmailAddress + "' removed, which means user needs to use new email '" + email + "' to login.");
+                            // TODO: Logout user and send email to new and previous email address
                         }
                     } else {
                         log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
@@ -281,6 +286,13 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 return false;
             }
         }
+    }
+
+    /**
+     * Update identity attached to session
+     */
+    private void updateSession(User user) throws Exception {
+        YanelServlet.setIdentity(new Identity(user, user.getEmail()), getEnvironment().getRequest().getSession(true), getRealm());
     }
 
     /**
