@@ -268,7 +268,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                             userManager.removeAlias(previousEmailAddress);
                             log.warn("Previous alias '" + previousEmailAddress + "' removed, which means user needs to use new email '" + email + "' to login.");
                             sendNotification(previousEmailAddress, email);
-                            // TODO/TBD: Logout user
+                            // TODO/TBD: Logout user and tell user why he/she was signed out
                         }
                     } else {
                         log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
