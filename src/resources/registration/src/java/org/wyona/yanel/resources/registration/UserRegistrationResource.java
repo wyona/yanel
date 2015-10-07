@@ -628,8 +628,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
                     body.append("\n\n" + getHomepageURL());
-                    // TODO: Improve subject, e.g. use realm name as prefix
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", body.toString());
+                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "[" + getRealm().getName() + "] User Registration Successful", body.toString());
                 }
 
                 // TODO: Add gender/salutation
@@ -849,8 +848,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                         body.append("\n\n" + getActivationURL(urBean));
                         // TODO: Calculate remaining time
                         //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
-                        // TODO: Improve subject, e.g. use realm name as prefix
-                        MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "Administrator has confirmed your registration request", body.toString());
+                        MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "[" + getRealm().getName() + "] Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
                     log.warn("Administrator key did not match!");
