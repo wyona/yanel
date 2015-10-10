@@ -16,7 +16,9 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
@@ -28,7 +30,7 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public class DeleteUserResource extends ExecutableUsecaseResource {
 
-    private static Category log = Category.getInstance(DeleteUserResource.class);
+    private static Logger log = LogManager.getLogger(DeleteUserResource.class);
     
     private static final String PARAM_USER_ID = "userID";
 
@@ -41,18 +43,34 @@ public class DeleteUserResource extends ExecutableUsecaseResource {
             UserManager userManager = getRealm().getIdentityManager().getUserManager();
             userManager.removeUser(id);
             addInfoMessage("User " + id + " deleted successfully.");
-            log.warn("TODO: Delete access policy!"); // Also see CreateUserResource
+
+            deleteUserProfileAccessPolicy(id);
         } catch (AccessManagementException e) {
+            log.error(e, e);
+            throw new UsecaseException(e.getMessage(), e);
+        } catch (Exception e) {
             log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
     }
+
+    /**
+     * Delete user profile access policy
+     * @param id User ID
+     */
+    private void deleteUserProfileAccessPolicy(String id) throws Exception {
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.removePolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html");
+    }
     
+    /**
+     *
+     */
     public User getUser() throws AccessManagementException {
         String id = getParameterAsString(PARAM_USER_ID);
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         User user = userManager.getUser(id);
         return user;
     }
-
 }
