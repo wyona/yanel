@@ -41,6 +41,9 @@ public class CreateUserResource extends ExecutableUsecaseResource {
     private static final String PARAM_PASSWORD1 = "password1";
     private static final String PARAM_PASSWORD2 = "password2";
 
+    /**
+     *
+     */
     @Override
     public void execute() throws UsecaseException {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
@@ -81,14 +84,7 @@ public class CreateUserResource extends ExecutableUsecaseResource {
                 }
             }
 
-            // Create access policy
-            org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
-            org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
-            org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
-            usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
-            policy.addUsecasePolicy(usecasePolicy);
-            // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
-            policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
+            createUserProfileAccessPolicy(id);
 
             addInfoMessage("User '" + id + "' (" + name + ") created successfully. (IMPORTANT: Please make sure to add user either to an existing group or to an access policy, because otherwise user will not have any explicite rights.)");
         } catch (AccessManagementException e) {
@@ -98,6 +94,22 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Create user profile access policy 
+     * @param id User ID
+     */
+    private void createUserProfileAccessPolicy(String id) throws Exception {
+        // TODO: Also see src/resources/registration/src/java/org/wyona/yanel/resources/registration/UserRegistrationResource.java
+
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+        org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+        usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
+        policy.addUsecasePolicy(usecasePolicy);
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
     }
 
     @Override
