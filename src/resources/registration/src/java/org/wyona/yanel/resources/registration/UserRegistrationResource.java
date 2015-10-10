@@ -343,12 +343,31 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Create user profile access policy
+     * @param id User ID
+     */
+    private void createUserProfileAccessPolicy(String id) throws Exception {
+        // TODO: Also see src/resources/user-mgmt/src/java/org/wyona/yanel/impl/resources/CreateUserResource.java
+
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+        org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+        usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
+        policy.addUsecasePolicy(usecasePolicy);
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
+    }
+
+    /**
      * Activate user
      * @param userRegBean User registration bean containing gender, firstname, etc.
      * @return activated user
      */
     protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
         long customerID = new java.util.Date().getTime();
+
+        createUserProfileAccessPolicy("" + customerID);
+
         // TODO: Use encrypted password
         User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty(GENDER, gender);
