@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import javax.mail.internet.InternetAddress;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
@@ -843,7 +845,9 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected Document generateResponseDocument() throws Exception {
         Document doc = getEmptyDocument();
         Element rootElement = doc.getDocumentElement();
-        String email = getEnvironment().getRequest().getParameter(EMAIL);
+
+        String email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+
         String uuid = getEnvironment().getRequest().getParameter("uuid");
         String adminConfirmationKey = getEnvironment().getRequest().getParameter(ADMIN_CONFIRMATION_KEY);
         if (email != null) { // INFO: Somebody tries to register (Please note that the email can also be empty in case somebody forgets to enter an email, but the query string parameter 'email' will exist anyway)
@@ -1084,7 +1088,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element submittedElem = (Element) doc.getDocumentElement().appendChild(doc.createElement("submitted-inputs"));
 
         Element emailElem = doc.createElementNS(NAMESPACE, EMAIL);
-        emailElem.setTextContent(getEnvironment().getRequest().getParameter(EMAIL));
+        emailElem.setTextContent(new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress());
         submittedElem.appendChild(emailElem);
 
         Element lastnameElem = doc.createElementNS(NAMESPACE, LASTNAME);
