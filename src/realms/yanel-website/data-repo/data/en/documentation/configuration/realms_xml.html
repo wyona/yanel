@@ -8,10 +8,11 @@
   <body>
 <h1>Configuration of realms.xml</h1>
 <p>The realms configuration contains the locations and prefixes of the various realms and denotes which realm is the ROOT realm.</p>
-<p>The location of the file <code>realms.xml</code> is normally configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> , but this path can be overwritten by adding a file realms.xml to the user home directory or by setting the environment variable <code>YANEL_REALMS_HOME</code>. The loading order is implemented by the java class org.wyona.yanel.core.map.RealmManager and the order is</p>
+<p>The location of the file <code>realms.xml</code> is normally configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> , but this path can be overwritten by adding a file <code>realms.xml</code> to a hidden folder <code>.yanel</code> inside the user home directory or by setting the environment variable <code>YANEL_REALMS_HOME</code>. The loading order is implemented by the java class <code>org.wyona.yanel.core.map.RealmManager</code> and the order is</p>
 <ol>
 <li>Environment variable (YANEL_REALMS_HOME)</li>
-<li>User home directory (user.home)</li>
+<li>Hidden folder inside user home directory {user.home}/.yanel</li>
+<li>DEPRECATED: User home directory {user.home}</li>
 <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/context.html#Environment_Entries">Environment entry</a> (e.g. within apache-tomcat-7.0.25/conf/context.xml: &lt;Environment name="yanel/realms-config-file" type="java.lang.String" value="/Users/alice/realms.xml"/&gt;)</li>
 <li>Yanel configuration (yanel.xml)</li>
 </ol>
