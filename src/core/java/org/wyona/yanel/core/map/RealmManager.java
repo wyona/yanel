@@ -106,11 +106,20 @@ public class RealmManager {
         }
 
 
-        // 2.) Getting realms.xml from user home directory
+        // 2.) Getting realms.xml from user home directory or rather hidden yanel directory inside user home directory
         log.debug("User home directory: " + System.getProperty("user.home"));
+
+        File userHomeDotYanelRealmsConfigFile = new File(System.getProperty("user.home") + "/.yanel", "realms.xml");
+        if (userHomeDotYanelRealmsConfigFile.isFile()) {
+            log.warn("DEBUG: Use hidden folder inside user home directory: " + userHomeDotYanelRealmsConfigFile.getParentFile().getAbsolutePath());
+            return userHomeDotYanelRealmsConfigFile;
+        } else {
+            log.warn("No realms configuration found inside hidden folder at user home directory: " + userHomeDotYanelRealmsConfigFile.getAbsolutePath());
+        }
+
         File userHomeRealmsConfigFile = new File(System.getProperty("user.home"), "realms.xml");
         if (userHomeRealmsConfigFile.isFile()) {
-            log.warn("Use user home directory: " + System.getProperty("user.home"));
+            log.warn("DEPRECATED: Use user home directory: " + System.getProperty("user.home"));
             return userHomeRealmsConfigFile;
         } else {
             log.warn("No realms configuration found within user home directory: " + userHomeRealmsConfigFile.getAbsolutePath());
