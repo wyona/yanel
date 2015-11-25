@@ -846,7 +846,10 @@ public class UserRegistrationResource extends BasicXMLResource {
         Document doc = getEmptyDocument();
         Element rootElement = doc.getDocumentElement();
 
-        String email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+        String email = null;
+        if (getEnvironment().getRequest().getParameter(EMAIL) != null) {
+            email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+        }
 
         String uuid = getEnvironment().getRequest().getParameter("uuid");
         String adminConfirmationKey = getEnvironment().getRequest().getParameter(ADMIN_CONFIRMATION_KEY);
