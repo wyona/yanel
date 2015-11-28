@@ -15,7 +15,7 @@
   <version revision="REVISION" version="VERSION"/>
 -->
   
-  <!-- # Realms configuration -->
+  <!-- # Realms configuration, also see http://www.yanel.org/en/documentation/configuration/realms_xml.html -->
   <realms-config src="realms.xml"/>
   
   <!-- # ResourceTypes configuration -->
