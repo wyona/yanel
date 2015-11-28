@@ -84,6 +84,7 @@ public class ResourceManager {
      * Creates a new resource object in the given realm with the given path and the given type.
      *
      * @param path Path relative to realm (e.g. yanel.getMap().getPath(realm, request.getServletPath()))
+     * @param rc Resource configuration TODO
      */
     public Resource getResource(Environment environment, Realm realm, String path, ResourceConfiguration rc) throws Exception {
         ResourceTypeDefinition rtd = rtRegistry.getResourceTypeDefinition(rc.getUniversalName());
