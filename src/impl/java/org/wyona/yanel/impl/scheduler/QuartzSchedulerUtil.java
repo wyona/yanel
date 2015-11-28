@@ -8,7 +8,8 @@ import org.quartz.Trigger;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -21,7 +22,7 @@ import org.wyona.yanel.core.map.Realm;
  */
 public class QuartzSchedulerUtil {
 
-    private static Logger log = Logger.getLogger(QuartzSchedulerUtil.class);
+    private static Logger log = LogManager.getLogger(QuartzSchedulerUtil.class);
 
     /**
      * Schedule jobs based on XML configuration
