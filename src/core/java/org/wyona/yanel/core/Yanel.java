@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
  * This class is a singleton.
  */
 public class Yanel {
+    private static Logger log = LogManager.getLogger(Yanel.class);
 
     private Map map = null;
     private ResourceTypeRegistry rtr = null;
@@ -68,8 +69,6 @@ public class Yanel {
     // TODO: It would be good to have an administrative contact per Yanel instance
     //private String adminName, adminEmail;
 
-    private static Logger log = LogManager.getLogger(Yanel.class);
-
     /**
      * Private constructor
      */
@@ -86,7 +85,7 @@ public class Yanel {
            return;
        }
 
-       File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
+       File configFile = getConfigFile();
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
        Configuration config = builder.buildFromFile(configFile);
        
@@ -132,6 +131,24 @@ public class Yanel {
 */
 
        isInitialized = true;
+    }
+
+    /**
+     * Get 'yanel.xml' configuration file
+     */
+    private File getConfigFile() {
+       // 1.) Getting yanel.xml from hidden yanel directory inside user home directory
+       log.debug("User home directory: " + System.getProperty("user.home"));
+       File userHomeDotYanelConfigFile = new File(System.getProperty("user.home") + "/.yanel", DEFAULT_CONFIGURATION_FILE_XML);
+        if (userHomeDotYanelConfigFile.isFile()) {
+            log.warn("DEBUG: Use hidden folder inside user home directory: " + userHomeDotYanelConfigFile.getParentFile().getAbsolutePath());
+            return userHomeDotYanelConfigFile;
+        } else {
+            log.warn("No yanel configuration found inside hidden folder at user home directory: " + userHomeDotYanelConfigFile.getAbsolutePath());
+        }
+
+       // 2.) Getting yanel.xml from classpath
+       return new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
     }
 
     /**
