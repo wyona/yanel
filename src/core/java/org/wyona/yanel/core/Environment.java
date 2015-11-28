@@ -39,9 +39,11 @@ public class Environment {
     private ToolbarState toolbarState;
 
     /**
-     * @param identity
-     * @param stateOfView
-     * @param resourceContainerPath
+     * @param request TODO
+     * @param response TODO
+     * @param identity TODO
+     * @param stateOfView TODO
+     * @param resourceContainerPath TODO
      */
     public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
         setRequest(request);
