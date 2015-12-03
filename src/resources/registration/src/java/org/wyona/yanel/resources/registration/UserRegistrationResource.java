@@ -848,7 +848,13 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         String email = null;
         if (getEnvironment().getRequest().getParameter(EMAIL) != null) {
-            email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+            try {
+                email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+            } catch(Exception e) {
+                Element exceptionEl = (Element) rootElement.appendChild(doc.createElement("invalid-email-address"));
+                exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+                log.error(e, e);
+            }
         }
 
         String uuid = getEnvironment().getRequest().getParameter("uuid");
