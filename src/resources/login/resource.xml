@@ -10,7 +10,7 @@ Generic Yanel login
 </description>
 
 <rtd>
-  <!-- Optional -->
+  <!-- Optional (Also see src/resources/registration/resource.xml) -->
   <property name="pre-auth-request-header"/> <!-- INFO: If set, e.g. 'SM_USER', then the HTTP header will be checked accordingly. Also see http://stackoverflow.com/questions/10148666/how-can-i-trust-that-the-siteminder-http-headers-havent-been-tampered-with -->
 </rtd>
 </resource>
