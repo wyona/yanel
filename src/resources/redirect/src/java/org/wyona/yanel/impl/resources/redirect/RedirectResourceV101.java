@@ -87,8 +87,9 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
         Identity identity = getIdentity(getRequest());
         if (identity != null) {
             currentUser = identity.getUsername();
+            log.debug("User '" + currentUser + "' is signed in.");
         }
-        boolean isLoggedIn = currentUser != null;
+        boolean isLoggedIn = isSignedIn(currentUser);
 
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
@@ -157,6 +158,21 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
             }
         }
         return view;
+    }
+
+    /**
+     * Check whether user is signed in
+     * @param currentUser User ID when signed in and null otherwise
+     * @return true when user is signed in and false otherwise
+     */
+    private boolean isSignedIn(String currentUser) throws Exception {
+        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
+        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+            String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+            log.debug("Pre authenticated user: " + preAuthUserName);
+            return true;
+        }
+        return currentUser != null;
     }
     
     /**
