@@ -13,6 +13,9 @@ Redirect resource, whereas redirects can also be configured user and device spec
   <!-- INFO: Default redirect -->
   <property name="href"/>
 
+  <!-- INFO: Optional pre authentication header name -->
+  <property name="pre-auth-request-header"/> <!-- INFO: If set, e.g. 'SM_USER', then the HTTP header will be checked accordingly. Also see http://stackoverflow.com/questions/10148666/how-can-i-trust-that-the-siteminder-http-headers-havent-been-tampered-with -->
+
 <!-- INFO: The 'device' and 'if-logged-in' attributes are optional and were introduced with version 1.0.1, whereas the value 'web.xml:mobile-devices' refers to the mobile device list inside WEB-INF/web.xml -->
 <!--
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
