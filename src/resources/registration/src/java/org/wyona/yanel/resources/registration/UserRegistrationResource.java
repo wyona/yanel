@@ -66,6 +66,10 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String SALUTATION = "salutation";
     protected static final String PHONE = "phone";
     protected static final String COMPANY = "company";
+
+    private static final String IS_PRE_AUTH_ATTR_NAME = "is-pre-authenticated";
+    private static final String PASSWORD_ELEMENT_NAME = "password";
+
     protected static final String PASSWORD = "password";
     protected static final String PASSWORD_CONFIRMED = "password2";
     
@@ -370,6 +374,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         createUserProfileAccessPolicy("" + customerID);
 
+        if (userRegBean.isPreAuthenticated()) {
+            log.warn("User '" + customerID + "' is pre-authenticated and we will try to create a user account without password, but the user management implementation might not support accounts without password ...");
+        }
         // TODO: Use encrypted password
         User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty(GENDER, gender);
@@ -415,6 +422,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Generate registration request as XML
      * @param urb User registration bean containing E-Mail address of user, etc.
+     * @return user registration bean as XML document
      */
     private Document getRegistrationRequestAsXML(UserRegistrationBean urb) { // TODO: What about custom fields?!
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
@@ -424,15 +432,19 @@ public class UserRegistrationResource extends BasicXMLResource {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         rootElem.setAttribute("request-time", df.format(new Date().getTime()));
 
-        // IMPORTANT TODO: Password needs to be encrypted!
-        Element passwordElem = doc.createElementNS(NAMESPACE, "password");
-        passwordElem.setAttribute("algorithm", "plaintext");
-        passwordElem.setTextContent(urb.getPassword());
+        Element passwordElem = doc.createElementNS(NAMESPACE, PASSWORD_ELEMENT_NAME);
+        if (urb.isPreAuthenticated()) {
+            passwordElem.setAttribute(IS_PRE_AUTH_ATTR_NAME, "true");
+        } else {
+            // IMPORTANT TODO: Password needs to be encrypted!
+            passwordElem.setAttribute("algorithm", "plaintext");
+            passwordElem.setTextContent(urb.getPassword());
 /*
-        passwordElem.setAttribute("algorithm", "SHA-256");
-        passwordElem.setTextContent(encrypt(urb.getPassword()));
-        // TODO: What about salt?!
+            passwordElem.setAttribute("algorithm", "SHA-256");
+            passwordElem.setTextContent(encrypt(urb.getPassword()));
+            // TODO: What about salt?!
 */
+        }
         rootElem.appendChild(passwordElem);
 
         Element genderElem = doc.createElementNS(NAMESPACE, GENDER);
@@ -735,6 +747,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Read user registration request from repository node
      * @param node Repository node containing firstname, lastname, etc.
+     * @return user registration bean containing information about submitted user registration
      */
     private UserRegistrationBean readRegistrationRequest(Node node) throws Exception {
         Document doc = XMLHelper.readDocument(node.getInputStream());
@@ -747,9 +760,20 @@ public class UserRegistrationResource extends BasicXMLResource {
         String firstname = (String) xpath.evaluate("/ur:registration-request/ur:" + FIRSTNAME, doc, XPathConstants.STRING);
         String lastname = (String) xpath.evaluate("/ur:registration-request/ur:" + LASTNAME, doc, XPathConstants.STRING);
         String email = (String) xpath.evaluate("/ur:registration-request/ur:" + EMAIL, doc, XPathConstants.STRING);
-        String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
+
+        boolean isPreAuthenticated = false;
+        String isPreAuthenticatedStr = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME + "/@" + IS_PRE_AUTH_ATTR_NAME, doc, XPathConstants.STRING);
+        if (isPreAuthenticatedStr != null && isPreAuthenticatedStr.equals("true")) {
+            isPreAuthenticated = true;
+        }
+
+        String password = null;
+        if (!isPreAuthenticated) {
+            password = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME, doc, XPathConstants.STRING);
+        }
 
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
+        urBean.setPreAuthenticated(isPreAuthenticated);
 
         urBean.setUUID(uuid);
 
@@ -935,8 +959,16 @@ public class UserRegistrationResource extends BasicXMLResource {
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
 
-        // INFO: Check password
-            String password = getEnvironment().getRequest().getParameter(PASSWORD);
+        String password = null;
+        boolean preAuthenticated = false;
+        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
+        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+            String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+            preAuthenticated = true;
+            log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+        } else {
+            // INFO: Check password
+            password = getEnvironment().getRequest().getParameter(PASSWORD);
             int minPwdLength = getMinPwdLength();
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
@@ -944,13 +976,14 @@ public class UserRegistrationResource extends BasicXMLResource {
                 log.error("Password not valid");
                 inputsValid = false;
             }
-        // INFO: Check password confirmed
+            // INFO: Check password confirmed
             String confirmedPassword = getEnvironment().getRequest().getParameter(PASSWORD_CONFIRMED);
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
                 log.warn("Passwords do not match!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
                 inputsValid = false;
             }
+        }
 
         // INFO: Check firstname
             String firstname = getEnvironment().getRequest().getParameter(FIRSTNAME);
@@ -1056,6 +1089,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
             userRegBean.setStreetName(street);
             userRegBean.setZipCode(zip);
+            userRegBean.setPreAuthenticated(preAuthenticated);
             return userRegBean;
         } else {
             return null;
