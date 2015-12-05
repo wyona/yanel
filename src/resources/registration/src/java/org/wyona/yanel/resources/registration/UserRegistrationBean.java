@@ -19,6 +19,8 @@ public class UserRegistrationBean {
     private String city;
     private String phone;
 
+    private boolean preAuthenticated = false;
+
     private boolean confirmedByAdministrator = false;
     private String adminConfirmationKey = null;
 
@@ -40,6 +42,21 @@ public class UserRegistrationBean {
      */
     public void setUUID(String uuid) {
         this.uuid = uuid;
+    }
+
+    /**
+     * Set flag whether user is pre authenticated
+     */
+    public void setPreAuthenticated(boolean preAuthenticated) {
+        this.preAuthenticated = preAuthenticated;
+    }
+
+    /**
+     * Check whether user is pre authenticated
+     * @return true when user is pre authenticated
+     */
+    public boolean isPreAuthenticated() {
+        return preAuthenticated;
     }
 
     /**
