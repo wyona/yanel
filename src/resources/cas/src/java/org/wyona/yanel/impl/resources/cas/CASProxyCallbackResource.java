@@ -57,13 +57,6 @@ public class CASProxyCallbackResource extends BasicXMLResource {
         } else {
             log.error("Node '" + nodePath + "' already exists!");
         }
-
-/* DEPRECATED
-        java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdFilename(pgtIou));
-        java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
-        out.write(pgtId.getBytes());
-        out.close();
-*/
     }
 
     /**
