@@ -361,24 +361,6 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
             log.error("No such node '" + getProxyIdNodePath(proxyGrantingTicket) + "' to read pgt Id from!");
             return null;
         }
-
-/* DEPRECATED
-        File proxyIdFile = new File(System.getProperty("java.io.tmpdir"), getProxyIdFilename(proxyGrantingTicket));
-        if (proxyIdFile.exists()) {
-            java.io.FileReader in = new java.io.FileReader(proxyIdFile);
-            java.io.BufferedReader br = new java.io.BufferedReader(in);
-            String pgtId = br.readLine();
-            br.close();
-            in.close();
-            if (!debugCASResponses) {
-                proxyIdFile.delete();
-            }
-            return pgtId;
-        } else {
-            log.error("No such file '" + proxyIdFile.getAbsolutePath() + "' to read pgt Id from!");
-            return null;
-        }
-*/
     }
 
     /**
