@@ -348,6 +348,7 @@ public class CASWebAuthenticatorImpl implements WebAuthenticator {
      * @return pgtId (e.g. 'TGT-2-Q2HIIavaNe4Dom6UDQ7As1zR6Td79SwScffCC6dD7XKDZRXNBm-cas01.example.org') and in case it does not exist, then return null
      */
     private String getPgtId(Realm realm, String proxyGrantingTicket) throws Exception {
+        // INFO: Please note that these tickets are created by src/resources/cas/src/java/org/wyona/yanel/impl/resources/cas/CASProxyCallbackResource.java
         if (realm.getRepository().existsNode(getProxyIdNodePath(proxyGrantingTicket))) {
             org.wyona.yarep.core.Node proxyIdNode = realm.getRepository().getNode(getProxyIdNodePath(proxyGrantingTicket));
             java.io.InputStream in = proxyIdNode.getInputStream();
