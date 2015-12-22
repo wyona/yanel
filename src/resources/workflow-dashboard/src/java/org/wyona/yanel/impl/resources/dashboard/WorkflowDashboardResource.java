@@ -72,11 +72,16 @@ public class WorkflowDashboardResource extends BasicXMLResource {
 
         org.wyona.yarep.core.Node[] nodes = null;
         if (queryText != null) {
+/*
+            log.warn("DEBUG: Search inside properties index of repository '" + getRealm().getRepository().getName() + "' using query '" + queryText + "' ...");
             //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/meetings");
-            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
-            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+            nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
+*/
 
+            log.warn("DEBUG: Search inside fulltext index of repository '" + getRealm().getRepository().getName() + "' using query '" + queryText + "' ...");
             nodes = getRealm().getRepository().getSearcher().search(queryText);
+        } else {
+            log.warn("No query, because no workflow state selected!");
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
