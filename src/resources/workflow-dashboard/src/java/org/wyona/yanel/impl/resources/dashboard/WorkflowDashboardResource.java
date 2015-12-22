@@ -10,14 +10,15 @@ import org.wyona.yanel.core.workflow.Workflow;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A resource in order to find resources by their workflow state
  */
 public class WorkflowDashboardResource extends BasicXMLResource {
 
-    private static Logger log = Logger.getLogger(WorkflowDashboardResource.class);
+    private static Logger log = LogManager.getLogger(WorkflowDashboardResource.class);
 
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
