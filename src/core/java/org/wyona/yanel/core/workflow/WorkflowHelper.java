@@ -442,11 +442,14 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Set workflow state of a particular revision of a resource
+     * @param resource Resource associated with revision
+     * @param state Workflow state
+     * @param revision Revision of which workflow state will be set
      */
     public static void setWorkflowState(Resource resource, String state, String revision) throws WorkflowException {
         try {
-            setWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()), state, revision);
+            setWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()).getRevision(revision), state);
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -458,6 +461,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
      * Set workflow state (and date)
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
+        log.debug("DEPRECATED");
         try {
             setWorkflowState(node.getRevision(revision), state);
         } catch (Exception e) {
@@ -468,10 +472,12 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
 
     /**
      * Set workflow state (and date)
+     * @param node Repository node for which workflow state will be set
+     * @param state Workflow state
      */
     private static void setWorkflowState(Node node, String state) throws WorkflowException {
         try {
-            log.debug("Set workflow state: " + state);
+            log.debug("Set workflow state '" + state + "' for repository node/revision '" + node.getPath() + "' ...");
             node.setProperty(WORKFLOW_STATE_PROPERTY, state);
             node.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
             // TODO: write workflow history
