@@ -28,7 +28,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
@@ -44,7 +47,7 @@ import org.wyona.yarep.core.Node;
  */
 public class ResourceConfiguration {
 
-    private Logger log = Logger.getLogger(ResourceConfiguration.class);
+    private Logger log = LogManager.getLogger(ResourceConfiguration.class);
 
     protected Node node;
     protected String name;
