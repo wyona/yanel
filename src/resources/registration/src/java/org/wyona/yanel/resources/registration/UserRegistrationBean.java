@@ -20,6 +20,7 @@ public class UserRegistrationBean {
     private String phone;
 
     private boolean preAuthenticated = false;
+    private String preAuthUsername = null;
 
     private boolean confirmedByAdministrator = false;
     private String adminConfirmationKey = null;
@@ -57,6 +58,22 @@ public class UserRegistrationBean {
      */
     public boolean isPreAuthenticated() {
         return preAuthenticated;
+    }
+
+    /**
+     * Set pre authenticated username
+     * @param name Username
+     */
+    public void setPreAuthenticatedUsername(String name) {
+        this.preAuthUsername = name;
+    }
+
+    /**
+     * Get pre authenticated username
+     * @return pre authenticated username when pre authenticated and otherwise null
+     */
+    public String getPreAuthenticatedUsername() {
+        return preAuthUsername;
     }
 
     /**
