@@ -140,6 +140,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
     /**
      * Get yarep collection listing as XML
+     * @param path Path of directory/collection
+     * @return listing of child nodes of directory/collection as XML
      */
     private StringBuilder getContentXMLOfYarepNode(String path) throws Exception {
         Repository repo = getRealm().getRepository();
@@ -184,7 +186,15 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                         lastModified = df.format(children[i].getLastModified());
                         log.warn("DEBUG: File last modified (formatted): " + lastModified);
                     }
-                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
+                    sb.append("<dir:file");
+                    sb.append(" path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"");
+                    String workflowState = getWorkflowState(children[i]);
+                    if (workflowState != null) {
+                        sb.append(" workflow-state=\"" + workflowState + "\"");
+                    } else {
+                        log.warn("DEBUG: Node '" + children[i].getPath() + "' has no workflow state set.");
+                    }
+                    sb.append("/>");
                 } else if (children[i].isCollection()) {
                     sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
@@ -200,6 +210,27 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         sb.append("</dir:directory>");
 
         return sb;
+    }
+
+    /**
+     * Get workflow state if available
+     * @param node Node which might has a workflow state
+     * @return workflow state associated with node if available and null otherwise
+     */
+    private String getWorkflowState(Node node) throws Exception {
+        if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(node, "org.wyona.yarep.core.attributes.VersionableV1")) {
+            java.util.Iterator<org.wyona.yarep.core.Revision> revisions = ((org.wyona.yarep.core.attributes.VersionableV1) node).getRevisions(false);
+            if (revisions != null && revisions.hasNext()) {
+                String revisionName = ((org.wyona.yarep.core.Revision) revisions.next()).getRevisionName();
+                return org.wyona.yanel.core.workflow.WorkflowHelper.getWorkflowState(node, revisionName);
+            } else {
+                log.warn("Node '" + node.getPath() + "' has no revisions.");
+                return null;
+            }
+        } else {
+            log.warn("Node implementation is not VersionableV1");
+            return null;
+        }
     }
 
     /**
