@@ -414,7 +414,10 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Get workflow state associated with a particular revision of a node
+     * @param node Node associated with revision
+     * @param revision Name of revision
+     * @return workflow state of node and null when no workflow state is set
      */
     public static String getWorkflowState(Node node, String revision) throws WorkflowException {
         try {
@@ -426,11 +429,13 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Get workflow state of a particular revision
+     * @param revision Revision of a node
+     * @return workflow state of node and null when no workflow state is set
      */
-    private static String getWorkflowState(Node node) throws WorkflowException {
+    private static String getWorkflowState(Revision revision) throws WorkflowException {
         try {
-            Property stateProp = node.getProperty(WORKFLOW_STATE_PROPERTY);
+            Property stateProp = revision.getProperty(WORKFLOW_STATE_PROPERTY);
             if (stateProp != null) {
                 return stateProp.getString();
             }
