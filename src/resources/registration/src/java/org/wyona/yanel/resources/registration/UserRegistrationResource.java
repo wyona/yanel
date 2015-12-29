@@ -971,8 +971,8 @@ public class UserRegistrationResource extends BasicXMLResource {
         String password = null;
         boolean preAuthenticated = false;
         String preAuthUsername = null;
-        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
-        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+        if (getYanel().isPreAuthenticationEnabled() && getYanel().getPreAuthenticationRequestHeaderName() != null && getEnvironment().getRequest().getHeader(getYanel().getPreAuthenticationRequestHeaderName()) != null) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
             preAuthUsername = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
             preAuthenticated = true;
             log.warn("DEBUG: Pre authenticated user: " + preAuthUsername);
