@@ -63,6 +63,8 @@ public class Yanel {
     private String truststoreSrc = null;
     private String truststorePwd = null;
     private boolean schedulerEnabled;
+    private boolean preAuthenticationEnabled;
+    private String preAuthReqHeaderName = null;
 
     private String smtpUsername, smtpPassword;
 
@@ -110,7 +112,16 @@ public class Yanel {
        Configuration versionConfig = config.getChild("version");
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
+
        reservedPrefix = config.getChild("reserved-prefix").getValue();
+
+       if (config.getChild("pre-auth-request-header", false) != null) {
+           preAuthenticationEnabled = config.getChild("pre-auth-request-header").getAttributeAsBoolean("enabled");
+           preAuthReqHeaderName = config.getChild("pre-auth-request-header").getValue();
+       } else {
+           preAuthenticationEnabled = false;
+           preAuthReqHeaderName = null;
+       }
 
        if (config.getChild("scheduler", false) != null) {
            schedulerEnabled = config.getChild("scheduler").getAttributeAsBoolean("enabled");
@@ -299,6 +310,22 @@ public class Yanel {
      */
     public String getTargetEnvironment() {
         return targetEnv;
+    }
+
+    /**
+     * Check whether pre-authentication is enabled
+     * @return true when pre-authentication is enabled and false otherwise
+     */
+    public boolean isPreAuthenticationEnabled() {
+        return preAuthenticationEnabled;
+    }
+
+    /**
+     * Get pre-authentication request header name, e.g. "SM_USER"
+     * @return request header name and null when not set
+     */
+    public String getPreAuthenticationRequestHeaderName() {
+        return preAuthReqHeaderName;
     }
 
     /**
