@@ -562,6 +562,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
 
+        // INFO: Flag whether pre-authentication is enabled
+        transformer.setParameter("yanel.pre-authentication-enabled", getYanel().isPreAuthenticationEnabled());
+
         // INFO: Yanel target environment
         if (this.getYanel().getTargetEnvironment() != null) {
             transformer.setParameter("yanel.target.environment", this.getYanel().getTargetEnvironment());
