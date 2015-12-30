@@ -52,7 +52,7 @@ public class LoginResource extends BasicXMLResource {
                 preAuthUsernameElement.appendChild(doc.createTextNode(preAuthUserName));
 
                 if (getRealm().getIdentityManager().getUserManager().existsAlias(preAuthUserName)) {
-                    log.warn("We should not get here, because org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl should have set identity.");
+                    log.warn("We should not get here, because org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl (or org.wyona.yanel.servlet.YanelServlet) should have set identity.");
                 } else {
                     log.warn("No such user '" + preAuthUserName + "' exists yet inside realm '" + getRealm().getName() + "' ...");
                 }
