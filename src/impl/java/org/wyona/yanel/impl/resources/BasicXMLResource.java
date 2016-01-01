@@ -548,6 +548,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String queryString = getEnvironment().getRequest().getQueryString();
         if (queryString != null) {
             transformer.setParameter("yanel.request.query-string", queryString);
+            Enumeration qsParamNames = getEnvironment().getRequest().getParameterNames();
+            while (qsParamNames.hasMoreElements()) {
+                String paramName = (String)qsParamNames.nextElement();
+                transformer.setParameter("yanel.request.qs-param_" + paramName, getEnvironment().getRequest().getParameter(paramName));
+            }
         }
 
         // localization
