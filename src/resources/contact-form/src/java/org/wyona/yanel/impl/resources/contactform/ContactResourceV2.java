@@ -240,10 +240,10 @@ public class ContactResourceV2 extends BasicXMLResource implements TrackableV1 {
     }
 
     /**
-     * Pass transformer paramters.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#passTransformerParameters(Transformer)
      */
-    protected void passTransformerParameters(Transformer transformer)
-    throws Exception {
+    @Override
+    protected void passTransformerParameters(Transformer transformer) throws Exception {
         super.passTransformerParameters(transformer);
 
         for(Map.Entry<String, String> entry : params.entrySet()) {

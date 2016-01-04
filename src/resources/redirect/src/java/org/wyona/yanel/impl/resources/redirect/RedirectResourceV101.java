@@ -166,11 +166,13 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
      * @return true when user is signed in and false otherwise
      */
     private boolean isSignedIn(String currentUser) throws Exception {
-        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
-        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
-            String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
-            log.debug("Pre authenticated user: " + preAuthUserName);
-            return true;
+        if (getYanel().isPreAuthenticationEnabled()) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+                String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+                log.debug("Pre authenticated user: " + preAuthUserName);
+                return true;
+            }
         }
         return currentUser != null;
     }

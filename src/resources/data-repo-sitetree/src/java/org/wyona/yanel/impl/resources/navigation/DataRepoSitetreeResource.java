@@ -9,7 +9,9 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
@@ -20,7 +22,7 @@ import javax.xml.transform.Transformer;
  * Data repository site tree generator.
  */
 public class DataRepoSitetreeResource extends BasicXMLResource {
-    private static Logger log = Logger.getLogger(DataRepoSitetreeResource.class);
+    private static Logger log = LogManager.getLogger(DataRepoSitetreeResource.class);
 
     /**
      * Get size.
@@ -173,7 +175,7 @@ public class DataRepoSitetreeResource extends BasicXMLResource {
     }
     
     /**
-     * Pass transformer parameters.
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#passTransformerParameters(Transformer)
      */
     @Override
     protected void passTransformerParameters(Transformer transformer) throws Exception {

@@ -42,6 +42,7 @@ public class CASProxyCallbackResource extends BasicXMLResource {
     }
 
     /**
+     * Write ticket into shared repository, such that CASWebAuthenticatorImpl can access it
      * @param pgtId 'TGT-2-Q2HIIavaNe4Dom6UDQ7As1zR6Td79SwScffCC6dD7XKDZRXNBm-cas01.example.org'
      * @param pgtIou 'PGTIOU-1-hG9ive0rfjuTb9IHaRsn-cas01.example.org'
      */
@@ -54,16 +55,11 @@ public class CASProxyCallbackResource extends BasicXMLResource {
             java.io.OutputStream out = proxyIdNode.getOutputStream();
             out.write(pgtId.getBytes());
             out.close();
+
+            // TODO: Delete all tickets older than one day (or make it configurable)
         } else {
             log.error("Node '" + nodePath + "' already exists!");
         }
-
-/* DEPRECATED
-        java.io.File proxyIdFile = new java.io.File(System.getProperty("java.io.tmpdir"), org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.getProxyIdFilename(pgtIou));
-        java.io.FileOutputStream out = new java.io.FileOutputStream(proxyIdFile);
-        out.write(pgtId.getBytes());
-        out.close();
-*/
     }
 
     /**

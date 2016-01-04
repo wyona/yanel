@@ -43,20 +43,21 @@ public class LoginResource extends BasicXMLResource {
         Document doc = XMLHelper.createDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
         Element rootElement = doc.getDocumentElement();
 
-        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
-        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
-            String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
-            log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+        if (getYanel().isPreAuthenticationEnabled()) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+                String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+                log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+                Element preAuthUsernameElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "pre-authenticated-user"));
+                preAuthUsernameElement.appendChild(doc.createTextNode(preAuthUserName));
 
-            Element preAuthUsernameElement = (Element) rootElement.appendChild(doc.createElementNS(YanelServlet.NAMESPACE, "pre-authenticated-user"));
-            preAuthUsernameElement.appendChild(doc.createTextNode(preAuthUserName));
-
-            if (getRealm().getIdentityManager().getUserManager().existsAlias(preAuthUserName)) {
-                log.warn("DEBUG: Pre-authenticated user '" + preAuthUserName + "' exists inside realm '" + getRealm().getName() + "', but access denied!");
-                preAuthUsernameElement.setAttribute("exists-inside-realm", "true");
-            } else {
-                log.warn("No such user '" + preAuthUserName + "' exists yet inside realm '" + getRealm().getName() + "' ...");
-                preAuthUsernameElement.setAttribute("exists-inside-realm", "false");
+                if (getRealm().getIdentityManager().getUserManager().existsAlias(preAuthUserName)) {
+                    log.warn("DEBUG: Pre-authenticated user '" + preAuthUserName + "' exists inside realm '" + getRealm().getName() + "', but access denied!");
+                    preAuthUsernameElement.setAttribute("exists-inside-realm", "true");
+                } else {
+                    log.warn("No such user '" + preAuthUserName + "' exists yet inside realm '" + getRealm().getName() + "' ...");
+                    preAuthUsernameElement.setAttribute("exists-inside-realm", "false");
+                }
             }
         }
 

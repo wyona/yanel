@@ -5,6 +5,7 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0" version="2012012400">
 
   <changes>
+    <change version="20151229">Configuration of 'pre-auth-request-header' added</change>
     <change version="20150330">Generic mail.smtp properties enabled, like for example mail.smtp.localhost</change>
     <change version="20120124">target environment configuration added</change>
     <change version="20100126">smtp configuration added</change>
@@ -50,5 +51,9 @@
 <!--
   <trust-store src="/foo/bar/truststore.jks" password="MY_PASSWORD"/>
 -->
+  
+  <!-- # Pre-authentication request header name and flag whether pre-authentication is actually enabled -->
+  <!-- # If enabled, then the HTTP header will be checked accordingly. Also see http://stackoverflow.com/questions/10148666/how-can-i-trust-that-the-siteminder-http-headers-havent-been-tampered-with -->
+  <pre-auth-request-header enabled="false">SM_USER</pre-auth-request-header>
 
 </yanel>

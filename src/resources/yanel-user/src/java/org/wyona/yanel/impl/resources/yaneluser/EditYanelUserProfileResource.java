@@ -345,6 +345,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#passTransformerParameters(Transformer)
      */
+    @Override
     protected void passTransformerParameters(javax.xml.transform.Transformer transformer) throws Exception {
         super.passTransformerParameters(transformer);
         try {

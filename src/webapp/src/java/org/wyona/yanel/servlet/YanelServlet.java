@@ -1921,6 +1921,29 @@ public class YanelServlet extends HttpServlet {
             return identity;
         }
 
+        if (yanelInstance.isPreAuthenticationEnabled()) {
+            String preAuthReqHeaderName = yanelInstance.getPreAuthenticationRequestHeaderName();
+            if (preAuthReqHeaderName != null && request.getHeader(preAuthReqHeaderName) != null) {
+                String preAuthUserName = request.getHeader(preAuthReqHeaderName);
+                log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+                String trueID = realm.getIdentityManager().getUserManager().getTrueId(preAuthUserName);
+                User user = realm.getIdentityManager().getUserManager().getUser(trueID);
+                if (user != null) {
+                    log.debug("User '" + user.getID() + "' considered pre-authenticated.");
+                    identity = new Identity(user, preAuthUserName);
+                    setIdentity(identity, request.getSession(true), realm);
+                    return identity;
+                } else {
+                    log.warn("No such pre-authenticated user '" + preAuthUserName + "', hence set identity to WORLD!");
+                    identity = new Identity();
+                    setIdentity(identity, request.getSession(true), realm);
+                    return identity;
+                }
+            } else {
+                log.warn("Pre-authentication enabled, but no request header name set!");
+            }
+        }
+
 /* TODO: Make configurable!
         if (true) {
             log.warn("DEBUG: Do not check for BASIC authentication, but set identity to WORLD.");

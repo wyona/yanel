@@ -548,6 +548,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String queryString = getEnvironment().getRequest().getQueryString();
         if (queryString != null) {
             transformer.setParameter("yanel.request.query-string", queryString);
+            Enumeration qsParamNames = getEnvironment().getRequest().getParameterNames();
+            while (qsParamNames.hasMoreElements()) {
+                String paramName = (String)qsParamNames.nextElement();
+                transformer.setParameter("yanel.request.qs-param_" + paramName, getEnvironment().getRequest().getParameter(paramName));
+            }
         }
 
         // localization
@@ -561,6 +566,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
+
+        // INFO: Flag whether pre-authentication is enabled
+        transformer.setParameter("yanel.pre-authentication-enabled", getYanel().isPreAuthenticationEnabled());
 
         // INFO: Yanel target environment
         if (this.getYanel().getTargetEnvironment() != null) {

@@ -68,6 +68,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String COMPANY = "company";
 
     private static final String IS_PRE_AUTH_ATTR_NAME = "is-pre-authenticated";
+    private static final String PRE_AUTH_USERNAME_ATTR_NAME = "pre-authenticated-username";
     private static final String PASSWORD_ELEMENT_NAME = "password";
 
     protected static final String PASSWORD = "password";
@@ -338,6 +339,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             // TODO: getUserManager().existsAlias(userRegBean.getEmail())
             getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
+            if (userRegBean.isPreAuthenticated()) {
+                getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getPreAuthenticatedUsername(), user.getID());
+            }
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", user.getID());
@@ -435,6 +439,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element passwordElem = doc.createElementNS(NAMESPACE, PASSWORD_ELEMENT_NAME);
         if (urb.isPreAuthenticated()) {
             passwordElem.setAttribute(IS_PRE_AUTH_ATTR_NAME, "true");
+            passwordElem.setAttribute(PRE_AUTH_USERNAME_ATTR_NAME, urb.getPreAuthenticatedUsername());
         } else {
             // IMPORTANT TODO: Password needs to be encrypted!
             passwordElem.setAttribute("algorithm", "plaintext");
@@ -763,8 +768,11 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         boolean isPreAuthenticated = false;
         String isPreAuthenticatedStr = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME + "/@" + IS_PRE_AUTH_ATTR_NAME, doc, XPathConstants.STRING);
-        if (isPreAuthenticatedStr != null && isPreAuthenticatedStr.equals("true")) {
+        String preAuthUserName = null;
+        String preAuthenticatedUsernameStr = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME + "/@" + PRE_AUTH_USERNAME_ATTR_NAME, doc, XPathConstants.STRING);
+        if (isPreAuthenticatedStr != null && isPreAuthenticatedStr.equals("true") && preAuthenticatedUsernameStr != null) {
             isPreAuthenticated = true;
+            preAuthUserName = preAuthenticatedUsernameStr;
         }
 
         String password = null;
@@ -774,6 +782,7 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
         urBean.setPreAuthenticated(isPreAuthenticated);
+        urBean.setPreAuthenticatedUsername(preAuthUserName);
 
         urBean.setUUID(uuid);
 
@@ -961,11 +970,12 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         String password = null;
         boolean preAuthenticated = false;
-        String preAuthReqHeaderName = getResourceConfigProperty("pre-auth-request-header");
-        if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
-            String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+        String preAuthUsername = null;
+        if (getYanel().isPreAuthenticationEnabled() && getYanel().getPreAuthenticationRequestHeaderName() != null && getEnvironment().getRequest().getHeader(getYanel().getPreAuthenticationRequestHeaderName()) != null) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            preAuthUsername = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
             preAuthenticated = true;
-            log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+            log.warn("DEBUG: Pre authenticated user: " + preAuthUsername);
         } else {
             // INFO: Check password
             password = getEnvironment().getRequest().getParameter(PASSWORD);
@@ -1090,6 +1100,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             userRegBean.setStreetName(street);
             userRegBean.setZipCode(zip);
             userRegBean.setPreAuthenticated(preAuthenticated);
+            userRegBean.setPreAuthenticatedUsername(preAuthUsername);
             return userRegBean;
         } else {
             return null;

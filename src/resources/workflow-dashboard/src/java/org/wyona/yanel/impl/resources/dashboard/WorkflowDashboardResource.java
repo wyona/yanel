@@ -10,14 +10,15 @@ import org.wyona.yanel.core.workflow.Workflow;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * A resource in order to find resources by their workflow state
  */
 public class WorkflowDashboardResource extends BasicXMLResource {
 
-    private static Logger log = Logger.getLogger(WorkflowDashboardResource.class);
+    private static Logger log = LogManager.getLogger(WorkflowDashboardResource.class);
 
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -71,11 +72,16 @@ public class WorkflowDashboardResource extends BasicXMLResource {
 
         org.wyona.yarep.core.Node[] nodes = null;
         if (queryText != null) {
+/*
+            log.warn("DEBUG: Search inside properties index of repository '" + getRealm().getRepository().getName() + "' using query '" + queryText + "' ...");
             //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/meetings");
-            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
-            //nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", queryText, "/");
+            nodes = getRealm().getRepository().getSearcher().searchProperty("workflow-state", workflowState, "/");
+*/
 
+            log.warn("DEBUG: Search inside fulltext index of repository '" + getRealm().getRepository().getName() + "' using query '" + queryText + "' ...");
             nodes = getRealm().getRepository().getSearcher().search(queryText);
+        } else {
+            log.warn("No query, because no workflow state selected!");
         }
 
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
