@@ -21,7 +21,7 @@ import org.wyona.yanel.servlet.YanelServlet;
 abstract public class Menu {
 
     private static Logger log = LogManager.getLogger(Menu.class);
-    private String backToRealm;
+    private String backToRealmPriv; // INFO: Used by deprecated method!
     
     /**
      * Get custom menus. Implement this method in order to introduce custom menus.
@@ -32,7 +32,7 @@ abstract public class Menu {
      * Aggregate all menus (used by YanelServlet). Overwrite this method if Yanel or Help menu not needed.
      */
     public String getAllMenus(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
-    	backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
+    	backToRealmPriv = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
     	return getYanelMenu(resource, request, map, reservedPrefix) + getMenus(resource, request, map, reservedPrefix) + getAdminMenu(resource, request, map, reservedPrefix) + getHelpMenu(resource, request, map, reservedPrefix);
     }
 
@@ -41,6 +41,7 @@ abstract public class Menu {
      */
     public String getYanelMenu(Resource resource, HttpServletRequest request, Map map, String reservedPrefix) throws ServletException, IOException, Exception {
         String userLanguage = getUserLanguage(resource);
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(resource.getPath());
 
         StringBuilder sb= new StringBuilder();
         sb.append("<ul><li>");
@@ -272,14 +273,30 @@ abstract public class Menu {
         }
         return language;
     }
-    
+
     /**
+     * @deprecated Use getMenuItem(String, String, String) instead
      * Utility method to create a menu item line
      * @param relativePath This is the relative path of the resource starting at the root of the realm
      * @parem label Label of menu item
      * @return the menu item
      */
     protected String getMenuItem(String relativePath, String label) {
-        return "<li><a href=\"" + backToRealm + relativePath + "\">" + label + "</a></li>";
+        return "<li><a href=\"" + backToRealmPriv + relativePath + "\">" + label + "</a></li>";
+    }
+
+    /**
+     * Utility method to create a menu item line
+     * @param backToRealm Back to realm path (e.g. '../../') whereas when set to null, then not used
+     * @param relativePath This is the relative path of the resource starting at the root of the realm
+     * @parem label Label of menu item
+     * @return the menu item
+     */
+    protected String getMenuItem(String backToRealm, String relativePath, String label) {
+        if (backToRealm != null) {
+            return "<li><a href=\"" + backToRealm + relativePath + "\">" + label + "</a></li>";
+        } else {
+            return "<li><a href=\"" + relativePath + "\">" + label + "</a></li>";
+        }
     }
 }
