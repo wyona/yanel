@@ -2,7 +2,8 @@ package org.wyona.yanel.servlet.toolbar.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.security.core.api.Identity;
 import org.wyona.yanel.core.Resource;
@@ -20,7 +21,7 @@ import org.wyona.yanel.servlet.toolbar.YanelToolbarException;
  */
 public class FromScratchRealmToolbar implements YanelToolbar {
 
-    private static Logger log = Logger.getLogger(FromScratchRealmToolbar.class);
+    private static Logger log = LogManager.getLogger(FromScratchRealmToolbar.class);
 
     private final Menu menu;
 
