@@ -52,8 +52,12 @@ abstract public class Menu {
         Identity identity = resource.getEnvironment().getIdentity();
         if (identity != null) {
             sb.append("<li><a href=\"" + backToRealm + reservedPrefix + "/users/" + identity.getUsername() + ".html\">" + getLabel("y:my-profile", userLanguage) + "</a></li>");
-            // TODO: Also consider additional query strings!
-            sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>" + getLabel("y:logout", userLanguage) + "</a></li>");
+            if (org.wyona.yanel.core.Yanel.getInstance().isPreAuthenticationEnabled()) {
+                // TBD: Menu item to switch user
+            } else {
+                // TODO: Also consider additional query strings!
+                sb.append("<li><a href=\"?yanel.usecase=logout\"><img class=\"yaneltoolbar_menuicon\" src=\"" + backToRealm + reservedPrefix + "/yanel-img/icons/system-log-out.png\" border=\"0\"/>" + getLabel("y:logout", userLanguage) + "</a></li>");
+            }
         }
         sb.append("</ul>");
 
