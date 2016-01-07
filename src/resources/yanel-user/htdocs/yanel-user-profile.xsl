@@ -23,6 +23,7 @@
   <xsl:param name="deletion" select="'false'"/>
   <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
+  <xsl:param name="yanel.pre-authentication-enabled" select="'IS_PRE_AUTH_ENABLED_IS_NULL'"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -63,6 +64,7 @@
 <!--
   <xsl:template match="form">
 -->
+    <xsl:if test="$yanel.pre-authentication-enabled != 'true'">
     <h2>Change Password</h2>
     <form name="user-password-form" method="post" action="#">
       <p>
@@ -93,6 +95,7 @@
         </table>
       </p>
     </form>
+    </xsl:if>
 
     <h2>Change Identity</h2>
     <form name="user-profile-form" method="post" action="#">
@@ -193,6 +196,7 @@
       </xsl:otherwise>
     </xsl:choose>
 
+    <!-- TBD <xsl:if test="$yanel.pre-authentication-enabled != 'true'"> -->
     <h2>History</h2>
     <table>
       <tr>
