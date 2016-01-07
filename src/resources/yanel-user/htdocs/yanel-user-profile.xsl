@@ -210,7 +210,7 @@
     </table>
   
 
-<!-- One shouldn't be able to delete oneself! -->
+<!-- TBD: One shouldn't be able to delete oneself! -->
 <!--
     <h2>Delete User</h2>
     <form name="user-deletion-form" method="post" action="#">
