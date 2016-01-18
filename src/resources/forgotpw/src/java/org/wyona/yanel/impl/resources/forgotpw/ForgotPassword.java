@@ -197,7 +197,7 @@ public class ForgotPassword extends BasicXMLResource {
             String smtpEmailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
             String smtpEmailServerPort = getResourceConfigProperty(SMTP_PORT_PROPERTY_NAME);
             if ((smtpEmailServer != null && smtpEmailServerPort != null) || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
-                String from = getResourceConfigProperty("smtpFrom");
+                String from = getFromEmail();
                 if (from != null) {
                     Element requestEmailElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail")); // INFO: A phone application might have cached the email address and hence wants to auto-complete the form...
                     String emailAddress = getEnvironment().getRequest().getParameter("email");
@@ -539,6 +539,21 @@ public class ForgotPassword extends BasicXMLResource {
     }
 
     /**
+     * Get from / sender email address for email being sent to invited user
+     * @return from / sender email address and null when not configured
+     */
+    private String getFromEmail() throws Exception {
+        String fromEmail = getResourceConfigProperty("smtpFrom");
+        if (fromEmail != null) {
+            return fromEmail;
+        } else {
+            fromEmail = getYanel().getAdministratorEmail();
+            log.warn("From / sender email address not configured inside resource configuration, hence try to user administrator email '" + fromEmail + "' of Yanel instance ...");
+            return fromEmail;
+        }
+    }
+
+    /**
      * Send email to user requesting to reset the password
      * @param guid UUID which is part of the change password link
      * @return UUID
@@ -548,7 +563,7 @@ public class ForgotPassword extends BasicXMLResource {
 
         String emailBody = generateEmailBody(guid);
 
-        String from = getResourceConfigProperty("smtpFrom");
+        String from = getFromEmail();
         String to =  emailAddress;
 
         String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
