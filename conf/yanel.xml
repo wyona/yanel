@@ -5,6 +5,7 @@
 <yanel xmlns="http://www.wyona.org/yanel/1.0" version="2012012400">
 
   <changes>
+    <change version="20160118">Administrator name and email introduced</change>
     <change version="20151229">Configuration of 'pre-auth-request-header' added</change>
     <change version="20150330">Generic mail.smtp properties enabled, like for example mail.smtp.localhost</change>
     <change version="20120124">target environment configuration added</change>
@@ -27,6 +28,11 @@
   
   <!-- # Scheduler configuration -->
   <scheduler enabled="false"/>
+  
+  <!-- # Administrator configuration -->
+<!--
+  <administrator email="contact@wyona.com">Michael Wechner</administrator>
+-->
   
   <!-- # Mail server configuration.
          Username and password attributes are optional,
