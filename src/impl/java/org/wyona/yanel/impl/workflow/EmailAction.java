@@ -21,14 +21,15 @@ import org.wyona.yanel.core.workflow.Action;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Send notifications via email
  */
 public class EmailAction implements Action {
 
-    private static Logger log = Logger.getLogger(EmailAction.class);
+    private static Logger log = LogManager.getLogger(EmailAction.class);
 
     private String expression;
 
@@ -85,7 +86,19 @@ public class EmailAction implements Action {
      * Get from/sender address
      */
     protected String getSenderAddress(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
-        return "contact@wyona.com";
+        String from = null;
+        // TODO: Make from address configurable inside workflow configuration
+        try {
+            from = org.wyona.yanel.core.Yanel.getInstance().getAdministratorEmail();
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        if (from != null) {
+            return from;
+        }
+        from = "contact@wyona.com";
+        log.warn("From email address not configured, hence use '" + from + "' as fallback.");
+        return from;
     }
 
     /**
@@ -93,7 +106,7 @@ public class EmailAction implements Action {
      */
     protected String getSubject(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         Resource resource = (Resource) workflowable;
-        return "[Yanel] The workflow state of the resource '" + resource.getPath() + "' has been changed: " + workflowable.getWorkflowState(revision);
+        return "[" + resource.getRealm().getName() + "] The workflow state of the resource '" + resource.getPath() + "' has been changed: " + workflowable.getWorkflowState(revision);
     }
 
     /**
