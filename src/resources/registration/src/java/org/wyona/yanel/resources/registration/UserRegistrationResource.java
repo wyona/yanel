@@ -252,11 +252,11 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("\n\nPlease confirm the request by clicking on the following link:");
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
                     body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] Confirm User Registration Request", body.toString());
+                    MailUtil.send(getFromEmail(), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] Confirm User Registration Request", body.toString());
                     Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
                 }
 
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
+                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
 
                 element.setAttribute("sent-by-yanel", "true");
             }
@@ -271,6 +271,20 @@ public class UserRegistrationResource extends BasicXMLResource {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email-not-sent"));
             element.setAttribute(EMAIL, userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
+        }
+    }
+
+    /**
+     * Get from / sender email address for email being sent to invited user
+     * @return from / sender email address and null when not configured
+     */
+    private String getFromEmail() throws Exception {
+        String fromEmail = getResourceConfigProperty(FROM_ADDRESS_PROP_NAME);
+        if (fromEmail != null) {
+            return fromEmail;
+        } else {
+            log.warn("From / sender email address not configured inside resource configuration, hence try to user administrator email of Yanel instance ...");
+            return getYanel().getAdministratorEmail();
         }
     }
 
@@ -658,7 +672,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("The following user account has been activated:");
                     body.append("\n\n" + urBean.getEmail());
                     body.append("\n\nvia " + getHomepageURL());
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] User account has been created", body.toString());
+                    MailUtil.send(getFromEmail(), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] User account has been created", body.toString());
                 }
 
                 if (sendNotificationsEnabled() && sendActivationSuccessfulEmail()) {
@@ -666,7 +680,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     body.append("Thank you for your registration.");
                     body.append("\n\nYou have successfully activated your account.");
                     body.append("\n\n" + getHomepageURL());
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "[" + getRealm().getName() + "] User Registration Successful", body.toString());
+                    MailUtil.send(getFromEmail(), urBean.getEmail(), "[" + getRealm().getName() + "] User Registration Successful", body.toString());
                 }
 
                 // TODO: Add gender/salutation
@@ -913,7 +927,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                         body.append("\n\n" + getActivationURL(urBean));
                         // TODO: Calculate remaining time
                         //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
-                        MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "[" + getRealm().getName() + "] Administrator has confirmed your registration request", body.toString());
+                        MailUtil.send(getFromEmail(), urBean.getEmail(), "[" + getRealm().getName() + "] Administrator has confirmed your registration request", body.toString());
                     }
                 } else {
                     log.warn("Administrator key did not match!");
