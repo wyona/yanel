@@ -4,7 +4,7 @@
 
 <yanel xmlns="http://www.wyona.org/yanel/1.0" version="2012012400">
 
-  <changes>
+  <changes> <!-- WARN: Please make sure to add new elements to src/build/yanel2properties.xsl -->
     <change version="20160118">Administrator name and email introduced</change>
     <change version="20151229">Configuration of 'pre-auth-request-header' added</change>
     <change version="20150330">Generic mail.smtp properties enabled, like for example mail.smtp.localhost</change>
