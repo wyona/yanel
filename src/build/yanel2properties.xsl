@@ -19,9 +19,11 @@
       <xsl:copy-of select="/yanel:yanel/yanel:resource-types-config"/>
       <xsl:copy-of select="/yanel:yanel/yanel:reserved-prefix"/>
       <xsl:copy-of select="/yanel:yanel/yanel:scheduler"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:administrator"/>
       <xsl:copy-of select="/yanel:yanel/yanel:smtp"/>
       <xsl:copy-of select="/yanel:yanel/yanel:target-environment"/>
       <xsl:copy-of select="/yanel:yanel/yanel:trust-store"/>
+      <xsl:copy-of select="/yanel:yanel/yanel:pre-auth-request-header"/>
     </yanel>
   </xsl:template>
 
