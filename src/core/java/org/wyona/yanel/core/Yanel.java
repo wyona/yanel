@@ -68,8 +68,7 @@ public class Yanel {
 
     private String smtpUsername, smtpPassword;
 
-    // TODO: It would be good to have an administrative contact per Yanel instance
-    //private String adminName, adminEmail;
+    private String adminName, adminEmail;
 
     /**
      * Private constructor
@@ -126,20 +125,18 @@ public class Yanel {
        if (config.getChild("scheduler", false) != null) {
            schedulerEnabled = config.getChild("scheduler").getAttributeAsBoolean("enabled");
        } else {
-           log.warn("Scheduler not configured within configuration: " + configFile);
+           log.warn("Scheduler not configured inside global Yanel configuration: " + configFile);
            schedulerEnabled = false;
        }
 
-/* TODO: It would be good to have an administrative contact per Yanel instance
        if (config.getChild("administrator", false) != null) {
            adminName = config.getChild("administrator").getValue();
            adminEmail = config.getChild("administrator").getAttribute("email");
        } else {
-           log.warn("Administrator not configured inside global yanel configuration: " + configFile);
+           log.warn("Administrator name and email not configured inside global Yanel configuration: " + configFile);
            adminName = null;
            adminEmail = null;
        }
-*/
 
        isInitialized = true;
     }
@@ -326,6 +323,22 @@ public class Yanel {
      */
     public String getPreAuthenticationRequestHeaderName() {
         return preAuthReqHeaderName;
+    }
+
+    /**
+     * Get administrator name
+     * @return administrator name and null when not set
+     */
+    public String getAdministratorName() {
+        return adminName;
+    }
+
+    /**
+     * Get administrator email
+     * @return administrator email and null when not set
+     */
+    public String getAdministratorEmail() {
+        return adminEmail;
     }
 
     /**
