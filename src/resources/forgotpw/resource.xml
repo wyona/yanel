@@ -10,7 +10,7 @@ Manage forgot password resource
 </description>
 
 <rtd>
-  <!-- Mandatory -->
+  <!-- Mandatory, whereas if not configured, then the administrator email address configured inside the global Yanel config will be used. -->
   <property name="smtpFrom"/>
 
   <!-- Optional -->
