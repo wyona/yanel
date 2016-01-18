@@ -10,7 +10,7 @@ User registration
 </description>
 
 <rtd>
-  <!-- Mandatory -->
+  <!-- Mandatory, whereas if not configured, then the administrator email address configured inside the global Yanel config will be used. -->
   <property name="fromEmail"/> <!-- For example 'noreply@wyona.com' -->
 
   <!-- Optional -->
