@@ -319,10 +319,12 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     /**
-     * Get mime type
+     * @see org.wyona.yanel.impl.resources.BasicXMLResource#getMimeType(String)
      */
+    @Override
     public String getMimeType(String viewId) throws Exception {
         String mimeType = null;
+
         ResourceConfiguration rc = getConfiguration();
         if (rc != null) {
             mimeType = rc.getProperty("mime-type");
@@ -331,8 +333,13 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         }
         if (mimeType != null) return mimeType;
 
+        mimeType = super.getMimeType(viewId);
+        if (mimeType != null) return mimeType;
+
         // NOTE: Assuming fallback re default_dir2xhtml.xsl ...
-        return "application/xhtml+xml";
+        mimeType = "application/xhtml+xml";
+        log.warn("No content type configured, hence fallback to '" + mimeType + "' ...");
+        return mimeType;
     }
 
     /**
