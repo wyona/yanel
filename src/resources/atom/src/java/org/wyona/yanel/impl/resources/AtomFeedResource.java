@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.wyona.yarep.core.RepositoryFactory;
 
 import org.apache.abdera.model.AtomDate;
 import org.apache.abdera.model.Entry;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.net.URL;
@@ -46,7 +48,7 @@ import javax.xml.transform.stream.StreamResult;
  */
 public class AtomFeedResource extends Resource implements ViewableV1 {
 
-    private static Category log = Category.getInstance(AtomFeedResource.class);
+    private static Logger log = LogManager.getLogger(AtomFeedResource.class);
 
     Date feedUpdated = null;
 
@@ -84,7 +86,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         View defaultView = new View();
 	StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
 
-	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/xslt/dir2xhtml.xsl\"?>");
+	//sb.append("<?xml-stylesheet type=\"text/xsl\" href=\"yanel/resources/directory/htdocs/default_dir2xhtml.xsl\"?>");
 
         String path = getPath();
         String entriesPath = getEntriesPath(path);
@@ -283,7 +285,7 @@ public class AtomFeedResource extends Resource implements ViewableV1 {
         String mimeType = getProperty(path, "mime-type", null);
         if (mimeType != null) return mimeType;
 
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
+        // NOTE: Assuming fallback re default_dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
 
