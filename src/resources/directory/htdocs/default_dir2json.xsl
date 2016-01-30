@@ -16,11 +16,19 @@
   <xsl:param name="yanel.globalHtdocsPath" select="'YANELHTDOCS_IS_NULL'"/>
 
   <xsl:template match="/">
-  { "myData":"test"
-  }
-<!--
+<!-- TODO: Also include sub-directories
     <xsl:apply-templates select="/dir:directory/*"/>
 -->
+  { "myData":[
+<xsl:for-each select="/dir:directory/dir:file">
+{
+"name":"<xsl:value-of select="@name"/>",
+"date":"<xsl:value-of select="@date"/>",
+"workflowState":"<xsl:value-of select="@workflow-state"/>"
+}<xsl:if test="position() != last()">,</xsl:if>
+</xsl:for-each>
+]
+  }
   </xsl:template>
 
   <xsl:template match="dir:directory">
