@@ -238,6 +238,10 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      */
     @Override
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
+        if (isDefaultXSLTDisabled()) {
+            return super.getXMLView(viewId, xmlInputStream);
+        }
+
         log.warn("DEBUG: ViewId: " + viewId);
         if (viewId == null || !viewId.equals("source")) {
             TransformerFactory tfactory = TransformerFactory.newInstance();
@@ -256,7 +260,18 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             return super.getXMLView(viewId, new java.io.ByteArrayInputStream(baos.toByteArray()));
         }
         return super.getXMLView(viewId, xmlInputStream);
+    }
 
+    /**
+     * Check whether default XSLT is disabled
+     * @return true when default XSLT is disabled and false otherwise
+     */
+    private boolean isDefaultXSLTDisabled() throws Exception {
+        String disabledStr = getResourceConfigProperty("default-xslt_disabled");
+        if (disabledStr != null && disabledStr.equals("true")) {
+            return true;
+        }
+        return false;
     }
 
     /**
