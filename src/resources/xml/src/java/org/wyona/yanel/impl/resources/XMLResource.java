@@ -678,6 +678,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Workflow                                     *
      ************************************************/
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.WorkflowableV1#doTransition(String, String)
+     */
     public void doTransition(String transitionID, String revision) throws WorkflowException {
         WorkflowHelper.doTransition(this, transitionID, revision);
     }
@@ -730,6 +733,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
     }
 
+    /**
+     *
+     */
     public void setWorkflowState(String state, String revision) throws WorkflowException {
         try {
             WorkflowHelper.setWorkflowState(getRepoNode(), state, revision);
