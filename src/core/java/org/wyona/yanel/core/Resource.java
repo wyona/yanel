@@ -22,7 +22,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.map.Realm;
 
@@ -31,7 +33,7 @@ import org.wyona.yanel.core.map.Realm;
  */
 public abstract class Resource {
 
-    private static Logger log = Logger.getLogger(Resource.class);
+    private static Logger log = LogManager.getLogger(Resource.class);
 
     // TODO: make protected members private (access in subclasses via getter/setter methods)
     protected ResourceTypeDefinition rtd;
@@ -305,6 +307,8 @@ public abstract class Resource {
 
     /**
      * Get property value from resource configuration
+     * @param name Name of resource property
+     * @return value of resource property and null when property not set
      */
     public String getResourceConfigProperty(String name) throws Exception {
         ResourceConfiguration rc = getConfiguration();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ import org.wyona.yarep.core.Node;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.PathUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.InputStream;
@@ -47,7 +48,7 @@ import java.util.Calendar;
  */
 public class CollectionResource extends BasicXMLResource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(CollectionResource.class);
+    private static Logger log = LogManager.getLogger(CollectionResource.class);
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
@@ -65,7 +66,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         try {
             if (yanelPath != null) {
                 if (yanelPath.startsWith("file:")) {
-                    log.warn("List children of actual file system directory ...");
+                    log.info("List children of actual file system directory '" + yanelPath + "' ...");
                     sb.append(getContentXMLOfFileSystemDirectory(yanelPath.substring(5)));
                 } else {
                     sb.append(getContentXMLOfYarepNode(yanelPath));
@@ -102,6 +103,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         StringBuilder sb = new StringBuilder();
         sb.append("<dir:directory yanel:path=\"" + getPath() + "\" dir:name=\"" + new File(path).getName() + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
 
+        // TODO: Make ordering/sorting configurable!
+        log.warn("TODO: Make order/sorting configurable!");
         File[] children = new File(path).listFiles();
         Calendar calendar = Calendar.getInstance();
         if (children != null) {
@@ -109,6 +112,12 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                 if (children[i].isFile()) {
                     calendar.setTimeInMillis(children[i].lastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
+                    log.warn("DEBUG: File last modified: " + lastModified);
+                    if (getResourceConfigProperty("date-format") != null) {
+                        java.text.DateFormat df = new java.text.SimpleDateFormat(getResourceConfigProperty("date-format"));
+                        lastModified = df.format(children[i].lastModified());
+                        log.warn("DEBUG: File last modified (formatted): " + lastModified);
+                    }
                     sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].lastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].length() + "\"/>");
                 } else if (children[i].isDirectory()) {
                     calendar.setTimeInMillis(children[i].lastModified());
@@ -131,10 +140,21 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
     /**
      * Get yarep collection listing as XML
+     * @param path Path of directory/collection
+     * @return listing of child nodes of directory/collection as XML
      */
     private StringBuilder getContentXMLOfYarepNode(String path) throws Exception {
         Repository repo = getRealm().getRepository();
         log.debug("Selected path: " + path);
+
+        if (!repo.existsNode(path)) {
+            log.warn("No such node '" + path + "'!");
+            StringBuilder sb = new StringBuilder();
+            sb.append("<dir:directory yanel:repository-configuration-file=\"" + repo.getConfigFile() + "\" yanel:path=\"" + getPath() + "\" dir:name=\"" + "TODO" + "\" dir:path=\"" + path + "\" xmlns:dir=\"http://apache.org/cocoon/directory/2.0\" xmlns:yanel=\"http://www.wyona.org/yanel/resource/directory/1.0\">");
+            sb.append("<yanel:exception>No such node: " + path + "</yanel:exception>");
+            sb.append("</dir:directory>");
+            return sb;
+        }
 
         // TODO: This doesn't seem to work ... (check on Yarep ...)
         if (repo.getNode(path).isResource()) {
@@ -160,7 +180,21 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                 if (children[i].isResource()) {
                     calendar.setTimeInMillis(children[i].getLastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
-                    sb.append("<dir:file path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"/>");
+                    log.debug("File last modified: " + lastModified);
+                    if (getResourceConfigProperty("date-format") != null) {
+                        java.text.DateFormat df = new java.text.SimpleDateFormat(getResourceConfigProperty("date-format"));
+                        lastModified = df.format(children[i].getLastModified());
+                        log.debug("File last modified (formatted): " + lastModified);
+                    }
+                    sb.append("<dir:file");
+                    sb.append(" path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"");
+                    String workflowState = getWorkflowState(children[i]);
+                    if (workflowState != null) {
+                        sb.append(" workflow-state=\"" + workflowState + "\"");
+                    } else {
+                        log.debug("Node '" + children[i].getPath() + "' has no workflow state set.");
+                    }
+                    sb.append("/>");
                 } else if (children[i].isCollection()) {
                     sb.append("<dir:directory path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\"/>");
                 } else {
@@ -179,10 +213,36 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     /**
+     * Get workflow state if available
+     * @param node Node which might has a workflow state
+     * @return workflow state associated with node if available and null otherwise
+     */
+    private String getWorkflowState(Node node) throws Exception {
+        if (org.wyona.commons.clazz.ClazzUtil.implementsInterface(node, "org.wyona.yarep.core.attributes.VersionableV1")) {
+            java.util.Iterator<org.wyona.yarep.core.Revision> revisions = ((org.wyona.yarep.core.attributes.VersionableV1) node).getRevisions(false);
+            if (revisions != null && revisions.hasNext()) {
+                String revisionName = ((org.wyona.yarep.core.Revision) revisions.next()).getRevisionName();
+                return org.wyona.yanel.core.workflow.WorkflowHelper.getWorkflowState(node, revisionName);
+            } else {
+                log.warn("Node '" + node.getPath() + "' has no revisions.");
+                return null;
+            }
+        } else {
+            log.warn("Node implementation is not VersionableV1");
+            return null;
+        }
+    }
+
+    /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getXMLView(String, InputStream)
      */
     @Override
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
+        if (isDefaultXSLTDisabled()) {
+            return super.getXMLView(viewId, xmlInputStream);
+        }
+
+        log.warn("DEBUG: ViewId: " + viewId);
         if (viewId == null || !viewId.equals("source")) {
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
@@ -192,7 +252,9 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
             transformerIntern.setParameter("yarep.back2realm", backToRoot());
             transformerIntern.setParameter("yarep.parent", getParent(getPath()));
-            transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
+
+            transformerIntern.setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
+            // DEPREACTED: transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
 
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformerIntern.transform(new StreamSource(xmlInputStream), new StreamResult(baos));
@@ -200,7 +262,18 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             return super.getXMLView(viewId, new java.io.ByteArrayInputStream(baos.toByteArray()));
         }
         return super.getXMLView(viewId, xmlInputStream);
+    }
 
+    /**
+     * Check whether default XSLT is disabled
+     * @return true when default XSLT is disabled and false otherwise
+     */
+    private boolean isDefaultXSLTDisabled() throws Exception {
+        String disabledStr = getResourceConfigProperty("default-xslt_disabled");
+        if (disabledStr != null && disabledStr.equals("true")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -239,7 +312,8 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             return new StreamSource(getRealm().getRepository().getNode(customDefaultXSLT).getInputStream());
         }
 
-        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+        // INFO: If no property 'default-xslt' set, then fallback to XSLT part of this resource
+        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "default_dir2xhtml.xsl");
         if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
         return new StreamSource(defaultXSLTFile);
     }
@@ -257,7 +331,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         }
         if (mimeType != null) return mimeType;
 
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
+        // NOTE: Assuming fallback re default_dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
 

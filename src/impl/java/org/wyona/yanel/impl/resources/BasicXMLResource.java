@@ -35,14 +35,19 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.utils.ListingErrorHandler;
 import org.w3c.dom.Document;
 import org.wyona.commons.io.MimeTypeUtil;
+
 import org.wyona.security.core.api.Identity;
+import org.wyona.security.core.api.User;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -59,8 +64,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * It is a base class for resources that generate XML. Subclasses must override getContentXML 
- * in order to pass XML for a view.
+ * It is a base class for resources that generate XML. Subclasses must override getContentXML in order to pass XML for a view.
+ * <p>
+ * Also see http://www.yanel.org/en/documentation/basic-xml-resource-type.html
+ * </p>
  * <p>
  * The class has its configuration for views ('default' and 'source' are built in). It resides in *.yanel-rc file, e.g.
  * <pre>
@@ -120,6 +127,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     protected HashMap<String, ViewDescriptor> viewDescriptors;
 
     private static final String VIEW_ID_PARAM_NAME = "yanel.resource.viewid";
+
+    private Identity identity = null;
+    private User user = null;
 
     /**
      * Get view descriptor for a particular view id
@@ -196,6 +206,12 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
      */
     public View getView(String viewId) throws Exception {
+        // INFO: Allows to override the view id inside the resource configuration
+        String overrideViewId = getResourceConfigProperty("viewid");
+        if (overrideViewId != null) {
+            viewId = overrideViewId;
+        }
+
         return getXMLView(viewId, getContentXML(viewId));
     }
 
@@ -328,7 +344,15 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
             
             Repository repo = getRealm().getRepository();
+            // TBD: Introduce javax.xml.transform.Templates in order to cache transformers (see for example http://www.javaworld.com/article/2073394/java-xml/transparently-cache-xsl-transformations-with-jaxp.html)
             TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
+            identity = getEnvironment().getIdentity();
+            user = null;
+            String userID = identity.getUsername();
+            if (userID != null) {
+                user = getRealm().getIdentityManager().getUserManager().getUser(userID);
+                //log.debug("User ID: " + userID + ", " + user.getID());
+            }
             for (int i = 0; i < xsltPaths.length; i++) {
                 String xsltPath = xsltPaths[i];
                 int schemeEndIndex = xsltPath.indexOf(':');
@@ -359,7 +383,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // create i18n transformer:
-            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(), getRealm().getDefaultLanguage(), uriResolver);
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(identity, user), getRealm().getDefaultLanguage(), uriResolver);
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create xinclude transformer:
@@ -470,8 +494,9 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Pass parameters to xslt transformer.
      * @param transformer Transformer for which various parameters (e.g. yanel.back2realm) will be set
      */
-    protected void passTransformerParameters(Transformer transformer) throws Exception {      
-        // Set general parameters
+    protected void passTransformerParameters(Transformer transformer) throws Exception {
+        // INFO: Set general parameters
+        transformer.setParameter("yanel.timestamp", new java.util.Date().getTime()); // INFO: timestamp can be used inside an XSLT to make for example URLs non-cacheable, by attaching a query string containing the timestamp
         transformer.setParameter("yanel.path.name", org.wyona.commons.io.PathUtil.getName(getPath()));
         transformer.setParameter("yanel.path", getPath());
         transformer.setParameter("yanel.back2context", PathUtil.backToContext(realm, getPath()));
@@ -523,6 +548,11 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         String queryString = getEnvironment().getRequest().getQueryString();
         if (queryString != null) {
             transformer.setParameter("yanel.request.query-string", queryString);
+            Enumeration qsParamNames = getEnvironment().getRequest().getParameterNames();
+            while (qsParamNames.hasMoreElements()) {
+                String paramName = (String)qsParamNames.nextElement();
+                transformer.setParameter("yanel.request.qs-param_" + paramName, getEnvironment().getRequest().getParameter(paramName));
+            }
         }
 
         // localization
@@ -532,10 +562,18 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("content-language", getContentLanguage());
 
         // INFO: user ID, firstname, etc.
-        addUserInfo(transformer);
+        addUserInfo(transformer, identity, user);
 
         // INFO: Reserved yanel prefix
         transformer.setParameter("yanel.reservedPrefix", this.getYanel().getReservedPrefix());
+
+        // INFO: Flag whether pre-authentication is enabled
+        transformer.setParameter("yanel.pre-authentication-enabled", getYanel().isPreAuthenticationEnabled());
+
+        // INFO: Yanel target environment
+        if (this.getYanel().getTargetEnvironment() != null) {
+            transformer.setParameter("yanel.target.environment", this.getYanel().getTargetEnvironment());
+        }
 
         // Add toolbar status
         String toolbarStatus = getToolbarStatus();
@@ -622,19 +660,26 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
-     * Get client
+     * Get 'simple' client name
+     * @param userAgent User agent, e.g. 'Mozilla/5.0+(compatible; UptimeRobot/2.0; http://www.uptimerobot.com/)' or 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+     * @return 'simple' client name, e.g. 'firefox' or 'MSIE'
      */
-    protected String getClient(String userAgent) {
-        if (userAgent.indexOf("Firefox") > 0) {
-            return "firefox";
-        } else if (userAgent.indexOf("MSIE") > 0) {
-            return "msie";
-        } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
-            return "chrome";
-        } else if (userAgent.indexOf("Safari") > 0) {
-            return "safari";
+    public static String getClient(String userAgent) {
+        if (userAgent != null) {
+            if (userAgent.indexOf("Firefox") > 0) {
+                return "firefox";
+            } else if (userAgent.indexOf("MSIE") > 0) {
+                return "msie";
+            } else if (userAgent.indexOf("Chrome") > 0) { // INFO: Please note that the chrome user agent also contains the word Safari, e.g. "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_7) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.77 Safari/534.24"
+                return "chrome";
+            } else if (userAgent.indexOf("Safari") > 0) {
+                return "safari";
+            } else {
+                if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
+                return null;
+            }
         } else {
-            if (log.isDebugEnabled()) log.debug("Client could not be recognized: " + userAgent);
+            log.warn("No user agent specified");
             return null;
         }
     }
@@ -643,25 +688,31 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
      * Add user ID, firstname, etc. as parameters to transformer
      * @param transformer Transformer to which user information as parameters will be added
      */
-    private void addUserInfo(Transformer transformer) {
-        Identity identity = getEnvironment().getIdentity();
+    private void addUserInfo(Transformer transformer, Identity identity, User user) throws Exception {
         if (identity != null) {
-            String userID = identity.getUsername();
-            if (userID != null) {
+            if (user != null) {
+                String userID = identity.getUsername();
                 transformer.setParameter("username", userID);
 
                 String firstname = identity.getFirstname(); // INFO: Please note that org.wyona.security.core.api.Identity(User, String) is using User#getName() as firstname!
-                if (firstname != null) {
+                if (firstname != null && firstname.length() > 0) {
                     transformer.setParameter("firstname", firstname);
                 } else {
                     log.warn("No firstname (user ID: " + userID + ")!");
                 }
 
                 String lastname = identity.getLastname();
-                if (lastname != null) {
+                if (lastname != null && lastname.length() > 0) {
                     transformer.setParameter("lastname", lastname);
                 } else {
                     log.warn("No lastname (user ID: " + userID + ")!");
+                }
+
+                String email = user.getEmail();
+                if (email != null) {
+                    transformer.setParameter("email", email);
+                } else {
+                    log.warn("No email (user ID: " + userID + ")!");
                 }
             }
         }
@@ -725,14 +776,13 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     /**
      * Get user language (order: profile, browser, ...)
      */
-    private String getUserLanguage() throws Exception {
+    private String getUserLanguage(Identity identity, User user) throws Exception {
         String language = getRequestedLanguage();
 
-        Identity identity = getEnvironment().getIdentity();
         String userID = identity.getUsername(); // WARN: Do not use the protected method getUsername(), because it might be overwritten and hence backwards compatibility might fail!
-        if (userID != null) {
+        if (user != null) {
             if (getRealm().getIdentityManager().getUserManager().existsUser(userID)) { // INFO: It might be possible that a user ID is still referenced by a session, but has been deleted "persistently" in the meantime
-                String userLanguage = getRealm().getIdentityManager().getUserManager().getUser(userID).getLanguage();
+                String userLanguage = user.getLanguage();
                 //log.debug("User language: " + userLanguage);
                 if(userLanguage != null) {
                     language = userLanguage;

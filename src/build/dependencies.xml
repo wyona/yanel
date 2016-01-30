@@ -26,11 +26,17 @@
 <!-- WARN: The glassfish repository does not seem to be available sometimes, hence we have copied the moxy libraries to maven2.wyona.org
     <artifact:remoteRepository id="glassfish.repository" url="http://maven.glassfish.org/content/repositories/eclipselink/"/>
 -->
+<!-- INFO: mvnrepository seems to be rather slow
+    <artifact:remoteRepository id="mvnrepository.repository" url="http://mvnrepository.com/artifact/"/>
+-->
 
     <!-- dependencies which are only needed at compile time, but won't be copied to WEB-INF/lib -->
     <artifact:dependencies pathId="maven2.compile.classpath" filesetId="maven2.compile.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
+<!--
+      <dependency groupId="javax.servlet" artifactId="javax.servlet-api" version="3.0.1" scope="provided"/>
+-->
     </artifact:dependencies>
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
@@ -38,13 +44,14 @@
 <!--
       <remoteRepository refid="glassfish.repository"/>
 -->
+<!--
+      <remoteRepository refid="mvnrepository.repository"/>
+-->
 
       <!-- INFO: Password encryption -->
-<!--
       <dependency groupId="org.bouncycastle" artifactId="bcprov-jdk16" version="1.46"/>
       <dependency groupId="org.bouncycastle" artifactId="bcmail-jdk16" version="1.46"/>
       <dependency groupId="org.bouncycastle" artifactId="bcpg-jdk16" version="1.46"/>
--->
 
       <!-- INFO: log4j version 2 -->
       <dependency groupId="org.apache.logging.log4j" artifactId="log4j-api" version="2.0-beta8"/>
@@ -62,10 +69,10 @@
       <dependency groupId="org.eclipse.persistence" artifactId="org.eclipse.persistence.moxy" version="2.3.2"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-core" version="1.3.0-r2b300730c5580b6c46e1deb94eee4589055c4593"/>
+      <dependency groupId="yarep" artifactId="yarep-core" version="1.4.4-rad86f74baf45f5625305b9ef561784ea8b6013c8"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.2.0-r2705049aa49904e3d0be7a6145d2a494901107f4"/>
+      <dependency groupId="wyona-org-commons" artifactId="wyona-org-commons" version="1.3.0-r8cdf59a4e1f5f4ea5b93c9991ff6a87c98d65269"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="net.sf.ehcache" artifactId="ehcache" version="2.7.0"/>
@@ -79,7 +86,7 @@
 -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -91,21 +98,16 @@
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging"
                   version="1.0.4"/>
       <dependency groupId="commons-io" artifactId="commons-io" version="1.2"/>
-      <!-- IMPORTANT: xerces 2.7.1 is dependent on xml-apis 1.3.02 -->
-      <dependency groupId="xerces" artifactId="xercesImpl"
-                  version="2.7.1"/>
-      <dependency groupId="xml-apis" artifactId="xml-apis"
-                  version="1.3.02"/>
       <dependency groupId="xml-resolver" artifactId="xml-resolver"
                   version="1.1"/>
 <!-- The XSLT engine of Java on MacOS X seems to have trouble. With Xalan enabled it should work! Also Abdera seems to need Xalan ... -->
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
-      <dependency groupId="xalan" artifactId="xalan" version="2.7.0"/>
+      <dependency groupId="xalan" artifactId="xalan" version="2.7.1"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.4.0-r371596de3c510604aadb5718fc7b92296f48c3ba"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="yarep" artifactId="yarep-impl" version="1.3.0-r2b300730c5580b6c46e1deb94eee4589055c4593"/>
+      <dependency groupId="yarep" artifactId="yarep-impl" version="1.4.4-rad86f74baf45f5625305b9ef561784ea8b6013c8"/>
       <dependency groupId="spring" artifactId="spring"
                   version="2.0"/>
       <dependency groupId="svnkit" artifactId="svnkit"
@@ -147,16 +149,27 @@
       <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
       <dependency groupId="mysql" artifactId="mysql-connector-java" version="5.1.12"/>
+
+      <!-- See http://jdbc.postgresql.org/download.html or http://mvnrepository.com/artifact/org.postgresql/postgresql/9.3-1101-jdbc41 -->
+      <dependency groupId="postgresql" artifactId="postgresql" version="9.3-1101.jdbc4"/>
+<!--
       <dependency groupId="postgresql" artifactId="postgresql" version="8.1-409.jdbc3"/>
+-->
+      <dependency groupId="commons-dbcp" artifactId="commons-dbcp" version="1.2.1"/>
+      <dependency groupId="commons-pool" artifactId="commons-pool" version="1.2"/>
 
 
       <!-- INFO: Contains resource: org.wyona.yanel.impl.resources.jellyadapterofcmdv3 -->
       <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="1.0.1-r7c074f5d6f27233fa1e3ef2f4451e608caed583f"/>
 
-      <!-- INFO: Log into ActiveMQ Java Messaging System -->
-      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="4.6.0-rf45ffc7681c"/>
+      <!-- INFO: Log to Boost -->
+      <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="4.9.0-r0ec55e61af5"/>
       <dependency groupId="wyona-com-boost" artifactId="Log4JParsingUtils" version="2.0.5-r197413947b9"/>
       <dependency groupId="wyona-com-boost" artifactId="MessageUtils" version="2.0.5-r197413947b9"/>
+
+      <!-- INFO: Get information from Boost -->
+      <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
+      <dependency groupId="wyona-com-boost" artifactId="BoostClient" version="1.2.0-ra2efa6d13de"/>
     </artifact:dependencies>
     
     <!--     get ext by maven -->    

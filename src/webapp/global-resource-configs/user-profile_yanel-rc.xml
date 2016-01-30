@@ -3,6 +3,10 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="yanel-user" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+<!-- INFO: When set, then email notifications will be sent when email/username/alias has been changed
+  <yanel:property name="fromEmail" value="michael.wechner@wyona.com"/>
+-->
+
 <!--
   <yanel:property name="user" value="lenya"/>
 -->

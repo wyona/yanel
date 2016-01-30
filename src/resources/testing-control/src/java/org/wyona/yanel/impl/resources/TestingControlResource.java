@@ -36,7 +36,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.PatternSet;
@@ -61,13 +64,15 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * 
+ * Resource in order to run tests
  */
 public class TestingControlResource extends Resource implements ViewableV2 {
 
     private static final String JUNIT_JAR = "yanel-JunitTests.jar";
     private static final String HTMLUNIT_JAR = "yanel-HtmlUnitTests.jar";
-    private static Category log = Category.getInstance(TestingControlResource.class);
+
+    private static Logger log = LogManager.getLogger(TestingControlResource.class);
+
     private boolean ajaxBrowser = false;
     private File JunitJarLocation;
     private File HtmlunitJarLocation;
@@ -259,8 +264,9 @@ public class TestingControlResource extends Resource implements ViewableV2 {
         StringBuffer sb = new StringBuffer();
         sb.append("<form method=\"post\">");
         sb.append("<h3>HtmlUnit Tests</h3>");
-        sb.append("<ul id=\"htmlunit\">");
         String[] allHtmlUnitTestNames = getAllTestNames("htmlunit");
+        if (allHtmlUnitTestNames != null) {
+            sb.append("<ul id=\"htmlunit\">");
         for (int i = 0; i < allHtmlUnitTestNames.length; i++) {
             String title = allHtmlUnitTestNames[i].substring(allHtmlUnitTestNames[i].lastIndexOf("/") + 1)
                     .replaceAll(".class", "");
@@ -270,11 +276,15 @@ public class TestingControlResource extends Resource implements ViewableV2 {
                     + allHtmlUnitTestNames[i] + "\"/>");
             sb.append("</li>");
         }
-        sb.append("</ul>");
+            sb.append("</ul>");
+        } else {
+            sb.append("<p>Retrieving HtmlUnit test names failed!</p>");
+        }
         sb.append("<hr/>");
         sb.append("<h3>JUnit Tests</h3>");
-        sb.append("<ul id=\"junit\">");
         String[] allJUnitTestNames = getAllTestNames("junit");
+        if (allJUnitTestNames != null) {
+            sb.append("<ul id=\"junit\">");
         for (int i = 0; i < allJUnitTestNames.length; i++) {
             String title = allJUnitTestNames[i].substring(allJUnitTestNames[i].lastIndexOf("/") + 1)
                     .replaceAll(".class", "");
@@ -284,7 +294,10 @@ public class TestingControlResource extends Resource implements ViewableV2 {
                     + "\"/>");
             sb.append("</li>");
         }
-        sb.append("</ul>");
+            sb.append("</ul>");
+        } else {
+            sb.append("<p>Retrieving JUnit test names failed!</p>");
+        }
         if (ajaxBrowser) {
             sb.append("<input type=\"hidden\" name=\"yanel.resource.viewid\" value=\"source\"/>");
             sb.append("<input type=\"hidden\" name=\"ajaxexecutetest\" value=\"true\"/>");

@@ -24,7 +24,10 @@ import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import org.apache.log4j.Logger;
+import javax.mail.internet.InternetAddress;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +41,7 @@ import javax.xml.xpath.XPathFactory;
  */
 public class UserRegistrationResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(UserRegistrationResource.class);
+    private static Logger log = LogManager.getLogger(UserRegistrationResource.class);
 
     static String NAMESPACE = "http://www.wyona.org/yanel/user-registration/1.0";
 
@@ -50,6 +53,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     private static final String ONE_OR_MORE_INPUTS_NOT_VALID = "one-or-more-inputs-not-valid";
 
+    private static final String ADMIN_CONFIRMATION_KEY = "admin-confirmation-key";
+    private static final String ADMINISTRATOR_CONFIRMED = "administrator-confirmed";
+
     protected static final String EMAIL = "email";
     protected static final String FIRSTNAME = "firstname";
     protected static final String LASTNAME = "lastname";
@@ -60,6 +66,13 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String SALUTATION = "salutation";
     protected static final String PHONE = "phone";
     protected static final String COMPANY = "company";
+
+    private static final String IS_PRE_AUTH_ATTR_NAME = "is-pre-authenticated";
+    private static final String PRE_AUTH_USERNAME_ATTR_NAME = "pre-authenticated-username";
+    private static final String PASSWORD_ELEMENT_NAME = "password";
+
+    protected static final String PASSWORD = "password";
+    protected static final String PASSWORD_CONFIRMED = "password2";
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -96,8 +109,9 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
-     * Check whether firstname is valid
-     * @param firstname Firstname
+     * Check whether first name is valid
+     * @param firstname First name
+     * @return true when first name is valid and false otherwise
      */
     private boolean isFirstnameValid(String firstname) {
         if (firstname != null && firstname.length() > 0) {
@@ -227,13 +241,27 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         try {
             Element element = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "confirmation-link-email"));
+            element.setAttribute("sent-by-yanel", "false");
             if (sendNotificationsEnabled()) {
-                MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), userRegBean.getEmail(), "Activate User Registration (sent by Yanel)", getActivationURL(userRegBean));
+                if (administratorConfirmationRequired()) {
+                    String adminConfirmationKey = java.util.UUID.randomUUID().toString();
+                    setAdminConfirmationKey(userRegBean.getUUID(), adminConfirmationKey);
+
+                    StringBuilder body = new StringBuilder();
+                    body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
+                    body.append("\n\nPlease confirm the request by clicking on the following link:");
+                    body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
+                    body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
+                    MailUtil.send(getFromEmail(), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] Confirm User Registration Request", body.toString());
+                    Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
+                }
+
+                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
+
                 element.setAttribute("sent-by-yanel", "true");
-            } else {
-                element.setAttribute("sent-by-yanel", "false");
             }
-            element.setAttribute("hours-valid", "" + DEFAULT_TOTAL_VALID_HRS);
+
+            element.setAttribute("hours-valid", "" + getHoursValid());
             if (getResourceConfigProperty("include-activation-link") != null && getResourceConfigProperty("include-activation-link").equals("true")) {
                 log.warn("Activation link will be part of response! Because of security reasons this should only be done for development or testing environments.");
                 element.setAttribute("activation-link", getActivationURL(userRegBean));
@@ -244,6 +272,67 @@ public class UserRegistrationResource extends BasicXMLResource {
             element.setAttribute(EMAIL, userRegBean.getEmail());
             element.setAttribute("exception-message", e.getMessage());
         }
+    }
+
+    /**
+     * Get from / sender email address for email being sent to invited user
+     * @return from / sender email address and null when not configured
+     */
+    private String getFromEmail() throws Exception {
+        String fromEmail = getResourceConfigProperty(FROM_ADDRESS_PROP_NAME);
+        if (fromEmail != null) {
+            return fromEmail;
+        } else {
+            fromEmail = getYanel().getAdministratorEmail();
+            log.warn("From / sender email address not configured inside resource configuration, hence try to user administrator email '" + fromEmail + "' of Yanel instance ...");
+            return fromEmail;
+        }
+    }
+
+    /**
+     * Get subject of confirmation email
+     */
+    private String getSubject() throws Exception {
+        String subject = "Activate User Registration (sent by Yanel)";
+        if (getResourceConfigProperty("subject") != null) {
+            subject = getResourceConfigProperty("subject");
+        }
+        return subject;
+    }
+
+    /**
+     * Get body of confirmation email
+     * @param url Email confirmation link
+     * @return body of confirmation email
+     */
+    private String getConfirmationEmailBody(String url) throws Exception {
+        String body = null;
+        if (getResourceConfigProperty("email-body-template-path") != null) {
+            Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
+            InputStream in = templateNode.getInputStream();
+            body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
+        } else {
+            String htdocsPath = "rthtdocs:/registration-confirmation-email-template.txt";
+            org.wyona.yanel.core.source.SourceResolver resolver = new org.wyona.yanel.core.source.SourceResolver(this);
+            javax.xml.transform.Source source = resolver.resolve(htdocsPath, null);
+            InputStream in = ((javax.xml.transform.stream.StreamSource) source).getInputStream();
+            body = org.apache.commons.io.IOUtils.toString(in);
+            in.close();
+        }
+        body = body.replace("@CONFIRMATION_LINK@", url);
+        body= body.replace("@VALID_HRS@", "" + getHoursValid());
+        return body;
+    }
+
+    /**
+     * Get hours valid
+     */
+    private long getHoursValid() throws Exception {
+        if (getResourceConfigProperty("hours-valid") != null) {
+            return new Long(getResourceConfigProperty("hours-valid")).longValue();
+        }
+        return DEFAULT_TOTAL_VALID_HRS;
     }
 
     /**
@@ -263,7 +352,11 @@ public class UserRegistrationResource extends BasicXMLResource {
 
             addUserToGroups(user);
 
+            // TODO: getUserManager().existsAlias(userRegBean.getEmail())
             getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
+            if (userRegBean.isPreAuthenticated()) {
+                getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getPreAuthenticatedUsername(), user.getID());
+            }
 
             Element ncE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "new-customer-registered"));
             ncE.setAttributeNS(NAMESPACE, "id", user.getID());
@@ -275,17 +368,51 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Create user profile access policy
+     * @param id User ID
+     */
+    private void createUserProfileAccessPolicy(String id) throws Exception {
+        // TODO: Also see src/resources/user-mgmt/src/java/org/wyona/yanel/impl/resources/CreateUserResource.java
+
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+        org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+        usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
+        policy.addUsecasePolicy(usecasePolicy);
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
+    }
+
+    /**
      * Activate user
      * @param userRegBean User registration bean containing gender, firstname, etc.
+     * @return activated user
      */
     protected User activateUser(UserRegistrationBean userRegBean) throws Exception {
         long customerID = new java.util.Date().getTime();
+
+        createUserProfileAccessPolicy("" + customerID);
+
+        if (userRegBean.isPreAuthenticated()) {
+            log.warn("User '" + customerID + "' is pre-authenticated and we will try to create a user account without password, but the user management implementation might not support accounts without password ...");
+        }
         // TODO: Use encrypted password
-        User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, userRegBean.getFirstname() + " " + userRegBean.getLastname(), userRegBean.getEmail(), userRegBean.getPassword());
+        User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty(GENDER, gender);
         user.setLanguage(getContentLanguage());
         user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
        return user;
+    }
+
+    /**
+     * Get name of user
+     */
+    private String getName(String firstname, String lastname) {
+        if (firstname == null && lastname == null) {
+            return null;
+        } else {
+            return firstname + " " + lastname;
+        }
     }
 
     /**
@@ -314,6 +441,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Generate registration request as XML
      * @param urb User registration bean containing E-Mail address of user, etc.
+     * @return user registration bean as XML document
      */
     private Document getRegistrationRequestAsXML(UserRegistrationBean urb) { // TODO: What about custom fields?!
         Document doc = XMLHelper.createDocument(NAMESPACE, "registration-request");
@@ -323,15 +451,20 @@ public class UserRegistrationResource extends BasicXMLResource {
         DateFormat df = new SimpleDateFormat(DATE_FORMAT);
         rootElem.setAttribute("request-time", df.format(new Date().getTime()));
 
-        // IMPORTANT TODO: Password needs to be encrypted!
-        Element passwordElem = doc.createElementNS(NAMESPACE, "password");
-        passwordElem.setAttribute("algorithm", "plaintext");
-        passwordElem.setTextContent(urb.getPassword());
+        Element passwordElem = doc.createElementNS(NAMESPACE, PASSWORD_ELEMENT_NAME);
+        if (urb.isPreAuthenticated()) {
+            passwordElem.setAttribute(IS_PRE_AUTH_ATTR_NAME, "true");
+            passwordElem.setAttribute(PRE_AUTH_USERNAME_ATTR_NAME, urb.getPreAuthenticatedUsername());
+        } else {
+            // IMPORTANT TODO: Password needs to be encrypted!
+            passwordElem.setAttribute("algorithm", "plaintext");
+            passwordElem.setTextContent(urb.getPassword());
 /*
-        passwordElem.setAttribute("algorithm", "SHA-256");
-        passwordElem.setTextContent(encrypt(urb.getPassword()));
-        // TODO: What about salt?!
+            passwordElem.setAttribute("algorithm", "SHA-256");
+            passwordElem.setTextContent(encrypt(urb.getPassword()));
+            // TODO: What about salt?!
 */
+        }
         rootElem.appendChild(passwordElem);
 
         Element genderElem = doc.createElementNS(NAMESPACE, GENDER);
@@ -472,14 +605,48 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "all-inputs-valid"));
         } else {
-            log.warn("One or more inputs are not valid...");
+            log.warn("One or more inputs are not valid...see returned XML for more details!");
             rootElement.appendChild(doc.createElementNS(NAMESPACE, ONE_OR_MORE_INPUTS_NOT_VALID));
         }
     }
 
     /**
+     * Check whether administrator needs to confirm registration request
+     */
+    private boolean administratorConfirmationRequired() throws Exception {
+        if (getResourceConfigProperty("administrator-confirmation-required") != null && getResourceConfigProperty("administrator-confirmation-required").equals("true")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check whether administrator key matches
+     * @param adminConfirmationKey Confirmation key as UUID
+     * @param uuid UUID of user registration activation request
+     * @param doc Document containing response to administrator trying to confirm registration request
+     * @return true if administrator key matches, otherwise return false
+     */
+    private boolean adminKeyMatches(String adminConfirmationKey, String uuid, Document doc) throws Exception {
+        String path = getActivationNodePath(uuid);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node registrationRequestNode = getRealm().getRepository().getNode(path);
+            UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
+            if (adminConfirmationKey.equals(urBean.getAdministratorConfirmationKey())) {
+                return true;
+            } else {
+                log.warn("Keys did not match!");
+            }
+        } else {
+            log.error("No such activation request node: " + path);
+        }
+        return false;
+    }
+
+    /**
      * Try to activate user registration
      * @param uuid UUID of user registration activation request
+     * @param doc Document containing response to user trying to activate account
      * @return true if user registration activation was successful, otherwise return false if actication failed
      */
     protected boolean activateRegistration(String uuid, Document doc) {
@@ -487,18 +654,35 @@ public class UserRegistrationResource extends BasicXMLResource {
             String path = getActivationNodePath(uuid);
             if (getRealm().getRepository().existsNode(path)) {
 
-                UserRegistrationBean urBean = readRegistrationRequest(getRealm().getRepository().getNode(path));
-
-                registerUser(doc, urBean);
-                getRealm().getRepository().getNode(path).delete();
-
-                String homepageURL = getHomepageURL();
-
-                if (sendNotificationsEnabled()) {
-                    MailUtil.send(getResourceConfigProperty(FROM_ADDRESS_PROP_NAME), urBean.getEmail(), "User Registration Successful", homepageURL);
-                }
+                Node registrationRequestNode = getRealm().getRepository().getNode(path);
+                UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
 
                 Element rootElement = doc.getDocumentElement();
+
+                if (administratorConfirmationRequired() && !urBean.hasAdministratorConfirmedRegistration()) {
+                    log.warn("Administrator has not confirmed registration request yet!");
+                    rootElement.appendChild(doc.createElement("administrator-not-confirmed-yet"));
+                    setConfirmedByUser(registrationRequestNode);
+                    return false;
+                } else {
+                    registerUser(doc, urBean);
+                    getRealm().getRepository().getNode(path).delete();
+
+                if (doNotifyAdministrator()) {
+                    StringBuilder body = new StringBuilder();
+                    body.append("The following user account has been activated:");
+                    body.append("\n\n" + urBean.getEmail());
+                    body.append("\n\nvia " + getHomepageURL());
+                    MailUtil.send(getFromEmail(), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] User account has been created", body.toString());
+                }
+
+                if (sendNotificationsEnabled() && sendActivationSuccessfulEmail()) {
+                    StringBuilder body = new StringBuilder();
+                    body.append("Thank you for your registration.");
+                    body.append("\n\nYou have successfully activated your account.");
+                    body.append("\n\n" + getHomepageURL());
+                    MailUtil.send(getFromEmail(), urBean.getEmail(), "[" + getRealm().getName() + "] User Registration Successful", body.toString());
+                }
 
                 // TODO: Add gender/salutation
 
@@ -512,6 +696,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 lastnameE.appendChild(doc.createTextNode(urBean.getLastname()));
 
                 return true;
+                }
             } else {
                 log.error("No such activation request node: " + path);
                 return false;
@@ -530,8 +715,59 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Set attribute that administrator has confirmed registration request
+     * @param requestUUID UUID of registration request
+     */
+    private void setAdminConfirmed(String requestUUID) throws Exception {
+        String path = getActivationNodePath(requestUUID);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node node = getRealm().getRepository().getNode(path);
+            Document doc = XMLHelper.readDocument(node.getInputStream());
+            doc.getDocumentElement().setAttribute(ADMINISTRATOR_CONFIRMED, "true");
+            java.io.OutputStream out = node.getOutputStream();
+            XMLHelper.writeDocument(doc, out);
+            out.close();
+        } else {
+            log.warn("No such reqgistration request '" + path + "'!");
+        }
+    }
+
+    /**
+     * Add administrator confirmation key to registration request
+     * @param requestUUID UUID of registration request
+     * @param adminKey Administrator confirmation key
+     */
+    private void setAdminConfirmationKey(String requestUUID, String adminKey) throws Exception {
+        String path = getActivationNodePath(requestUUID);
+        if (getRealm().getRepository().existsNode(path)) {
+            Node node = getRealm().getRepository().getNode(path);
+            Document doc = XMLHelper.readDocument(node.getInputStream());
+            doc.getDocumentElement().setAttribute(ADMIN_CONFIRMATION_KEY, adminKey);
+            java.io.OutputStream out = node.getOutputStream();
+            XMLHelper.writeDocument(doc, out);
+            out.close();
+        } else {
+            log.warn("No such reqgistration request '" + path + "'!");
+        }
+    }
+
+    /**
+     * Set flag that user confirmed email address
+     * @param node Repository node containing registration request (firstname, lastname, etc.)
+     */
+    private void setConfirmedByUser(Node node) throws Exception {
+        Document doc = XMLHelper.readDocument(node.getInputStream());
+        DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+        doc.getDocumentElement().setAttribute("date-confirmed-by-user", df.format(new Date().getTime()));
+        java.io.OutputStream out = node.getOutputStream();
+        XMLHelper.writeDocument(doc, out);
+        out.close();
+    }
+
+    /**
      * Read user registration request from repository node
      * @param node Repository node containing firstname, lastname, etc.
+     * @return user registration bean containing information about submitted user registration
      */
     private UserRegistrationBean readRegistrationRequest(Node node) throws Exception {
         Document doc = XMLHelper.readDocument(node.getInputStream());
@@ -544,10 +780,38 @@ public class UserRegistrationResource extends BasicXMLResource {
         String firstname = (String) xpath.evaluate("/ur:registration-request/ur:" + FIRSTNAME, doc, XPathConstants.STRING);
         String lastname = (String) xpath.evaluate("/ur:registration-request/ur:" + LASTNAME, doc, XPathConstants.STRING);
         String email = (String) xpath.evaluate("/ur:registration-request/ur:" + EMAIL, doc, XPathConstants.STRING);
-        String password = (String) xpath.evaluate("/ur:registration-request/ur:password", doc, XPathConstants.STRING);
+
+        boolean isPreAuthenticated = false;
+        String isPreAuthenticatedStr = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME + "/@" + IS_PRE_AUTH_ATTR_NAME, doc, XPathConstants.STRING);
+        String preAuthUserName = null;
+        String preAuthenticatedUsernameStr = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME + "/@" + PRE_AUTH_USERNAME_ATTR_NAME, doc, XPathConstants.STRING);
+        if (isPreAuthenticatedStr != null && isPreAuthenticatedStr.equals("true") && preAuthenticatedUsernameStr != null) {
+            isPreAuthenticated = true;
+            preAuthUserName = preAuthenticatedUsernameStr;
+        }
+
+        String password = null;
+        if (!isPreAuthenticated) {
+            password = (String) xpath.evaluate("/ur:registration-request/ur:" + PASSWORD_ELEMENT_NAME, doc, XPathConstants.STRING);
+        }
 
         UserRegistrationBean urBean = new UserRegistrationBean(gender, firstname, lastname, email, password, "TODO", "TODO");
+        urBean.setPreAuthenticated(isPreAuthenticated);
+        urBean.setPreAuthenticatedUsername(preAuthUserName);
+
         urBean.setUUID(uuid);
+
+        if (doc.getDocumentElement().hasAttribute(ADMINISTRATOR_CONFIRMED)) {
+            if (doc.getDocumentElement().getAttribute(ADMINISTRATOR_CONFIRMED).equals("true")) {
+                urBean.setAdministratorConfirmed(true);
+            }
+        } else {
+            urBean.setAdministratorConfirmed(false);
+        }
+
+        if (doc.getDocumentElement().hasAttribute(ADMIN_CONFIRMATION_KEY)) {
+            urBean.setAdministratorConfirmationKey(doc.getDocumentElement().getAttribute(ADMIN_CONFIRMATION_KEY));
+        }
 
         return urBean;
     }
@@ -565,6 +829,36 @@ public class UserRegistrationResource extends BasicXMLResource {
             log.error(e, e);
         }
         return true;
+    }
+
+    /**
+     * Check whether an email should be sent when activation was successful
+     */
+    private boolean sendActivationSuccessfulEmail() {
+        try {
+            String value = getResourceConfigProperty("send-activation-successful-email");
+            if (value != null && value.equals("false")) {
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return true;
+    }
+
+    /**
+     * Check whether notification email should be sent to administrator
+     */
+    private boolean doNotifyAdministrator() {
+        try {
+            String value = getResourceConfigProperty("notify-administrator");
+            if (value != null && value.equals("true")) {
+                return true;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+        return false;
     }
 
     /**
@@ -599,15 +893,52 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected Document generateResponseDocument() throws Exception {
         Document doc = getEmptyDocument();
         Element rootElement = doc.getDocumentElement();
-        String email = getEnvironment().getRequest().getParameter(EMAIL);
+
+        String email = null;
+        if (getEnvironment().getRequest().getParameter(EMAIL) != null) {
+            try {
+                email = new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress();
+            } catch(Exception e) {
+                Element exceptionEl = (Element) rootElement.appendChild(doc.createElement("invalid-email-address"));
+                exceptionEl.appendChild(doc.createTextNode(e.getMessage()));
+                log.error(e, e);
+            }
+        }
+
         String uuid = getEnvironment().getRequest().getParameter("uuid");
+        String adminConfirmationKey = getEnvironment().getRequest().getParameter(ADMIN_CONFIRMATION_KEY);
         if (email != null) { // INFO: Somebody tries to register (Please note that the email can also be empty in case somebody forgets to enter an email, but the query string parameter 'email' will exist anyway)
             processRegistrationRequest(doc, email);
-        } else if (uuid != null) { // INFO: Somebody tries to activate registration
-            if(activateRegistration(uuid, doc)) {
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
+        } else if (uuid != null) { // INFO: Somebody (user or administrator) tries to activate registration
+            if (adminConfirmationKey != null) {
+                log.warn("DEBUG: Administrator confirms registration request.");
+                if (adminKeyMatches(adminConfirmationKey, uuid, doc)) {
+                    setAdminConfirmed(uuid);
+
+                    String path = getActivationNodePath(uuid);
+                    if (getRealm().getRepository().existsNode(path)) {
+                        Node registrationRequestNode = getRealm().getRepository().getNode(path);
+                        UserRegistrationBean urBean = readRegistrationRequest(registrationRequestNode);
+
+                        Element adminConfirmedEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "administrator-confirmed"));
+                        adminConfirmedEl.setAttribute("user-email", urBean.getEmail());
+
+                        StringBuilder body = new StringBuilder("Administrator has confirmed your registration request.");
+                        body.append("\n\nTo activate your account, you need to click on the following link:");
+                        body.append("\n\n" + getActivationURL(urBean));
+                        // TODO: Calculate remaining time
+                        //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
+                        MailUtil.send(getFromEmail(), urBean.getEmail(), "[" + getRealm().getName() + "] Administrator has confirmed your registration request", body.toString());
+                    }
+                } else {
+                    log.warn("Administrator key did not match!");
+                }
             } else {
-                rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
+                if(activateRegistration(uuid, doc)) {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-successful"));
+                } else {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "activation-failed"));
+                }
             }
         } else {
             rootElement.appendChild(doc.createElementNS(NAMESPACE, "no-input-yet"));
@@ -652,21 +983,32 @@ public class UserRegistrationResource extends BasicXMLResource {
                 emailE.appendChild(doc.createTextNode("" + email)); 
             }
 
-        // INFO: Check password
-            String password = getEnvironment().getRequest().getParameter("password");
+        String password = null;
+        boolean preAuthenticated = false;
+        String preAuthUsername = null;
+        if (getYanel().isPreAuthenticationEnabled() && getYanel().getPreAuthenticationRequestHeaderName() != null && getEnvironment().getRequest().getHeader(getYanel().getPreAuthenticationRequestHeaderName()) != null) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            preAuthUsername = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+            preAuthenticated = true;
+            log.warn("DEBUG: Pre authenticated user: " + preAuthUsername);
+        } else {
+            // INFO: Check password
+            password = getEnvironment().getRequest().getParameter(PASSWORD);
             int minPwdLength = getMinPwdLength();
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
+                log.error("Password not valid");
                 inputsValid = false;
             }
-        // INFO: Check password confirmed
-            String confirmedPassword = getEnvironment().getRequest().getParameter("password2");
+            // INFO: Check password confirmed
+            String confirmedPassword = getEnvironment().getRequest().getParameter(PASSWORD_CONFIRMED);
             if (password != null && confirmedPassword != null && !password.equals(confirmedPassword)) {
                 log.warn("Passwords do not match!");
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "passwords-do-not-match"));
                 inputsValid = false;
             }
+        }
 
         // INFO: Check firstname
             String firstname = getEnvironment().getRequest().getParameter(FIRSTNAME);
@@ -689,7 +1031,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             }
 
         // INFO: Check gender (mandatory)
-            String gender = isGenderValid(getEnvironment().getRequest().getParameter(SALUTATION));
+            String gender = isGenderValid(getEnvironment().getRequest().getParameter(SALUTATION)); // INFO: Please note that the gender is determined based on the salutation parameter
             if (gender == null) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "gender-not-valid"));
                 inputsValid = false;
@@ -716,6 +1058,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String street = getEnvironment().getRequest().getParameter(STREET);
         if (!isStreetValid(street)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "street-not-valid"));
+            log.warn("'" + STREET + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, STREET));
@@ -749,6 +1092,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             String city = getEnvironment().getRequest().getParameter(CITY);
             if (!isCityValid(city)) {
                 Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city-not-valid"));
+                log.warn("'" + CITY + "' not valid!");
                 inputsValid = false;
             } else {
                 Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "city"));
@@ -759,6 +1103,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         String phone = getEnvironment().getRequest().getParameter(PHONE);
         if (!isPhoneValid(phone)) {
             Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "phone-not-valid"));
+            log.warn("'" + PHONE + "' not valid!");
             inputsValid = false;
         } else {
             Element fnE = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, PHONE));
@@ -769,6 +1114,8 @@ public class UserRegistrationResource extends BasicXMLResource {
             UserRegistrationBean userRegBean = new UserRegistrationBean(gender, firstname, lastname, email, password, city, phone);
             userRegBean.setStreetName(street);
             userRegBean.setZipCode(zip);
+            userRegBean.setPreAuthenticated(preAuthenticated);
+            userRegBean.setPreAuthenticatedUsername(preAuthUsername);
             return userRegBean;
         } else {
             return null;
@@ -810,7 +1157,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element submittedElem = (Element) doc.getDocumentElement().appendChild(doc.createElement("submitted-inputs"));
 
         Element emailElem = doc.createElementNS(NAMESPACE, EMAIL);
-        emailElem.setTextContent(getEnvironment().getRequest().getParameter(EMAIL));
+        emailElem.setTextContent(new InternetAddress(getEnvironment().getRequest().getParameter(EMAIL)).getAddress());
         submittedElem.appendChild(emailElem);
 
         Element lastnameElem = doc.createElementNS(NAMESPACE, LASTNAME);

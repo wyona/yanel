@@ -40,7 +40,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.validator.EmailValidator;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -62,7 +65,7 @@ import org.wyona.yarep.core.NodeType;
  */
 public class ForgotPassword extends BasicXMLResource {
 
-    private static Logger log = Logger.getLogger(ForgotPassword.class);
+    private static Logger log = LogManager.getLogger(ForgotPassword.class);
     private long totalValidHrs;
 
     private static final String PW_RESET_ID = "pwresetid";
@@ -99,7 +102,15 @@ public class ForgotPassword extends BasicXMLResource {
             totalValidHrs = DEFAULT_TOTAL_VALID_HRS;
         }
         Document adoc = XMLHelper.createDocument(NAMESPACE, "yanel-forgotpw");
-        processUserAction(request, adoc);
+
+        try {
+            processUserAction(request, adoc);
+        } catch(Exception e) {
+            log.error(e, e);
+            Element exceptionEl = (Element) adoc.getDocumentElement().appendChild(adoc.createElement("exception"));
+            exceptionEl.setTextContent(getStackTrace(e));
+        }
+
         DOMSource source = new DOMSource(adoc);
         StringWriter xmlAsWriter = new StringWriter();
         StreamResult result = new StreamResult(xmlAsWriter);
@@ -107,6 +118,16 @@ public class ForgotPassword extends BasicXMLResource {
         // write changes
         ByteArrayInputStream inputStream = new ByteArrayInputStream(xmlAsWriter.toString().getBytes("UTF-8"));
         return inputStream;
+    }
+
+    /**
+     * Get stack trace of exception
+     * @param e The exception to handle.
+     */
+    private String getStackTrace(Exception e) {
+        java.io.StringWriter sw = new java.io.StringWriter();
+        e.printStackTrace(new java.io.PrintWriter(sw));
+        return sw.toString();
     }
 
     /**
@@ -124,7 +145,7 @@ public class ForgotPassword extends BasicXMLResource {
             Element cpeElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "change-password-email"));
             cpeElement.setAttribute("submitted-email", email);
             try {
-                String uuid = generateForgotPasswordRequest(email);
+                String uuid = generateForgotPasswordRequest(email, messageElement, cpeElement);
                 if (uuid != null) {
                     messageElement.setTextContent("Password change request was successful. Please check your email for further instructions on how to complete your request.");
                     cpeElement.setAttribute("status", "200");
@@ -140,6 +161,9 @@ public class ForgotPassword extends BasicXMLResource {
                 log.warn(e.getMessage());
                 messageElement.setTextContent(e.getMessage());
                 cpeElement.setAttribute("status", "400");
+
+                Element exceptionEl = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "exception"));
+                exceptionEl.setTextContent(getStackTrace(e));
             }
 
         } else if (resetPasswordRequestUUID != null && !resetPasswordRequestUUID.equals("") && !action.equals(SUBMITNEWPW)){
@@ -173,7 +197,7 @@ public class ForgotPassword extends BasicXMLResource {
             String smtpEmailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);
             String smtpEmailServerPort = getResourceConfigProperty(SMTP_PORT_PROPERTY_NAME);
             if ((smtpEmailServer != null && smtpEmailServerPort != null) || (getYanel().getSMTPHost() != null && getYanel().getSMTPPort() >= 0)) {
-                String from = getResourceConfigProperty("smtpFrom");
+                String from = getFromEmail();
                 if (from != null) {
                     Element requestEmailElement = (Element) rootElement.appendChild(adoc.createElementNS(NAMESPACE, "requestemail")); // INFO: A phone application might have cached the email address and hence wants to auto-complete the form...
                     String emailAddress = getEnvironment().getRequest().getParameter("email");
@@ -291,7 +315,7 @@ public class ForgotPassword extends BasicXMLResource {
      * @param email E-Mail address of user
      * @return request UUID if user with specific email address exists and email was sent, return null or throw an exception otherwise
      */
-    private String generateForgotPasswordRequest(String email) throws Exception {
+    private String generateForgotPasswordRequest(String email, Element messageEl, Element cpeElement) throws Exception {
         String exceptionMsg;
         if (email == null || ("").equals(email)) {
             exceptionMsg = "E-mail address is empty.";
@@ -300,7 +324,7 @@ public class ForgotPassword extends BasicXMLResource {
         } else {
             User user = getUser(email);
             if (user == null) {
-                exceptionMsg = "Unable to find user based on the " + email + " E-mail address.";
+                exceptionMsg = "Unable to find user for email address '" + email + "'.";
             } else {
                 String uuid = UUID.randomUUID().toString();
                 uuid = sendEmail(uuid, user.getEmail());
@@ -310,20 +334,42 @@ public class ForgotPassword extends BasicXMLResource {
                     return uuid;
                 } else {
                     exceptionMsg = "No forgot password request UUID was generated (please check log file to check what went wrong)";
-                    log.warn(exceptionMsg);
-                    throw new Exception(exceptionMsg);
                 }
             }
         }
         log.warn(exceptionMsg);
-        throw new Exception(exceptionMsg);
+        messageEl.setTextContent(exceptionMsg);
+        cpeElement.setAttribute("status", "400");
+        return null;
     }
 
     /**
      * Get user which is associated with an email address
      * @param email Email address of user
+     * @return user associated with email
      */
     protected User getUser(String email) throws Exception {
+        java.util.Iterator<User> it = realm.getIdentityManager().getUserManager().getUsers(email);
+        if (it.hasNext()) {
+            log.warn("DEBUG: Found at least one user for email '" + email + "' ...");
+            User uniqueUser  = null;
+            while (it.hasNext()) {
+                User user = (User) it.next();
+                if (email.equals(user.getEmail())) {
+                    if (uniqueUser != null) {
+                        log.warn("There seems to be more than one user with the email '" + email + "'!");
+                    }
+                    uniqueUser = user;
+                }
+            }
+            if (uniqueUser != null) {
+                return uniqueUser;
+            }
+        }
+        log.warn("No user found with email '" + email + "'!");
+        return null;
+
+/*
         log.warn("TODO: Checking every user by her/his email does not scale!");
         User[] userList = realm.getIdentityManager().getUserManager().getUsers(true);
         for(int i=0; i< userList.length; i++) {
@@ -331,8 +377,9 @@ public class ForgotPassword extends BasicXMLResource {
                 return userList[i];
             }
         }
-        log.warn("No user found with email addres: " + email);
+        log.warn("No user found with email addres '" + email + "'!'!");
         return null;
+*/
     }
 
     /**
@@ -492,6 +539,21 @@ public class ForgotPassword extends BasicXMLResource {
     }
 
     /**
+     * Get from / sender email address for email being sent to invited user
+     * @return from / sender email address and null when not configured
+     */
+    private String getFromEmail() throws Exception {
+        String fromEmail = getResourceConfigProperty("smtpFrom");
+        if (fromEmail != null) {
+            return fromEmail;
+        } else {
+            fromEmail = getYanel().getAdministratorEmail();
+            log.warn("From / sender email address not configured inside resource configuration, hence try to user administrator email '" + fromEmail + "' of Yanel instance ...");
+            return fromEmail;
+        }
+    }
+
+    /**
      * Send email to user requesting to reset the password
      * @param guid UUID which is part of the change password link
      * @return UUID
@@ -501,7 +563,7 @@ public class ForgotPassword extends BasicXMLResource {
 
         String emailBody = generateEmailBody(guid);
 
-        String from = getResourceConfigProperty("smtpFrom");
+        String from = getFromEmail();
         String to =  emailAddress;
 
         String emailServer = getResourceConfigProperty(SMTP_HOST_PROPERTY_NAME);

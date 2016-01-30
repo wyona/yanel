@@ -15,7 +15,7 @@
 
 <xsl:template match="/">
 
-<xsl:comment> NOTE: This file has been generated automatically from conf/resource-types.xml resp. conf/local/local.resource-types.xml! </xsl:comment>
+<xsl:comment> NOTE: This file has been generated automatically from build/classes/resource-types.xml, see target 'generate-resources-build-file' inside src/build/targets/resources.xml ...</xsl:comment>
 <project name="resources">
 
   <target name="init">

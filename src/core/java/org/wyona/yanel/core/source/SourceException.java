@@ -10,13 +10,6 @@ public class SourceException extends TransformerException {
     /**
      *
      */
-    //public SourceException() {
-        //super();
-    //}
-
-    /**
-     *
-     */
     public SourceException(Throwable t) {
         super(t);
     }
@@ -34,5 +27,4 @@ public class SourceException extends TransformerException {
     public SourceException(String s, Throwable t) {
         super(s, t);
     }
-
 }

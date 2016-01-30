@@ -6,15 +6,17 @@ import javax.servlet.http.HttpSessionEvent;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Counting sessions, whereas please note that when Yanel is being restarted, the session counter will loose all information and will start counting from scratch. Which means existing sessions which have existed just before restart will not be listed.
  */
 public class SessionCounter implements HttpSessionListener {
 
-    private static Logger log = Logger.getLogger(SessionCounter.class);
+    private static Logger log = LogManager.getLogger(SessionCounter.class);
 
+    // TODO: Consider to make activeSessions persistent, such that after restart the existing sessions also get listed
     private static HashMap activeSessions = new HashMap();
 
     /**

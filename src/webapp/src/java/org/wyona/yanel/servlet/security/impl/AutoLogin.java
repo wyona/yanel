@@ -9,9 +9,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
 import org.wyona.commons.xml.XMLHelper;
 import org.wyona.yanel.core.Environment;
 import org.wyona.yanel.core.map.Realm;
@@ -24,7 +27,8 @@ import org.wyona.yarep.core.Repository;
  */
 public class AutoLogin {
     
-    private static Logger log = Logger.getLogger(AutoLogin.class);
+    private static final Logger log = LogManager.getLogger(AutoLogin.class);
+
     private static final String COOKIE_NAME = "YANELAUTOLOGIN";
     private static final String SEP = "___";
     

@@ -8,10 +8,11 @@
   <body>
 <h1>Configuration of realms.xml</h1>
 <p>The realms configuration contains the locations and prefixes of the various realms and denotes which realm is the ROOT realm.</p>
-<p>The location of the file <code>realms.xml</code> is normally configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> , but this path can be overwritten by adding a file realms.xml to the user home directory or by setting the environment variable <code>YANEL_REALMS_HOME</code>. The loading order is implemented by the java class org.wyona.yanel.core.map.RealmManager and the order is</p>
+<p>The location of the file <code>realms.xml</code> is normally configured within the file <a href="yanel_xml.html"><code>yanel.xml</code></a> , but this path can be overwritten by adding a file <code>realms.xml</code> to a hidden folder <code>.yanel</code> inside the user home directory or by setting the environment variable <code>YANEL_REALMS_HOME</code>. The loading order is implemented by the java class <code>org.wyona.yanel.core.map.RealmManager</code> and the order is</p>
 <ol>
 <li>Environment variable (YANEL_REALMS_HOME)</li>
-<li>User home directory (user.home)</li>
+<li>Hidden folder inside user home directory {user.home}/.yanel</li>
+<li>DEPRECATED: User home directory {user.home}</li>
 <li><a href="http://tomcat.apache.org/tomcat-7.0-doc/config/context.html#Environment_Entries">Environment entry</a> (e.g. within apache-tomcat-7.0.25/conf/context.xml: &lt;Environment name="yanel/realms-config-file" type="java.lang.String" value="/Users/alice/realms.xml"/&gt;)</li>
 <li>Yanel configuration (yanel.xml)</li>
 </ol>
@@ -24,17 +25,38 @@
   &lt;!--&lt;name&gt;Realm Name&lt;/name&gt;--&gt;
   &lt;config src="/absolute/path/to/realm/"/&gt;
   &lt;reverse-proxy&gt;
-    &lt;host-name&gt;your.domain.ch&lt;/host-name&gt;
+    &lt;host-name&gt;www.yanel.org&lt;/host-name&gt;
 &lt;!--
     &lt;port&gt;80&lt;/port&gt;
     &lt;ssl-port&gt;443&lt;/ssl-port&gt;
 --&gt;
-    &lt;prefix&gt;/yanel/globus&lt;/prefix&gt;
+    &lt;prefix&gt;/yanel/yanel-website&lt;/prefix&gt;
+&lt;!--
+    &lt;reverse-prefix&gt;/optional&lt;/reverse-prefix&gt;
+--&gt;
   &lt;/reverse-proxy&gt;
 &lt;/realm&gt;
 
 &lt;/realms&gt;        
     <br /><br /></pre>
+
+<p>
+The elements <code>host-name</code> and <code>prefix</code> allow Yanel to act upon URLs as the original client requested, for example
+
+<ul>
+  <li>Original client request: <code>http://www.yanel.org/en/download/index.html</code></li>
+  <li>Request Yanel receives from reverse proxy: <code>http://127.0.0.1:8080/yanel/yanel-website/en/download/index.html</code></li>
+</ul>
+
+whereas the reverse proxy configuration might be as follows:
+
+<ul>
+  <li><code>ProxyPassReverseCookiePath /yanel /</code></li>
+  <li><code>ProxyPass           /  http://127.0.0.1:8080/yanel/yanel-website/</code></li>
+  <li><code>ProxyPassReverse    /  http://127.0.0.1:8080/yanel/yanel-website/</code></li>
+</ul>
+</p>
+
 <h2>Environment variable YANEL_REALMS_HOME<br /></h2>
 <p>The environment variable can for example be set within <code>apache-tomcat-7.0.25/bin/catalina.sh</code> of Tomcat</p>
 <p><code>export YANEL_REALMS_HOME=/Users/michaelwechner/src/realms</code></p>

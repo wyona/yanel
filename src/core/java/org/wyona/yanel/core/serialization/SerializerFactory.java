@@ -18,11 +18,13 @@ public class SerializerFactory {
     public static final int HTML_TRANSITIONAL = 2;
     public static final int XML = 3;
     public static final int TEXT = 4;
+    public static final int HTML5 = 5;
     
     public static final String XHTML_STRICT_KEY = "XHTML_STRICT";
     public static final String HTML_TRANSITIONAL_KEY = "HTML_TRANSITIONAL";
     public static final String XML_KEY = "XML";
     public static final String TEXT_KEY = "TEXT";
+    public static final String HTML5_KEY = "HTML5";
 
     private static final Logger log = Logger.getLogger(SerializerFactory.class);
 
@@ -48,6 +50,8 @@ public class SerializerFactory {
             return getSerializer(XML);
         } else if (key.equals(TEXT_KEY)) {
             return getSerializer(TEXT);
+        } else if (key.equals(HTML5_KEY)) {
+            return getSerializer(HTML5);
         }
         return getSerializer(TEXT);
     }
@@ -76,6 +80,13 @@ public class SerializerFactory {
             serializer = new XMLSerializer();
             Properties format = OutputPropertiesFactory.getDefaultMethodProperties(Method.XML);
             format.setProperty("indent", "yes");
+            serializer.setOutputFormat(format);
+        } else if (key == HTML5) {
+            serializer = new HTML5Serializer();
+            Properties format = new Properties();
+            format.setProperty("indent", "yes");
+            //see: http://cscie153.dce.harvard.edu/lecture_notes/2012/20121022/slide24.html
+            //format.setProperty("doctype-system", "about:legacy-compat");
             serializer.setOutputFormat(format);
         } else {
             // Internal Xalan serializer

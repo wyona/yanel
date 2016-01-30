@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
   <yanel:rti name="forgotpw" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
   <yanel:property name="change-password-requests-path" value="change-password-requests"/>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user xmlns="http://www.wyona.org/security/1.0" id="alice">
+<name>Alice</name>
+<email>alice@foo.bar</email>
+<password algorithm="bcrypt-MD5">$2a$12$JkFOvaJoYe0zdss.2CJUhu6pdj9WYMr5jHJsVg/czLwUlb4Z0VxQC</password>
+<description>Dummy User</description>
+<aliases/>
+<groups>
+<group id="admin"/>
+<group id="editor"/>
+<group id="reviewer"/>
+</groups>
+</user>

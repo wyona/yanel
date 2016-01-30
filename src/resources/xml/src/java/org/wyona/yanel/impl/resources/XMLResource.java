@@ -30,11 +30,15 @@ import javax.xml.transform.Source;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 import org.wyona.commons.xml.XMLHelper;
+
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.AnnotatableV1;
@@ -54,6 +58,8 @@ import org.wyona.yanel.core.attributes.translatable.TranslationManager;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.source.HttpResolver;
+import org.wyona.yanel.core.source.SourceException;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
@@ -71,12 +77,14 @@ import org.wyona.yarep.core.Revision;
  */
 public class XMLResource extends BasicXMLResource implements ModifiableV2, VersionableV2, VersionableV3, CreatableV2, IntrospectableV1, TranslatableV1, WorkflowableV1, AnnotatableV1, CommentableV1 {
 
-    private static Logger log = Logger.getLogger(XMLResource.class);
+    private static Logger log = LogManager.getLogger(XMLResource.class);
 
     private Boolean annotationRead = false;
     private Set<String> annotations  = new HashSet<String>();
 
     private static final String YANEL_PATH_PROPERTY_NAME = "yanel-path";
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+    private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(java.lang.String)
@@ -90,54 +98,82 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#getView(String, String)
      */
     public View getView(String viewId, String revisionName) throws Exception {
-        Repository repo = getRealm().getRepository();
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
-        InputStream xmlInputStream = getContentXML(repo, yanelPath, revisionName);
+        InputStream xmlInputStream = getSourceXML(revisionName);
         return getXMLView(viewId, xmlInputStream);
     }
 
     /**
      * Get initial content as XML
-     * @param yanelPath Path from resource configuration, which might contain a protocol, e.g. 'http' or 'yanelresource'
+     * @param revisionName Name of revision for which source XML will be retrieved / generated
+     * @return TODO
      */
-    private InputStream getContentXML(Repository repo, String yanelPath, String revisionName) throws Exception {
+    private InputStream getSourceXML(String revisionName) throws Exception {
+        String sourcePath = getCustomSourcePath();
 
-        if (yanelPath != null) {
-            if (log.isDebugEnabled()) log.debug("Yanel Path: " + yanelPath);
-            if (yanelPath.startsWith("yanelrepo:") || yanelPath.startsWith("yanelresource:") || yanelPath.startsWith("http:") || yanelPath.startsWith("https:")) {
-                log.debug("Protocol/Scheme used: " + yanelPath);
+        if (sourcePath != null) {
+            if (log.isDebugEnabled()) log.debug("Source path: " + sourcePath);
+            if (sourcePath.startsWith("yanelrepo:") || sourcePath.startsWith("yanelresource:") || sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+                log.debug("Protocol/Scheme used: " + sourcePath);
                 // TODO: URL Re-writing (see for example http://j2ep.sourceforge.net/docs/rewrite.html)
                 try {
-                    SourceResolver resolver = new SourceResolver(this);
-                    Source source = resolver.resolve(yanelPath, null);
-                    return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    javax.xml.transform.URIResolver resolver = null;
+                    if (sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+                        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME) || isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+                            resolver = new HttpResolver(this, getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME), getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+                        } else {
+                            resolver = new HttpResolver(this);
+                        }
+
+                        String username = getResourceConfigProperty("username");
+                        String password = getResourceConfigProperty("password");
+                        if (username != null && password != null) {
+                            ((HttpResolver) resolver).setBasicAuthCredentials(username, password);
+                        } else {
+                            log.warn("No BASIC AUTH credentials configured in order to request: " + sourcePath);
+                        }
+                    } else {
+                        resolver = new SourceResolver(this);
+                    }
+
+                    Source source = null;
+                    try {
+                        source = resolver.resolve(sourcePath, null);
+                    } catch(SourceException e) {
+                        String exceptionMessage = e.getMessage();
+                        log.error(exceptionMessage);
+                        StringBuilder sb = new StringBuilder("<exception>" + exceptionMessage + "</exception>");
+                        return new java.io.ByteArrayInputStream(sb.toString().getBytes());
+                    }
+                    try {
+                        return org.wyona.commons.xml.XMLHelper.isWellFormed(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                    } catch(Exception e) {
+                        String exceptionMessage = "Data retrieved from '" + sourcePath + "' might not be well-formed (Original exception message: " + e.getMessage() + "), hence let's request it again and try to tidy it...";
+                        log.warn(exceptionMessage);
+                        source = resolver.resolve(sourcePath, null);
+                        return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
+                        //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
+                    }
                 } catch(Exception e) {
-                    String exceptionMessage = "Data retrieved from '" + yanelPath + "' not well-formed!";
-                    log.warn(exceptionMessage);
-/*
+                    String exceptionMessage = e.getMessage();
+                    log.error(exceptionMessage);
                     StringBuilder sb = new StringBuilder("<exception>" + exceptionMessage + "</exception>");
                     return new java.io.ByteArrayInputStream(sb.toString().getBytes());
-*/
-                    SourceResolver resolver = new SourceResolver(this);
-                    Source source = resolver.resolve(yanelPath, null);
-                    return tidy(((javax.xml.transform.stream.StreamSource) source).getInputStream());
-                    //return tidy(intercept(((javax.xml.transform.stream.StreamSource) source).getInputStream()));
                 }
             } else {
-                log.info("No protocol used.");
+                log.info("Either no protocol used or protocol not implemented: " + sourcePath);
             }
 
-            Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), yanelPath);
+            Resource res = yanel.getResourceManager().getResource(getEnvironment(), getRealm(), sourcePath);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "1")) {
                 // TODO: Pass the request ...
-                String viewV1path = getRealm().getMountPoint() + yanelPath.substring(1);
+                String viewV1path = getRealm().getMountPoint() + sourcePath.substring(1);
                 log.warn("Path of view: " + viewV1path);
                 View view = ((ViewableV1) res).getView(new Path(viewV1path), null);
                 if (view.getMimeType().indexOf("xml") >= 0) {
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
                 // TODO: Pass the request ...
                 View view = ((ViewableV2) res).getView(null);
@@ -145,13 +181,14 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                     // TODO: Shall the mime-type be transfered?
                     return view.getInputStream();
                 }
-                log.error("No XML like mime-type: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("No XML like mime-type: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             } else {
-                log.error("Resource is not ViewableV1: " + getPath() + " (yanel-path: " + yanelPath + ")");
+                log.error("Resource is not ViewableV1: " + getPath() + " (" + YANEL_PATH_PROPERTY_NAME + ": " + sourcePath + ")");
             }
             return null;
         }
 
+        Repository repo = getRealm().getRepository();
         Node node;
         if (revisionName != null) {
             node = repo.getNode(getPath()).getRevision(revisionName);
@@ -260,20 +297,20 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#write(java.io.InputStream)
      */
     public void write(InputStream in) throws Exception {
         log.warn("Not implemented yet!");
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getLastModified()
      */
     public long getLastModified() throws Exception {
         long lastModified;
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
-            log.warn("Get last modified for parameter yanel-path '" + yanelPath + "' is not implemented yet!");
+            log.warn("Get last modified for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' is not implemented yet!");
             lastModified = -1;
         } else {
             Node node = getRealm().getRepository().getNode(getPath());
@@ -288,15 +325,23 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
+     * Get custom path
+     */
+    protected String getCustomSourcePath() throws Exception {
+        return getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+    }
+
+    /**
      * Get repository node
      */
     public Node getRepoNode() throws Exception {
-        // INFO: yanel-path is normally not just another repository path, but rather another resource! See getContentXML()
-        String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        // INFO: The property 'yanel-path' is normally not just another repository path, but rather another resource! See getSourceXML(String) ...
+        String path = getCustomSourcePath();
         if (path == null) {
             path = getPath();
         } else {
-            if (path.indexOf("http://") == 0) {
+            if (path.indexOf("http://") == 0 || path.indexOf("https://") == 0) {
+                log.warn("No local repository node: " + path);
                 throw new NoSuchNodeException(path, getRealm().getRepository());
             }
         }
@@ -324,8 +369,8 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
                 return null;
             }
         } catch(NoSuchNodeException e) {
-            String path = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
-            if (path != null && path.indexOf("http://") == 0) {
+            String path = getCustomSourcePath();
+            if (path != null && (path.indexOf("http://") == 0 || path.indexOf("https://") == 0)) {
                 log.warn("No revisions available for external URL: " + path);
                 return null;
             } else {
@@ -420,9 +465,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * @see org.wyona.yanel.core.api.attributes.VersionableV2#isCheckedOut()
      */
     public boolean isCheckedOut() throws Exception {
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
-            log.warn("Check whether checked-out for parameter yanel-path '" + yanelPath + "' not implemented yet!");
+            log.warn("Check whether checked-out for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
             return false;
         } else {
             Node node = getRealm().getRepository().getNode(getPath());
@@ -533,7 +578,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         map.put("mime-type", request.getParameter("rp.mime-type"));
         map.put("source-view-mime-type", request.getParameter("rp.source-view-mime-type"));
         map.put("workflow-schema", request.getParameter("rp.workflow-schema"));
-        map.put("yanel-path", request.getParameter("rp.yanel-path"));
+        map.put(YANEL_PATH_PROPERTY_NAME, request.getParameter("rp." + YANEL_PATH_PROPERTY_NAME));
 
         // TODO: get all parameters, e.g. source-view-mime-type (Security!)
         return map;
@@ -633,6 +678,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      * Workflow                                     *
      ************************************************/
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.WorkflowableV1#doTransition(String, String)
+     */
     public void doTransition(String transitionID, String revision) throws WorkflowException {
         WorkflowHelper.doTransition(this, transitionID, revision);
     }
@@ -685,6 +733,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
     }
 
+    /**
+     *
+     */
     public void setWorkflowState(String state, String revision) throws WorkflowException {
         try {
             WorkflowHelper.setWorkflowState(getRepoNode(), state, revision);
@@ -801,9 +852,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
             return;
         }
 
-        String yanelPath = getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String yanelPath = getCustomSourcePath();
         if (yanelPath != null) {
-            log.warn("Read annotations for parameter yanel-path '" + yanelPath + "' not implemented yet!");
+            log.warn("Read annotations for parameter " + YANEL_PATH_PROPERTY_NAME + " '" + yanelPath + "' not implemented yet!");
         } else {
             annotations = org.wyona.yanel.core.attributes.annotatable.Util.readAnnotations(getRealm().getRepository(), getPath());
             if (annotations != null) {
@@ -827,5 +878,49 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
      */
     public CommentManagerV1 getCommentManager() throws Exception {
         return new org.wyona.yanel.impl.comments.CommentManagerV1Impl();
+    }
+
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
+     */
+    @Override
+    public boolean exists() throws Exception {
+        String sourcePath = getCustomSourcePath();
+        if (sourcePath != null) {
+            if (sourcePath.startsWith("yanelrepo:") || sourcePath.startsWith("yanelresource:") || sourcePath.startsWith("http:") || sourcePath.startsWith("https:")) {
+            } else {
+                log.info("Either no protocol used or protocol not implemented: " + sourcePath);
+            }
+            log.warn("Method exists() for custom source path '" + sourcePath + "' not implemented yet!");
+            return false;
+        } else {
+            return super.exists();
+        }
+    }
+
+    /**
+     * Check whether timeout property is configured
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when timeout property is configured
+     */
+    private boolean isTimeoutConfigured(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get value of timeout property
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of timeout property in milliseconds
+     */
+    private int getTimeoutValue(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return new Integer(getResourceConfigProperty(name)).intValue();
+        } else {
+            return 0;
+        }
     }
 }

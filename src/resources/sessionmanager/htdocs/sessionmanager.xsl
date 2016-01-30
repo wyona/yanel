@@ -15,7 +15,7 @@
         <strong>Total number of sessions: </strong>
         <xsl:value-of select="s:number-of-sessions"/>
 
-        <h2>All "logged-in" sessions</h2>
+        <h2>All "logged-in" (or previously logged-in) sessions</h2>
         <!-- INFO: Show all logged-in sessions first -->
         <xsl:if test="not(s:session[s:identities])">
           <p>No "logged-in" sessions yet.</p>
@@ -37,7 +37,7 @@
         </ol>
 
         <hr/>
-        <p><a href="?yanel.resource.viewid=source">XML</a> (Please make sure to configure a view called "source" within your resource configuration, e.g. see <em>src/realms/welcome-admin/yanel/rti/session-manager.html.yanel-rc</em>)</p>
+        <p><a href="?yanel.resource.viewid=source">XML</a> (Please make sure to configure a view called "source" within your resource configuration, e.g. see <em>global-resource-configs/session-manager_yanel-rc.xml</em>)</p>
       </body>
     </html>
   </xsl:template>
@@ -62,6 +62,18 @@
           <li>
             <strong>Associated identities (username and realm): </strong>
             <xsl:value-of select="s:identities"/>
+          </li>
+        </xsl:if>
+        <xsl:if test="s:cas-proxy-ticket">
+          <li>
+            <strong>Hashed CAS proxy ticket: </strong>
+            <xsl:value-of select="s:cas-proxy-ticket"/>
+          </li>
+        </xsl:if>
+        <xsl:if test="s:cas-ticket">
+          <li>
+            <strong>Hashed CAS ticket: </strong>
+            <xsl:value-of select="s:cas-ticket"/>
           </li>
         </xsl:if>
 

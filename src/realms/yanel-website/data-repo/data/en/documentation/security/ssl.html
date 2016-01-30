@@ -29,7 +29,13 @@ Please note that the keystore file <code>local/apache-tomcat-7.0.25/yanel.keysto
 
 <h3>Creating a trust-store file called 'truststore.jks'</h3>
 <p>Assuming that you have a certificate (named 'CA_CERTIFICATE') from the <a href="http://en.wikipedia.org/wiki/Certificate_authority">CA</a> that signed the third-party server's certificate. One can create a trust-store file (named 'truststore.jks') by executing the following command:</p>
-<code>keytool -importcert -v -alias MY_CERTIFICATE_AUTHORITY_ALIAS -file CA_CERTIFICATE -storepass MY_PASSWORD -keystore truststore.jks</code>
+<code>keytool -importcert -v -alias MY_ALIAS -file CA_CERTIFICATE -storepass MY_PASSWORD -keystore truststore.jks</code>
+
+<p>Check whether the certificate has been added correctly by running (use password MY_PASSWORD)</p>
+<code>keytool -v -list -keystore truststore.jks</code>
+
+<p>In order to delete a certificate from the truststore use</p>
+<code>keytool -delete -alias MY_ALIAS -keystore truststore.jks</code>
 
 <h3>Configuring the location of the trust-store</h3>
 <p>One can configure the location of the trust-store file and its password inside <a href="../configuration/yanel_xml.html"><code>yanel.xml</code></a>. Yanel is reading this configuration at startup and will set the java system properties '<code>javax.net.ssl.trustStore</code>' and '<code>javax.net.ssl.keyStorePassword</code>' accordingly.</p>

@@ -18,7 +18,8 @@ package org.wyona.yanel.core.workflow;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
@@ -43,7 +44,7 @@ import org.wyona.yarep.core.Revision;
  */
 public class WorkflowHelper {
     
-    private static Logger log = Logger.getLogger(WorkflowHelper.class);
+    private static Logger log = LogManager.getLogger(WorkflowHelper.class);
 
     protected static final String LIVE_REVISION_PROPERTY = "live-revision";
     protected static final String WORKFLOW_DATE_PROPERTY = "workflow-date";
@@ -413,7 +414,10 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Get workflow state associated with a particular revision of a node
+     * @param node Node associated with revision
+     * @param revision Name of revision
+     * @return workflow state of node and null when no workflow state is set
      */
     public static String getWorkflowState(Node node, String revision) throws WorkflowException {
         try {
@@ -425,11 +429,13 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Get workflow state of a particular revision
+     * @param revision Revision of a node
+     * @return workflow state of node and null when no workflow state is set
      */
-    private static String getWorkflowState(Node node) throws WorkflowException {
+    private static String getWorkflowState(Revision revision) throws WorkflowException {
         try {
-            Property stateProp = node.getProperty(WORKFLOW_STATE_PROPERTY);
+            Property stateProp = revision.getProperty(WORKFLOW_STATE_PROPERTY);
             if (stateProp != null) {
                 return stateProp.getString();
             }
@@ -441,11 +447,14 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
     }
 
     /**
-     *
+     * Set workflow state of a particular revision of a resource
+     * @param resource Resource associated with revision
+     * @param state Workflow state
+     * @param revision Revision of which workflow state will be set
      */
     public static void setWorkflowState(Resource resource, String state, String revision) throws WorkflowException {
         try {
-            setWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()), state, revision);
+            setWorkflowState(resource.getRealm().getRepository().getNode(resource.getPath()).getRevision(revision), state);
         } catch (Exception e) {
             log.error(e, e);
             throw new WorkflowException(e.getMessage(), e);
@@ -457,6 +466,7 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
      * Set workflow state (and date)
      */
     public static void setWorkflowState(Node node, String state, String revision) throws WorkflowException {
+        log.debug("DEPRECATED");
         try {
             setWorkflowState(node.getRevision(revision), state);
         } catch (Exception e) {
@@ -467,10 +477,12 @@ transitions:            for (int j = 0; j < transitions.length; j++) {
 
     /**
      * Set workflow state (and date)
+     * @param node Repository node for which workflow state will be set
+     * @param state Workflow state
      */
     private static void setWorkflowState(Node node, String state) throws WorkflowException {
         try {
-            log.debug("Set workflow state: " + state);
+            log.debug("Set workflow state '" + state + "' for repository node/revision '" + node.getPath() + "' ...");
             node.setProperty(WORKFLOW_STATE_PROPERTY, state);
             node.setProperty(WORKFLOW_DATE_PROPERTY, new Date());
             // TODO: write workflow history

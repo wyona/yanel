@@ -28,7 +28,9 @@ import java.util.Set;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.ResourceManager;
 import org.wyona.yanel.core.Yanel;
@@ -43,7 +45,7 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class DefaultTranslationManager implements TranslationManager {
 
-    protected static Category log = Category.getInstance(DefaultTranslationManager.class);
+    protected static Logger log = LogManager.getLogger(DefaultTranslationManager.class);
     
     protected HashMap languageVersions; // key is path
     protected HashSet pages;

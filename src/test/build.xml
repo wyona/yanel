@@ -58,11 +58,17 @@
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-io" version="1.2"/>
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-lang" version="2.1"/>
       <dependency groupId="apache-jakarta-commons" artifactId="apache-jakarta-commons-logging" version="1.0.4"/>
-      <dependency groupId="htmlunit" artifactId="htmlunit" version="1.10"/>
+<!--
+      <dependency groupId="net.sourceforge.htmlunit" artifactId="htmlunit" version="1.14"/>
+-->
+      <dependency groupId="net.sourceforge.htmlunit" artifactId="htmlunit" version="2.15"/>
       <dependency groupId="jaxen" artifactId="jaxen" version="1.1-beta-10"/>
       <dependency groupId="rhino" artifactId="rhino" version="1.6R2"/>
       <dependency groupId="nekohtml" artifactId="nekohtml" version="0.9.5"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
+<!--
+      <dependency groupId="javax.servlet" artifactId="javax.servlet-api" version="3.0.1" scope="provided"/>
+-->
     </artifact:dependencies>
 
     <property name="maven2.cp" refid="maven2.classpath"/>
@@ -127,11 +133,7 @@
   </target>
 
   <target name="build-resources" depends="init" description="Build tests of resources">
-    <condition property="local.resource-types.config.exists">
-      <available file="${local.config.home}/local.resource-types.xml" type="file"/>
-    </condition>
     <antcall target="generate-resources-test-build-from-default"/>
-    <antcall target="generate-resources-test-build-from-local"/>
     <path id="yanel.home.dir.ref">
       <pathelement location="${yanel.home.dir}"/>
     </path>
@@ -145,13 +147,8 @@
     <ant antfile="${build.dir}/test-resources.xml" target="build-test-resources" inheritRefs="true"/>
   </target>
   
-  <target name="generate-resources-test-build-from-default" depends="init" unless="local.resource-types.config.exists">
-    <xslt in="${conf.dir}/resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
-  </target>
-
-  <target name="generate-resources-test-build-from-local" depends="init" if="local.resource-types.config.exists">
-    <echo>Create ant build file '${build.dir}/test-resources.xml' in order to build tests of resources</echo>
-    <xslt in="${local.config.home}/local.resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="true"/>
+  <target name="generate-resources-test-build-from-default" depends="init">
+    <xslt in="${build.dir}/classes/resource-types.xml" out="${build.dir}/test-resources.xml" style="test-resources.xsl" force="false"/>
   </target>
   
   <target name="copy-properties">
@@ -214,8 +211,15 @@
   </target>
 
   <target name="htmlunit" depends="build" description="Run htmlunit tests">
-    <echo>Running the htmlunit tests</echo>
+    <echo>Running the htmlunit tests (${test.class.name}, ${test.results.dir}, ${htmlunit.build.dir})</echo>
+
+<!--
+    <property name="debug.classpath" refid="classpath"/>
+    <echo>DEBUG: Classpath: ${debug.classpath}</echo>
+-->
+
     <junit fork="yes" printsummary="yes" haltonfailure="no" failureproperty="htmlunit.tests.failed">
+      <test todir="${test.results.dir}" name="${test.class.name}" if="test.class.name"/>
       <batchtest todir="${test.results.dir}" unless="test.class.name">
         <fileset dir="${htmlunit.build.dir}" includes="**/*Test.class" excludes="**/Abstract*.class"/>
       </batchtest>

@@ -198,6 +198,12 @@
 
   <target name="compile-webapp-classes" description="Compile Java classes of Yanel webapp" depends="init, compile-core, compile-cmdl, compile-neutron"><!--XXX HACK: This is the only place where we compile the command line interface, we should do that elsewhere. -->
     <mkdir dir="${classes.dir}"/>
+
+<!--
+    <property name="property.classpath.compile" refid="classpath.compile"/>
+    <echo>DEBUG COMPILE WEBAPP CLASSPATH: ${property.classpath.compile}</echo>
+-->
+
     <javac srcdir="${yanel.source.home}/src/webapp/src/java/org/wyona/yanel/servlet" destdir="${classes.dir}"
       debug="true"
       encoding="${javac.encoding}"
@@ -211,15 +217,21 @@
 
   <target name="compile-webapp" depends="compile-webapp-classes, install-webapp-jar"/>
   
-  <target name="createCK" description="Add ssl configuration to your webserver"> 
-    <!-- delete already created file -->
-    <delete file="${build.dir}/${certificate.keystore}"/>
-    <!-- create new keystore file -->
+  <target name="createSSLKeystore" description="Create SSL certificate and store it inside keystore file in order to use Yanel with SSL"> 
+    <property name="keystore.path" value="${build.dir}/${certificate.keystore}"/>
+<!--
+    <property name="keystore.path" value="/Users/michaelwechner/${certificate.keystore}"/>
+-->
+
+    <!-- INFO: Delete previously created keystore file -->
+    <delete file="${keystore.path}"/>
+
+    <!-- INFO: Create new keystore file containing certificate -->
     <!-- IMPORT NOTE: In order to find keytool set:  export PATH=/usr/local/jdk1.5.0_06/bin:$PATH (resp. depending on operating system use some other way to reset the PATH environment variable) -->
     <exec executable="keytool">
       <arg line="-genkey"/>
       <arg line="-alias"/>
-      <arg value="${servlet.container}"/>
+      <arg value="tomcat-yanel-dev"/>
       <arg line="-keyalg"/>
       <arg value="RSA"/>
       <arg line="-storepass"/>
@@ -227,9 +239,13 @@
       <arg line="-keypass"/>
       <arg value="${certificate.keypass}"/>
       <arg line="-keystore"/>
-      <arg value="${build.dir}/${certificate.keystore}"/>
+      <arg value="${keystore.path}"/>
       <arg line="-dname"/>
       <arg value="CN=${certificate.common.name}, OU=${certificate.organisation.unit}, O=${certificate.organisation}, L=${certificate.locality.name}, S=${certificate.state.name}, C=${certificate.country.code}"/>
+<!-- Java 1.7 and higher
+      <arg line="-ext"/>
+      <arg value="SAN=dns:localhost,ip:127.0.0.1"/>
+-->
     </exec>
   </target>
 

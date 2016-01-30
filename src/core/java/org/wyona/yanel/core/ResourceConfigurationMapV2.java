@@ -22,7 +22,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.util.WildcardMatcherHelper;
 
@@ -41,7 +44,7 @@ import org.wyona.yanel.core.util.WildcardMatcherHelper;
  */
 public class ResourceConfigurationMapV2 {
 
-    private static Logger log = Logger.getLogger(ResourceConfigurationMapV2.class);
+    private static Logger log = LogManager.getLogger(ResourceConfigurationMapV2.class);
 
     private static final String MATCHER_TAG_NAME = "matcher";
     private static final String PATTERN_ATTR_NAME = "pattern";

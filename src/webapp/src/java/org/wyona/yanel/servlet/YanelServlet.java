@@ -87,6 +87,7 @@ import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
+import org.wyona.yanel.core.map.ReverseProxyConfig;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
 
 import org.wyona.yanel.impl.resources.BasicGenericExceptionHandlerResource;
@@ -141,6 +142,7 @@ public class YanelServlet extends HttpServlet {
     private Yanel yanelInstance;
     private Sitetree sitetree;
 
+    private long MEMORY_GROWTH_THRESHOLD = 300;
     private File xsltInfoAndException;
     private String xsltLoginScreenDefault;
     private boolean displayMostRecentVersion = true;
@@ -198,12 +200,18 @@ public class YanelServlet extends HttpServlet {
     private static final String NO_REVISIONS_TAG_NAME = "no-revisions-yet";
     private static final String EXCEPTION_TAG_NAME = "exception";
 
+    private static final String CAS_LOGOUT_REQUEST_PARAM_NAME = "logoutRequest";
+
     /**
      * @see javax.servlet.GenericServlet#init(ServletConfig)
      */
     @Override
     public void init(ServletConfig config) throws ServletException {
         servletContextRealPath = config.getServletContext().getRealPath("/");
+
+        if (config.getInitParameter("memory.growth.threshold") != null) {
+            MEMORY_GROWTH_THRESHOLD = new Long(config.getInitParameter("memory.growth.threshold")).longValue();
+        }
 
         xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
         xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
@@ -323,12 +331,26 @@ public class YanelServlet extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // NOTE: Do not add code outside the try-catch block, because otherwise exceptions won't be logged
         try {
+            Runtime rt = Runtime.getRuntime();
+            long usedMBefore = getUsedMemory(rt);
+            //log.debug("Memory usage before request processed: " + usedMBefore);
+
             ThreadContext.put("id", getFishTag(request));
             //String httpAcceptMediaTypes = request.getHeader("Accept");
             //String httpAcceptLanguage = request.getHeader("Accept-Language");
 
+            if (isCASLogoutRequest(request)) {
+                log.warn("DEBUG: CAS logout request received: " + request.getServletPath());
+                if (doCASLogout(request, response)) {
+                    return;
+                } else {
+                    log.error("Logout based on CAS request failed!");
+                }
+                return;
+            }
+
             String yanelUsecase = request.getParameter(YANEL_USECASE);
-            if(yanelUsecase != null && yanelUsecase.equals("logout")) {
+            if (yanelUsecase != null && yanelUsecase.equals("logout")) {
                 try {
                     log.debug("Disable auto login..."); // TODO: The cookie is not always deleted!
                     AutoLogin.disableAutoLogin(request, response, getRealm(request).getRepository());
@@ -336,7 +358,7 @@ public class YanelServlet extends HttpServlet {
                     log.error("Exception while disabling auto login: " + e.getMessage(), e);
                 }
                 // INFO: Logout from Yanel
-                if(doLogout(request, response)) {
+                if (doLogout(request, response)) {
                     return;
                 } else {
                     log.error("Logout failed!");
@@ -348,7 +370,7 @@ public class YanelServlet extends HttpServlet {
 
             // Check authorization and if authorization failed, then try to authenticate
             if (doAccessControl(request, response) != null) {
-                // INFO: Either redirect (after successful authentication) or access denied (and response will send the login screen)
+                // INFO: Either redirect (after successful authentication) or access denied (and response will contain the login screen)
                 return;
             } else {
                 if (log.isDebugEnabled()) log.debug("Access granted: " + request.getServletPath());
@@ -400,6 +422,11 @@ public class YanelServlet extends HttpServlet {
                 log.error("No such method implemented: " + method);
                 response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
             }
+            long usedMAfter = getUsedMemory(rt);
+            //log.debug("Memory usage after request processed: " + usedMAfter);
+            if ((usedMAfter - usedMBefore) > MEMORY_GROWTH_THRESHOLD) {
+                log.warn("Memory usage increased by '" + MEMORY_GROWTH_THRESHOLD + "' while request '" + getRequestURLQS(request, null, false) + "' was processed!");
+            }
         } catch (ServletException e) {
             log.error(e, e);
             throw new ServletException(e.getMessage(), e);
@@ -409,6 +436,13 @@ public class YanelServlet extends HttpServlet {
         } finally {
             ThreadContext.clear();
         } // NOTE: This was our last chance to log an exception, hence do not add code outside the try-catch block
+    }
+
+    /**
+     * Get currently used memory
+     */
+    private long getUsedMemory(Runtime rt) {
+        return (rt.totalMemory() - rt.freeMemory()) / 1024 / 1024;
     }
 
     /**
@@ -485,7 +519,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else if (value != null && value.equals("roll-back")) {
                 log.debug("Roll back ...");
-                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentity(request, map.getRealm(request.getServletPath())).getUsername());
+                org.wyona.yanel.core.util.VersioningUtil.rollBack(resource, request.getParameter(YANEL_RESOURCE_REVISION), getIdentityFromRequest(request, map.getRealm(request.getServletPath())).getUsername());
                 // TODO: Send confirmation screen
                 getContent(request, response);
                 return;
@@ -524,8 +558,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Generate response from view of resource
-     * @param TODO
-     * @param TODO
+     * @param request TODO
+     * @param response TODO
      */
     private void getContent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // INFO: Generate "yanel" document in order to collect information in case something should go wrong or some meta information should be requested
@@ -894,9 +928,10 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Perform the given transition on the indicated revision.
-     * @param request
-     * @param response
-     * @param transition
+     * @param request TODO
+     * @param response TODO
+     * @param revision TODO
+     * @param transition TODO
      * @throws ServletException
      * @throws IOException
      */
@@ -1006,7 +1041,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 Resource resource = getResource(request, response);
-                log.warn("Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
+                log.warn("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
                 save(request, response, false);
                 return;
             }
@@ -1072,7 +1107,7 @@ public class YanelServlet extends HttpServlet {
         Identity identity;
         try {
             Realm realm = map.getRealm(request.getServletPath());
-            identity = getIdentity(request, realm);
+            identity = getIdentityFromRequest(request, realm);
             String stateOfView = StateOfView.AUTHORING;
             if (yanelUI.isToolbarEnabled(request)) { // TODO: Is this the only criteria?
                 stateOfView = StateOfView.AUTHORING;
@@ -1096,6 +1131,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Save data
+     * @param request TODO
+     * @param response TODO
      */
     private void save(HttpServletRequest request, HttpServletResponse response, boolean doCheckin) throws ServletException, IOException {
         log.debug("Save data ...");
@@ -1196,12 +1233,19 @@ public class YanelServlet extends HttpServlet {
         // INFO: Get identity, realm, path
         Identity identity;
         Realm realm;
-        String path;
+        String pathWithoutQS;
         try {
             realm = map.getRealm(request.getServletPath());
-            identity = getIdentity(request, realm);
-            //log.debug("Identity retrieved from request (for realm '" + realm.getID() + "'): " + identity);
-            path = map.getPath(realm, request.getServletPath());
+
+/* TBD: Check whether BASIC might be used and if so, then maybe handle things differently (also see https://github.com/wyona/yanel/issues/41)
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null) {
+            if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
+*/
+
+            identity = getIdentityFromRequest(request, realm);
+            //log.warn("DEBUG: Identity retrieved from request (for realm '" + realm.getID() + "'): " + identity);
+            pathWithoutQS = map.getPath(realm, request.getServletPath());
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
         }
@@ -1231,8 +1275,8 @@ public class YanelServlet extends HttpServlet {
         boolean authorized = false;
         Usecase usecase = getUsecase(request);
         try {
-            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + path + ", identity: " + identity + ", Usecase: " + usecase.getName());
-            authorized = realm.getPolicyManager().authorize(path, identity, usecase);
+            if (log.isDebugEnabled()) log.debug("Check authorization: realm: " + realm + ", path: " + pathWithoutQS + ", identity: " + identity + ", Usecase: " + usecase.getName());
+            authorized = realm.getPolicyManager().authorize(pathWithoutQS, request.getQueryString(), identity, usecase);
             if (log.isDebugEnabled()) log.debug("Check authorization result: " + authorized);
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
@@ -1252,7 +1296,7 @@ public class YanelServlet extends HttpServlet {
             }
             return null; // INFO: Return null in order to indicate that access is granted
         } else {
-            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + path + "; Identity: " + identity + "; Usecase: " + usecase + ")");
+            log.warn("Access denied: " + getRequestURLQS(request, null, false) + " (Path of request: " + pathWithoutQS + "; Identity: " + identity + "; Usecase: " + usecase + ")");
             // TODO: Implement HTTP BASIC/DIGEST response (see above)
 
             // INFO: If request is not via SSL and SSL is configured, then redirect to SSL connection.
@@ -1289,7 +1333,7 @@ public class YanelServlet extends HttpServlet {
             }
 
             if (doAuthenticate(request, response) != null) {
-                log.info("Access denied and not authenticated yet, hence return response of web authenticator.");
+                log.info("Access denied and not authenticated correctly yet, hence return response of web authenticator...");
                 /*
 		  NOTE: Such a response can have different reasons:
                         - Either no credentials provided yet and web authenticator is generating a response to fetch credentials
@@ -1307,6 +1351,7 @@ public class YanelServlet extends HttpServlet {
                     }
                 }
 
+                //log.debug("Returned status code: " + response.getStatus()); // INFO: Only supported by servlet api 3.0 and higher
                 return response;
             } else {
                 try {
@@ -1341,58 +1386,8 @@ public class YanelServlet extends HttpServlet {
      */
     private String getRequestURLQS(HttpServletRequest request, String addQS, boolean xml) {
         try {
-            Realm realm = map.getRealm(request.getServletPath());
-    
-            // TODO: Handle this exception more gracefully!
-            if (realm == null) log.error("No realm found for path " +request.getServletPath());
-
-            String proxyHostName = realm.getProxyHostName();
-            int proxyPort = realm.getProxyPort();
-            String proxyPrefix = realm.getProxyPrefix();
-    
-            URL url = new URL(request.getRequestURL().toString());
-
-            if(realm.isProxySet()) {
-                String forwardedHost = request.getHeader("X-FORWARDED-HOST");
-                if (forwardedHost != null) {
-                    url = new java.net.URL(url.getProtocol(), forwardedHost, url.getFile());
-                }
-                if (proxyHostName != null) {
-                    url = new URL(url.getProtocol(), proxyHostName, url.getFile());
-                }
-
-                if (proxyPort >= 0) {
-                    //log.debug("Configured proxy port: " + proxyPort);
-                    url = new URL(url.getProtocol(), url.getHost(), proxyPort, url.getFile());
-                } else {
-                    //log.debug("No proxy port configured, hence use default port: " + url.getDefaultPort());
-                    url = new URL(url.getProtocol(), url.getHost(), url.getFile()); // INFO: Please note that if one does not set the port explicitely, then toString() won't add the port to the returned string.
-                }
-
-                if (proxyPrefix != null) {
-                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
-                }
-                //log.debug("Proxy enabled for this realm resp. request: " + realm + ", " + url);
-            } else {
-                //log.debug("No proxy set for this realm resp. request: " + realm + ", " + url);
-            }
-
-            String urlQS = url.toString();
-            if (request.getQueryString() != null) {
-                urlQS = urlQS + "?" + request.getQueryString();
-                if (addQS != null) urlQS = urlQS + "&" + addQS;
-            } else {
-                if (addQS != null) urlQS = urlQS + "?" + addQS;
-            }
-    
-            if (xml) {
-                urlQS = urlQS.replaceAll("&", "&amp;");
-            }
-    
-            if(log.isDebugEnabled()) log.debug("Request: " + urlQS);
-
-            return urlQS;
-        } catch (Exception e) {
+            return Utils.getRequestURLQS(map.getRealm(request.getServletPath()), request, addQS, xml);
+        } catch(Exception e) {
             log.error(e.getMessage(), e);
             return null;
         }
@@ -1557,7 +1552,85 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
+     * Do CAS logout
+     * @param request Request containing CAS ticket information, e.g. <samlp:LogoutRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" ID="LR-35-Cb0GJEEVItSWd5U2J4SEuzhvJ5uOORPhvG6" Version="2.0" IssueInstant="2014-05-12T10:12:10Z"><saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">@NOT_USED@</saml:NameID><samlp:SessionIndex>ST-37-rAzNSduFbOh7hJyzuNjW-cas01.example.org</samlp:SessionIndex></samlp:LogoutRequest>
+     * @param response TODO
+     * @return true when logout was successful and false otherwise
+     */
+    private boolean doCASLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String body = request.getParameter(CAS_LOGOUT_REQUEST_PARAM_NAME);
+        log.debug("Logout request content: " + body);
+        try {
+            Document doc = XMLHelper.readDocument(new java.io.ByteArrayInputStream(body.getBytes()), false);
+            String id = doc.getDocumentElement().getAttribute("ID");
+            log.warn("DEBUG: CAS ID: " + id);
+
+            Element[] sessionIndexEls = XMLHelper.getChildElements(doc.getDocumentElement(), "SessionIndex", "urn:oasis:names:tc:SAML:2.0:protocol");
+            if (sessionIndexEls != null && sessionIndexEls.length == 1) {
+                String sessionIndex = sessionIndexEls[0].getFirstChild().getNodeValue();
+                log.warn("DEBUG: CAS SessionIndex: " + sessionIndex);
+
+                HttpSession[] activeSessions = org.wyona.yanel.servlet.SessionCounter.getActiveSessions();
+                for (int i = 0; i < activeSessions.length; i++) {
+                    //log.debug("Yanel session ID: " + activeSessions[i].getId());
+                    CASTicketsMap casTicketsMap = (CASTicketsMap) activeSessions[i].getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKETS_SESSION_NAME);
+
+                    if (casTicketsMap != null && casTicketsMap.containsValue(sessionIndex)) {
+                        log.warn("DEBUG: Session '" + activeSessions[i].getId() + "' contains CAS ticket which matches with SessionIndex: " + sessionIndex);
+                        removeIdentitiesAndCASTickets(activeSessions[i], casTicketsMap.getRealmId(sessionIndex));
+                        // TODO: Notify other cluster nodes!
+                        return true;
+                    } else {
+                        //log.debug("Session '" + activeSessions[i].getId() + "' has either no CAS tickets or does not does match with SessionIndex.");
+                    }
+                }
+                log.warn("SessionIndex '" + sessionIndex + "' did no match any session.");
+                return false;
+            } else {
+                log.error("No CAS SessionIndex element!");
+                return false;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            return false;
+        }
+    }
+
+    /**
+     * Remove identities and CAS tickets from session
+     * @param session Session containing identities and CAS tickets
+     * @param realmId Realm ID associated with CAS ticket
+     */
+    private void removeIdentitiesAndCASTickets(HttpSession session, String realmId) {
+        IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
+        if (identityMap != null) {
+            log.warn("DEBUG: Remove identity associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
+            identityMap.remove(realmId);
+        } else {
+            log.warn("No identity map!");
+        }
+
+        CASTicketsMap casTicketsMap = (CASTicketsMap)session.getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_TICKETS_SESSION_NAME);
+        if (casTicketsMap != null) {
+            log.warn("DEBUG: Remove CAS ticket associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
+            casTicketsMap.remove(realmId);
+        } else {
+            log.warn("No CAS tickets map!");
+        }
+
+        String casProxyTicket = (String)session.getAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
+        if (casProxyTicket != null) {
+            log.warn("DEBUG: Remove CAS proxy ticket associated with realm '" + realmId + "' from session '" + session.getId() + "' ...");
+            session.removeAttribute(org.wyona.yanel.servlet.security.impl.CASWebAuthenticatorImpl.CAS_PROXY_TICKET_SESSION_NAME);
+        } else {
+            log.warn("No CAS proxy ticket map!");
+        }
+    }
+
+    /**
      * Do logout
+     * @param request TODO
+     * @param response TODO
      * @return true if logout was successful (and set a "Redirect response" for a regular logout and a "Neutron response" if auth scheme is Neutron)
      */
     private boolean doLogout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -1570,7 +1643,15 @@ public class YanelServlet extends HttpServlet {
             }
 
 	    WebAuthenticator wa = map.getRealm(request.getServletPath()).getWebAuthenticator();
-            return wa.doLogout(request, response, map);
+            boolean successfulLogout = wa.doLogout(request, response, map);
+
+            //int status = response.getStatus(); // INFO: This only works with servlet spec 3.0 (also see http://tomcat.apache.org/whichversion.html)
+            int status = 301;
+            TrackingInformationV1 trackInfo = null;
+            Resource res = null;
+            doLogAccess(request, response, status, res, trackInfo);
+
+            return successfulLogout;
         } catch (Exception e) {
             log.error(e, e);
             throw new ServletException(e.getMessage(), e);
@@ -1662,7 +1743,7 @@ public class YanelServlet extends HttpServlet {
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
                 // create i18n transformer:
-                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request), yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
+                I18nTransformer2 i18nTransformer = new I18nTransformer2("global", getLanguage(request, yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage()), yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage());
                 CatalogResolver catalogResolver = new CatalogResolver();
                 i18nTransformer.setEntityResolver(new CatalogResolver());
                 
@@ -1683,11 +1764,14 @@ public class YanelServlet extends HttpServlet {
     }
 
     /**
-     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Default en
+     * Get language with the following priorization: 1) yanel.meta.language query string parameter, 2) Accept-Language header, 3) Fallback language
+     * @param fallbackLanguage Fallback when neither query string parameter nor Accept-Language header exists
      */
-    private String getLanguage(HttpServletRequest request) throws Exception {
+    public static String getLanguage(HttpServletRequest request, String fallbackLanguage) throws Exception {
         // TODO: Shouldn't this be replaced by Resource.getRequestedLanguage() or Resource.getContentLanguage() ?!
+
         String language = request.getParameter("yanel.meta.language");
+
         if (language == null) {
             language = request.getHeader("Accept-Language");
             if (language != null) {
@@ -1701,8 +1785,12 @@ public class YanelServlet extends HttpServlet {
                 }
             }
         }
-        if(language != null && language.length() > 0) return language;
-        return yanelInstance.getMap().getRealm(request.getServletPath()).getDefaultLanguage();
+
+        if(language != null && language.length() > 0) {
+            return language;
+        }
+
+        return fallbackLanguage;
     }
 
     /**
@@ -1781,8 +1869,19 @@ public class YanelServlet extends HttpServlet {
                 Identity identity = (Identity)identityMap.get(realmID);
                 if (identity != null && !identity.isWorld()) {
                     return identity;
+                } else {
+                    log.debug("No identity yet for realm '" + realmID + "'.");
+                    if (identity != null && identity.isWorld()) {
+                        log.debug("Identity is set to world.");
+                    } else {
+                        log.debug("No identity set at all.");
+                    }
                 }
+            } else {
+                log.debug("No identity map yet.");
             }
+        } else {
+            log.debug("No session yet.");
         }
         return null; 
     }
@@ -1797,7 +1896,7 @@ public class YanelServlet extends HttpServlet {
             IdentityMap identityMap = (IdentityMap)session.getAttribute(IDENTITY_MAP_KEY);
             if (identityMap == null) {
                 identityMap = new IdentityMap();
-                session.setAttribute(YanelServlet.IDENTITY_MAP_KEY, identityMap);
+                session.setAttribute(IDENTITY_MAP_KEY, identityMap);
             }
             //log.debug("Firstname: " + identity.getFirstname());
             identityMap.put(realm.getID(), identity); // INFO: Please note that the constructor Identity(User, String) is resolving group IDs (including parent group IDs) and hence these are "attached" to the session in order to improve performance during authorization checks
@@ -1812,13 +1911,45 @@ public class YanelServlet extends HttpServlet {
      * @param realm Realm
      * @return Identity if one exist, or otherwise an empty identity (which is considered to be WORLD)
      */
-    private static Identity getIdentity(HttpServletRequest request, Realm realm) throws Exception {
+    private Identity getIdentityFromRequest(HttpServletRequest request, Realm realm) throws Exception {
+
+        // INFO: Please note that the identity normally gets set inside a WebAuthenticator implementation
         //log.debug("Get identity for request '" + request.getServletPath() + "'.");
-        Identity identity = getIdentity(request.getSession(false), realm);
+        Identity identity = getIdentity(request.getSession(false), realm.getID());
         if (identity != null) { // INFO: Please note that the WORLD identity (or rather an empty identity) is not added to the session (please see further down)
             //log.debug("Identity from session: " + identity);
             return identity;
         }
+
+        if (yanelInstance.isPreAuthenticationEnabled()) {
+            String preAuthReqHeaderName = yanelInstance.getPreAuthenticationRequestHeaderName();
+            if (preAuthReqHeaderName != null && request.getHeader(preAuthReqHeaderName) != null) {
+                String preAuthUserName = request.getHeader(preAuthReqHeaderName);
+                log.warn("DEBUG: Pre authenticated user: " + preAuthUserName);
+                String trueID = realm.getIdentityManager().getUserManager().getTrueId(preAuthUserName);
+                User user = realm.getIdentityManager().getUserManager().getUser(trueID);
+                if (user != null) {
+                    log.debug("User '" + user.getID() + "' considered pre-authenticated.");
+                    identity = new Identity(user, preAuthUserName);
+                    setIdentity(identity, request.getSession(true), realm);
+                    return identity;
+                } else {
+                    log.warn("No such pre-authenticated user '" + preAuthUserName + "', hence set identity to WORLD!");
+                    identity = new Identity();
+                    setIdentity(identity, request.getSession(true), realm);
+                    return identity;
+                }
+            } else {
+                log.warn("Pre-authentication enabled, but no request header name set!");
+            }
+        }
+
+/* TODO: Make configurable!
+        if (true) {
+            log.warn("DEBUG: Do not check for BASIC authentication, but set identity to WORLD.");
+            return new Identity();
+        }
+*/
 
         // HTTP BASIC Authentication (For clients such as for instance Sunbird, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
@@ -1841,10 +1972,15 @@ public class YanelServlet extends HttpServlet {
                     User user = realm.getIdentityManager().getUserManager().getUser(trueID);
                     if (user != null && user.authenticate(password)) {
                         log.debug("User '" + user.getID() + "' successfully authenticated via BASIC authentication.");
-                        return new Identity(user, username);
+                        identity = new Identity(user, username);
+                        setIdentity(identity, request.getSession(true), realm);
+                        return identity;
                     } else {
                         log.warn("HTTP BASIC Authentication failed for " + username + " (True ID: '" + trueID + "') and request '" + request.getServletPath() + "', hence set identity to WORLD!");
-                        return new Identity();
+                        identity = new Identity();
+                        setIdentity(identity, request.getSession(true), realm);
+                        return identity;
+
 /* INFO: Do not return unauthorized response, but rather just return 'WORLD' as identity...
                         response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -2122,7 +2258,7 @@ public class YanelServlet extends HttpServlet {
             return response;
         }
             
-        // Set mime type and encoding
+        // INFO: Set mime type and encoding
         String mimeType = view.getMimeType();
         if (view.getEncoding() != null) {
             mimeType = patchMimeType(mimeType, request);
@@ -2195,7 +2331,7 @@ public class YanelServlet extends HttpServlet {
                             try {
                                 Usecase usecase = new Usecase(TOOLBAR_USECASE);
                                 Realm realm = map.getRealm(request.getServletPath());
-                                Identity identity = getIdentity(request, realm);
+                                Identity identity = getIdentityFromRequest(request, realm);
                                 String path = map.getPath(realm, request.getServletPath());
                                 // NOTE: This extra authorization check is necessary within a multi-realm environment, because after activating the toolbar with a query string, the toolbar flag attached to the session will be ignored by doAccessControl(). One could possibly do this check within doAccessControl(), but could be a peformance issue! Or as an alternative one could refactor the code, such that the toolbar session flag is realm aware.
                                 if(realm.getPolicyManager().authorize(path, identity, usecase)) {
@@ -2303,7 +2439,7 @@ public class YanelServlet extends HttpServlet {
     public void destroy() {
         super.destroy();
 
-        log.warn("DEBUG: Destroy Yanel instance...");
+        log.info("Destroy Yanel instance...");
         yanelInstance.destroy();
 
         if (scheduler != null) {
@@ -2673,6 +2809,8 @@ public class YanelServlet extends HttpServlet {
 
     /**
      * Log browser history of each user
+     * @param request TODO
+     * @param response TODO
      * @param resource Resource which handles the request
      * @param statusCode HTTP response status code (because one is not able to get status code from response)
      * @param trackInfo Tracking information bean
@@ -2738,7 +2876,7 @@ public class YanelServlet extends HttpServlet {
             }
             
             // TBD/TODO: What if user has logged out, but still has a persistent cookie?!
-            Identity identity = getIdentity(request, realm);
+            Identity identity = getIdentityFromRequest(request, realm);
             if (identity != null && identity.getUsername() != null) {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("u", identity.getUsername());
 
@@ -2756,9 +2894,13 @@ public class YanelServlet extends HttpServlet {
 */
             }
 
+            String clientIP = getClientAddressOfUser(request);
+
             String httpAcceptLanguage = request.getHeader("Accept-Language");
             if (httpAcceptLanguage != null) {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("a-lang", httpAcceptLanguage);
+            } else {
+                log.warn("Client request (IP: " + clientIP + ") has no Accept-Language header.");
             }
 
             HttpSession session = request.getSession(true);
@@ -2772,7 +2914,7 @@ public class YanelServlet extends HttpServlet {
                 accessLogMessage = accessLogMessage + AccessLog.encodeLogField("http-status", "" + HttpServletResponse.SC_OK);
             }
 
-            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", getClientAddressOfUser(request));
+            accessLogMessage = accessLogMessage + AccessLog.encodeLogField("ip", clientIP);
 
             logAccess.info(accessLogMessage);
 
@@ -3166,7 +3308,7 @@ public class YanelServlet extends HttpServlet {
                 }
             }
         } else {
-            log.debug("Resource is null because access was probably denied: " + servletPath);
+            log.debug("Resource is null because access was probably denied or not necessarily initialized: " + servletPath);
         }
         return tags;
     }
@@ -3174,6 +3316,7 @@ public class YanelServlet extends HttpServlet {
     /**
      * Get client address of user
      * @param request Client request
+     * @return original client IP address, e.g. 'TODO'
      */
     private String getClientAddressOfUser(HttpServletRequest request) {
         String remoteIPAddr = request.getHeader("X-FORWARDED-FOR");
@@ -3181,12 +3324,20 @@ public class YanelServlet extends HttpServlet {
             if (remoteIPAddr.indexOf("unknown") >= 0) {
                 log.warn("TODO: Clean remote IP address: " + remoteIPAddr);
             }
-            return remoteIPAddr;
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("No such request header: X-FORWARDED-FOR (hence fallback to request.getRemoteAddr())"); // INFO: For example in the case of AJP or if no proxy is used
             }
-            return request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
+            remoteIPAddr = request.getRemoteAddr(); // INFO: For performance reasons we do not use getRemoteHost(), but rather just use the IP address.
+        }
+
+        // TODO: What about ", 198.240.213.22, 146.67.140.72"
+        if (remoteIPAddr.indexOf(",") > 0) { // INFO: Comma separated addresses, like for example '172.21.126.179, 89.250.145.138' (see Format of X-Forwarded-For at http://en.wikipedia.org/wiki/X-Forwarded-For)
+            String firstAddress = remoteIPAddr.split(",")[0].trim();
+            //log.debug("Use the first IP address '" + firstAddress + "' of comma separated list '" + remoteIPAddr + "' ...");
+            return firstAddress;
+        } else {
+            return remoteIPAddr;
         }
     }
 
@@ -3197,5 +3348,17 @@ public class YanelServlet extends HttpServlet {
      */
     private String getFishTag(HttpServletRequest request) {
         return getClientAddressOfUser(request) + "_" + request.getSession(true).getId().substring(0, 4); // TBD: org.wyona.yanel.impl.resources.sessionmanager.SessionManagerResource#hashSessionID(String)
+    }
+
+    /**
+     * Check whether request is a CAS single sign out request (https://wiki.jasig.org/display/casum/single+sign+out#SingleSignOut-Howitworks)
+     * @return true when request is a CAS single sign out request and false otherwise
+     */
+    private boolean isCASLogoutRequest(HttpServletRequest request) { // INFO: Also see org.wyona.yanel.impl.resources.CASLogoutMatcher
+        if (METHOD_POST.equals(request.getMethod()) && request.getParameter(CAS_LOGOUT_REQUEST_PARAM_NAME) != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

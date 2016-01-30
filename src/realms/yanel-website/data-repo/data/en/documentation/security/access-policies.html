@@ -57,5 +57,13 @@
 <p>
 The "From Scratch Realm" contains an example of a policy map <code><a href="https://github.com/wyona/yanel/blob/master/src/realms/from-scratch-realm-template/ac-policies/policy-map.xml">src/realms/from-scratch-realm-template/ac-policies/policy-map.xml</a></code> which allows to define more complex rules to match requested resources with access policies. Please note that policy maps are currently only supported by <code>org.wyona.security.impl.PolicyManagerImplVersion2</code>.
 </p>
+
+<p>
+The policy map also supports matching of query strings, e.g.
+
+<pre>
+&lt;matcher pattern="/*/projects/*/index.html?disable=*" path="/disable-enable-email_policy.xml"/&gt;
+</pre>
+</p>
 </body>
 </html>

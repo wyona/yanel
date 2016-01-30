@@ -4,16 +4,21 @@
 package org.wyona.yanel.impl.resources.yaneluser;
 
 import org.wyona.yanel.core.ResourceConfiguration;
+import org.wyona.yanel.core.util.MailUtil;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 
+import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
+
+import org.wyona.yanel.servlet.YanelServlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -25,7 +30,7 @@ import org.wyona.commons.xml.XMLHelper;
  */
 public class EditYanelUserProfileResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(EditYanelUserProfileResource.class);
+    private static Logger log = LogManager.getLogger(EditYanelUserProfileResource.class);
 
     private String transformerParameterName;
     private String transformerParameterValue;
@@ -114,6 +119,29 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                     Element groupEl = doc.createElement("group");
                     groupEl.setAttribute("id", groups[i].getID());
                     groupsEl.appendChild(groupEl);
+                }
+            }
+
+            String[] aliases = user.getAliases();
+            if (aliases != null && aliases.length > 0) {
+                Element aliasesEl = (Element) rootEl.appendChild(doc.createElement("aliases"));
+                for (int i = 0; i < aliases.length; i++) {
+                    Element aliasEl = (Element) aliasesEl.appendChild(doc.createElement("alias"));
+                    aliasEl.appendChild(doc.createTextNode(aliases[i]));
+                }
+            } else {
+                rootEl.appendChild(doc.createElement("no-aliases"));
+            }
+
+            org.wyona.security.core.UserHistory history = user.getHistory();
+            if (history != null) {
+                java.util.List<org.wyona.security.core.UserHistory.HistoryEntry> entries = history.getHistory();
+                for (org.wyona.security.core.UserHistory.HistoryEntry entry: entries) {
+                    Element historyEl = (Element) rootEl.appendChild(doc.createElement("history"));
+                    Element eventEl = (Element) historyEl.appendChild(doc.createElement("event"));
+                    eventEl.setAttribute("usecase", entry.getUsecase());
+                    eventEl.setAttribute("description", entry.getDescription());
+                    eventEl.setAttribute("date", "" + entry.getDate());
                 }
             }
 
@@ -215,18 +243,40 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
                 String userId = getUserId();
                 org.wyona.security.core.api.UserManager userManager = realm.getIdentityManager().getUserManager();
                 User user = userManager.getUser(userId);
-                String previousEmailAddress = user.getEmail();
-                user.setEmail(email);
-                //user.setName(getEnvironment().getRequest().getParameter("userName"));
-                //user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
-                user.save();
 
-                String[] aliases = user.getAliases();
-                for (int i = 0; i < aliases.length; i++) {
-                    if (aliases[i].equals(previousEmailAddress)) {
-                        userManager.createAlias(email, userId);
-                        userManager.removeAlias(previousEmailAddress);
-                        log.warn("Alias updated, which means user needs to use new email '" + email + "' to login.");
+                user.setName(getEnvironment().getRequest().getParameter("userName"));
+                user.setLanguage(getEnvironment().getRequest().getParameter("user-profile-language"));
+                user.save();
+                updateSession(user);
+
+                String previousEmailAddress = user.getEmail();
+                if (!previousEmailAddress.equals(email)) {
+                    user.setEmail(email);
+                    user.save();
+
+                    if (userManager.existsAlias(previousEmailAddress)) {
+                        if (!userManager.existsAlias(email)) {
+                            userManager.createAlias(email, userId);
+                        } else {
+                            if (hasAlias(user, email)) {
+                                log.warn("DEBUG: User '" + userId + "' already has alias '" + email + "'.");
+                            } else {
+                                throw new Exception("Alias '" + email + "' already exists, but is not associated with user '" + userId + "'!");
+                            }
+                        }
+                        if (hasAlias(user, previousEmailAddress)) {
+                            userManager.removeAlias(previousEmailAddress);
+                            log.warn("Previous alias '" + previousEmailAddress + "' removed, which means user needs to use new email '" + email + "' to login.");
+                            sendNotification(previousEmailAddress, email);
+                            // TODO/TBD: Logout user and tell user why he/she was signed out
+                        }
+                    } else {
+                        log.warn("Previous email '" + previousEmailAddress + "' was not used as alias, hence we also use new email '" + email + "' not as alias.");
+                    }
+                } else {
+                    log.warn("DEBUG: Current email and new email are the same.");
+                    if (!userManager.existsAlias(email)) {
+                        log.warn("Email '" + email + "' is not used as alias yet!");
                     }
                 }
 
@@ -241,6 +291,50 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     }
 
     /**
+     * Send notifications to previous and new emails that login alias has changed
+     */
+    private void sendNotification(String previousEmail, String newEmail) throws Exception {
+        String from = getResourceConfigProperty("fromEmail");
+        if (from != null) {
+            String subject = "[" + getRealm().getName() + "] Username changed";
+            String body = "Please note that you must use '" + newEmail + "' instead '" + previousEmail + "' to login.";
+            try {
+                MailUtil.send(from, previousEmail, subject, body);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+            try {
+                MailUtil.send(from, newEmail, subject, body);
+            } catch(Exception e) {
+                log.error(e, e);
+            }
+        } else {
+            log.warn("No 'from' email address inside resource configuration set, hence no notifications about changed username will be sent!");
+        }
+    }
+
+    /**
+     * Update identity attached to session
+     */
+    private void updateSession(User user) throws Exception {
+        YanelServlet.setIdentity(new Identity(user, user.getEmail()), getEnvironment().getRequest().getSession(true), getRealm());
+    }
+
+    /**
+     * Check whether user has a specific alias
+     * @return true when user has a specific alias
+     */
+    private boolean hasAlias(User user, String alias) throws Exception {
+        String[] aliases = user.getAliases();
+        for (int i = 0; i < aliases.length; i++) {
+            if (aliases[i].equals(alias)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      *
      */
     private void setTransformerParameter(String name, String value) {
@@ -251,6 +345,7 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#passTransformerParameters(Transformer)
      */
+    @Override
     protected void passTransformerParameters(javax.xml.transform.Transformer transformer) throws Exception {
         super.passTransformerParameters(transformer);
         try {

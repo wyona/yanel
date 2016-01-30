@@ -1,0 +1,7 @@
+Thank you for your registration.
+
+To activate your account, you need to click on the following link:
+
+@CONFIRMATION_LINK@
+
+Note that this confirmation link is valid only for the next @VALID_HRS@ hours.

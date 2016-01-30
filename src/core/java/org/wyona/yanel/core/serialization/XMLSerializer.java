@@ -2,7 +2,8 @@ package org.wyona.yanel.core.serialization;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -15,7 +16,7 @@ import org.xml.sax.SAXException;
  */
 public class XMLSerializer extends AbstractSerializer {
 
-    private static Logger log = Logger.getLogger(XMLSerializer.class);
+    private static Logger log = LogManager.getLogger(XMLSerializer.class);
     protected String pendingElement = null;
     protected boolean doIndent;
     protected boolean omitDoctype;

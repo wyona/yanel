@@ -15,7 +15,8 @@ import org.wyona.yanel.servlet.AccessLog;
 import org.wyona.yanel.impl.resources.BasicXMLResource;
 import org.wyona.commons.xml.XMLHelper;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.wyona.boost.client.BoostService;
 import com.wyona.boost.client.ServiceException;
@@ -33,11 +34,14 @@ import org.wyona.yarep.core.search.Searcher;
 public class PersonalizedContentResource extends BasicXMLResource {
 
     @SuppressWarnings("unused")
-    private static Logger log = Logger.getLogger(PersonalizedContentResource.class);
+    private static Logger log = LogManager.getLogger(PersonalizedContentResource.class);
 
     private static final String NAMESPACE = "http://www.wyona.org/yanel/boost/1.0";
 
     private static final String BOOST_SERVICE_URL_PARAM = "boost-service-url";
+
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+    private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
 
     /**
      * Get the XML content of this resource.
@@ -148,7 +152,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             }
             root.appendChild(resultsEl);
         } catch(ServiceException e) {
-            // Something wrong with retrieving interests...
+            // INFO: Something wrong with retrieving interests...
             log.error(e, e);
 
             Element exceptionEl = doc.createElementNS(NAMESPACE, "exception");
@@ -166,7 +170,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
             // INFO: Add clickstream to user profile
             Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
             for(HistoryEntry he : clickStream) {
-                log.warn("DEBUG: URL of history entry: " + he.getURL());
+                //log.debug("URL of history entry: " + he.getURL());
                 Element urlEl = doc.createElementNS(NAMESPACE, "url");
                 urlEl.appendChild(doc.createTextNode(he.getURL()));
                 urlEl.setAttribute("epoch-time", "" + he.getTime());
@@ -203,7 +207,14 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * @return list of URLs which were requested by user with a given cookie
      */
     private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+        log.warn("DEBUG: Get clickstream...");
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setConnectionTimeout(getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
+        }
+        if (isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setSocketTimeout(getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+        }
         BoostService boost = new BoostService(bsc);
         return boost.getClickStream(cookie);
     }
@@ -217,7 +228,14 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * @return list of interests
      */
     private Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+        log.warn("DEBUG: Get user interests...");
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setConnectionTimeout(getTimeoutValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
+        }
+        if (isTimeoutConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setSocketTimeout(getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+        }
         BoostService boost = new BoostService(bsc);
         return boost.getUserProfile(cookie);
     }
@@ -228,5 +246,31 @@ public class PersonalizedContentResource extends BasicXMLResource {
      */
     public boolean exists() throws Exception {
         return true;
+    }
+
+    /**
+     * Check whether timeout property is configured
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when timeout property is configured
+     */
+    private boolean isTimeoutConfigured(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Get value of timeout property
+     * @param name Name of timeout property, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of timeout property in milliseconds
+     */
+    private int getTimeoutValue(String name) throws Exception {
+        if (getResourceConfigProperty(name) != null) {
+            return new Integer(getResourceConfigProperty(name)).intValue();
+        } else {
+            return 0;
+        }
     }
 }

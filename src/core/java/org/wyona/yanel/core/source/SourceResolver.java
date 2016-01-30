@@ -6,7 +6,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.commons.io.PathUtil;
@@ -19,7 +20,7 @@ import org.wyona.commons.io.PathUtil;
  */
 public class SourceResolver implements URIResolver {
 
-    private static final Logger log = Logger.getLogger(SourceResolver.class);
+    private static final Logger log = LogManager.getLogger(SourceResolver.class);
     
     private HashMap<String, URIResolver> resolvers;
     private Resource resource;
@@ -87,6 +88,7 @@ public class SourceResolver implements URIResolver {
         URIResolver resolver = null;
         if (this.resolvers.containsKey(scheme)) {
             resolver = this.resolvers.get(scheme);
+            //log.debug("Get cached resolver '" + resolver + "' for scheme '" + scheme + "'.");
         } else {
             if (scheme.equals("yanelresource")) {
                 resolver = new ResourceResolver(this.resource);
@@ -99,7 +101,7 @@ public class SourceResolver implements URIResolver {
                 resolver = new HttpResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
             } else if (scheme.equals("https")) {
-                resolver = new HttpResolver(this.resource); // TBD/TODO: Can we use the HttpResolver for https?!
+                resolver = new HttpResolver(this.resource);
                 this.resolvers.put(scheme, resolver);
             } else if (scheme.equals("rthtdocs")) {
                 resolver = new RTHtdocsResolver(this.resource);

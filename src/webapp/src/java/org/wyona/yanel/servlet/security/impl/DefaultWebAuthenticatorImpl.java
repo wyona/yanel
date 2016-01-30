@@ -35,7 +35,10 @@ import org.w3c.dom.Element;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.xml.resolver.tools.CatalogResolver;
 
 // JOID is an alternative openid impl
@@ -57,7 +60,7 @@ import org.openid4java.message.ParameterList;
  */
 public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
-    private static Logger log = Logger.getLogger(DefaultWebAuthenticatorImpl.class);
+    private static Logger log = LogManager.getLogger(DefaultWebAuthenticatorImpl.class);
 
     private static String OPENID_DISCOVERED_KEY = "openid-discovered";
 
@@ -94,7 +97,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
 
 
-            // HTML Form based authentication
+            // INFO: HTML Form based authentication
             String loginUsername = request.getParameter(LOGIN_USER_REQUEST_PARAM_NAME);
             String openID = request.getParameter("yanel.login.openid");
             String openIDSignature = request.getParameter("openid.sig");
@@ -171,8 +174,9 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 }
                 return response;
             } else {
-                if (log.isDebugEnabled()) log.debug("No form based authentication request.");
+                if (log.isDebugEnabled()) log.debug("No form based authentication request or no credentials submitted yet.");
             }
+
             // Check for Neutron-Auth based authentication
             String yanelUsecase = request.getParameter("yanel.usecase");
             if(yanelUsecase != null && yanelUsecase.equals("neutron-auth")) {
@@ -367,11 +371,20 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 log.warn("DEBUG: Somebody seems to ask for a Calendar (ICS) ...");
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return response;
             } else {
+                String userAgent = request.getHeader("User-Agent");
+                if (userAgent != null && userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
+                    log.warn("DEBUG: In the case of the user agent '" + userAgent + "' an error 401 is returned instead a login form.");
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
+                    //log.debug("Returned status code: " + response.getStatus());
+                    return response;
+                }
+                //log.debug("Generate authentication form to enter credentials...");
                 getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
             }
             return response;
-
 /*
             if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
             return null;
@@ -382,37 +395,191 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * @see org.wyona.yanel.core.api.security.WebAuthenticator#getXHTMLAuthenticationForm(HttpServletRequest, HttpServletResponse, Realm, String, String, String, String, String, Map)
      */
     public void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map) throws ServletException, IOException {
+        try {
+            if (getRealmLoginScreenXSLT(realm, xsltLoginScreenDefault).isFile()) {
+                // INFO: Backwards compatible
+                org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
+                getXHTMLAuthenticationForm(request, response, realm, message, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map, adoc, this.getClass());
+            } else {
+                getXHTMLAuthenticationFormViaLoginResource(request, response, realm, message, reservedPrefix, servletContextRealPath, sslPort);
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            throw new ServletException(e);
+        }
+    }
 
-        // TODO: Enhance with global resource, which will make it more flexible
+    /**
+     * @param message TODO
+     */
+    private void getXHTMLAuthenticationFormViaLoginResource(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String servletContextRealPath, String sslPort) throws Exception {
+        org.wyona.yanel.core.ResourceConfiguration loginRC = org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher.getGlobalResourceConfiguration("login_yanel-rc.xml", realm, servletContextRealPath);
+
+        org.wyona.yanel.core.Yanel yanelInstance = org.wyona.yanel.core.Yanel.getInstance();
+        yanelInstance.init();
+        String path = yanelInstance.getMap().getPath(realm, request.getServletPath());
+        org.wyona.yanel.core.Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(request, response, realm), realm, path, loginRC);
+
+        java.util.Map resParams = new java.util.HashMap();
+        if (message != null) {
+            resParams.put("message", message);
+        }
+        if (sslPort != null) {
+            resParams.put("sslPort", sslPort);
+        }
+        res.setParameters(resParams);
+
+        // INFO: Set no cache parameters
+        try {
+            if ("true".equals(res.getResourceConfigProperty("yanel:no-cache"))) {
+                log.debug("Set no-cache headers...");
+                response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+                response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+                response.setDateHeader("Expires", 0); // Proxies.
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+        }
+
+        // INFO: Get view of resource
+        String viewId = null;
+        if (request.getParameter("yanel.resource.viewid") != null) {
+            viewId = request.getParameter("yanel.resource.viewid");
+        }
+        org.wyona.yanel.core.attributes.viewable.View view = ((org.wyona.yanel.core.api.attributes.ViewableV2) res).getView(viewId);
+
+        // INFO: Set mime type and encoding
+        String mimeType = view.getMimeType();
+        if (view.getEncoding() != null) {
+            mimeType = YanelServlet.patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + view.getEncoding());
+        } else if (res.getConfiguration() != null && res.getConfiguration().getEncoding() != null) {
+            mimeType = YanelServlet.patchMimeType(mimeType, request);
+            response.setContentType(mimeType + "; charset=" + res.getConfiguration().getEncoding());
+        } else {
+            // try to guess if we have to set the default encoding
+            if (mimeType != null && mimeType.startsWith("text") ||
+                mimeType.equals("application/xml") ||
+                mimeType.equals("application/xhtml+xml") ||
+                mimeType.equals("application/atom+xml") ||
+                mimeType.equals("application/x-javascript")) {
+
+                mimeType = YanelServlet.patchMimeType(mimeType, request);
+                response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
+            } else {
+                // probably binary mime-type, don't set encoding
+                mimeType = YanelServlet.patchMimeType(mimeType, request);
+                response.setContentType(mimeType);
+            }
+        }
+
+        // TODO: Set HTTP headers, see YanelServlet#generateResponse(View ...)
+
+        // INFO: Set response body
+        java.io.InputStream is = view.getInputStream();
+        try {
+            // INFO: Check whether InputStream is empty and try to Write content into response
+            byte buffer[] = new byte[8192];
+            int bytesRead;
+            bytesRead = is.read(buffer);
+            if (bytesRead != -1) {
+                java.io.OutputStream os = response.getOutputStream();
+                os.write(buffer, 0, bytesRead);
+                while ((bytesRead = is.read(buffer)) != -1) {
+                    os.write(buffer, 0, bytesRead);
+                }
+                os.close();
+            } else {
+                log.warn("Returned content size of request '" + request.getRequestURI() + "' is 0");
+            }
+        } catch(Exception e) {
+            log.error("Writing into response failed for request '" + request.getRequestURL()); // INFO: For example in the case of ClientAbortException
+            //log.error("Writing into response failed for request '" + request.getRequestURL() + "' (Client: " + getClientAddressOfUser(request) + ")"); // INFO: For example in the case of ClientAbortException
+            log.error(e, e);
+            throw new ServletException(e);
+        } finally {
+            //log.debug("Close InputStream in any case!");
+            is.close(); // INFO: Make sure to close InputStream, because otherwise we get bugged with open files
+        }
+    }
+
+    /**
+     * Create environment containing request, etc.
+     */
+    private org.wyona.yanel.core.Environment getEnvironment(HttpServletRequest request, HttpServletResponse response, Realm realm) throws Exception {
+        Identity identity = YanelServlet.getIdentity(request.getSession(true), realm);
+        if (identity == null) {
+            // INFO: When no identity set yet, then set it to WORLD
+            identity = new Identity();
+        }
+        return new org.wyona.yanel.core.Environment(request, response, identity, org.wyona.yanel.core.StateOfView.LIVE, null);
+    }
+
+    /**
+     * Get XSLT to generate login screen
+     */
+    private static File getLoginScreenXSLT(Realm realm, String xsltLoginScreenDefault, String servletContextRealPath) {
+        // INFO: Try to get login XSLT from realm
+        File xsltLoginScreen = getRealmLoginScreenXSLT(realm, xsltLoginScreenDefault);
+        // INFO: When login XSLT does not exist inside realm, then fallback to login XSLT of Yanel
+        if (!xsltLoginScreen.isFile()) {
+            xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
+        }
+        return xsltLoginScreen;
+    }
+
+    /**
+     * Get custom XSLT of realm to generate login screen
+     */
+    private static File getRealmLoginScreenXSLT(Realm realm, String xsltLoginScreenDefault) {
+        File realmDir = realm.getRootDir();
+        if (realmDir == null) {
+            realmDir = new File(realm.getConfigFile().getParent());
+        }
+        return org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + xsltLoginScreenDefault);
+    }
+
+    /**
+     * Generate custom XHTML form for authentication, which allows to overwrite the input document
+     * @param adoc Document containing information about authentication
+     */
+    static void getXHTMLAuthenticationForm(HttpServletRequest request, HttpServletResponse response, Realm realm, String message, String reservedPrefix, String xsltLoginScreenDefault, String servletContextRealPath, String sslPort, Map map, org.w3c.dom.Document adoc, Class clazz) throws ServletException, IOException {
+
+        // TODO: Enhance as global resource, which will make it more flexible
 
         if(log.isDebugEnabled()) log.debug("Default authentication form implementation!");
 
         try {
-            org.w3c.dom.Document adoc = generateAuthenticationScreenXML(request, realm, message, sslPort, map);
-
             String yanelFormat = request.getParameter("yanel.login.format");
-            if(yanelFormat != null && yanelFormat.equals("xml")) {
-                response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
-                //OutputStream out = response.getOutputStream();
-                javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
-                //out.close();
+            if (yanelFormat != null) {
+                if (yanelFormat.equals("xml")) {
+                    response.setContentType("application/xml; charset=" + YanelServlet.DEFAULT_ENCODING);
+                    //OutputStream out = response.getOutputStream();
+                    javax.xml.transform.TransformerFactory.newInstance().newTransformer().transform(new javax.xml.transform.dom.DOMSource(adoc), new javax.xml.transform.stream.StreamResult(response.getOutputStream()));
+                    //out.close();
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
+                    return;
+                } else if (yanelFormat.equals("error")) {
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + clazz.getName() + "'");
+                    //log.debug("Returned status code: " + response.getStatus());
+                    return;
+                } else {
+                    throw new ServletException("No such login format '" + yanelFormat + "' implemented!");
+                }
             } else {
                 String mimeType = YanelServlet.patchMimeType("application/xhtml+xml", request);
                 response.setContentType(mimeType + "; charset=" + YanelServlet.DEFAULT_ENCODING);
 
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
                 //response.setHeader("Optional-WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\""); // INFO: See http://tools.ietf.org/html/draft-oiwa-http-auth-extension-02
-/* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13)
+/* INFO: Since we want to do HTML-form/session/cookie based authentication/authorization, we just return a 200, because otherwise browsers do not display the text/html response body of a HTTP 401 response, instead, they just pop up a modal authentication dialog (until "cancel" is pressed). (See http://www.w3.org/html/wg/tracker/issues/13 or http://webmasters.stackexchange.com/questions/24443/should-i-return-a-http-401-status-code-on-an-html-based-login-form)
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                 response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
 */
 
-                File realmDir = realm.getRootDir();
-                if (realmDir == null) realmDir = new File(realm.getConfigFile().getParent());
-                File xsltLoginScreen = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + xsltLoginScreenDefault);
-                if (!xsltLoginScreen.isFile()) xsltLoginScreen = org.wyona.commons.io.FileUtil.file(servletContextRealPath, xsltLoginScreenDefault);
 
-                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(xsltLoginScreen));
+                Transformer transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(getLoginScreenXSLT(realm, xsltLoginScreenDefault, servletContextRealPath)));
 
                 String pathRelativeToRealm = request.getServletPath().replaceFirst(realm.getMountPoint(),"/"); // INFO: For example "/en/index.html"
                 transformer.setParameter("yanel.path", pathRelativeToRealm);
@@ -506,6 +673,13 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (proxyPrefix != null) {
                     url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile().substring(proxyPrefix.length()));
                 }
+
+                org.wyona.yanel.core.map.ReverseProxyConfig reverseProxyConfig = realm.getReverseProxyConfig();
+                if (reverseProxyConfig.getReversePrefix() != null) {
+                    // INFO: Add reverse proxy prefix, e.g. "/boost2"
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), reverseProxyConfig.getReversePrefix() + url.getFile());
+                }
+
                 //log.debug("Proxy enabled for this realm resp. request: " + realm + ", " + url);
             } else {
                 //log.debug("No proxy set for this realm resp. request: " + realm + ", " + url);
@@ -675,7 +849,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         if (user != null && user.authenticate(password)) {
             log.debug("Realm: " + realm);
             YanelServlet.setIdentity(new Identity(user, username), session, realm);
-            log.warn("Authentication was successful for user: " + user.getID());
+            log.warn("DEBUG: Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
             return true;
         } else {
@@ -685,14 +859,15 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     }
 
     /**
+     * @deprecated Use org.wyona.yanel.impl.resources.login.LoginResource#getContentXML(String) instead
      * Generate XML of authentication/login screen
-     * @param request
-     * @param realm
+     * @param request TODO
+     * @param realm TODO
      * @param message Error message, e.g. "Login failed"
-     * @param sslPort
-     * @param map
+     * @param sslPort TODO
+     * @param map TODO
      */
-    protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
+    static protected org.w3c.dom.Document generateAuthenticationScreenXML(HttpServletRequest request, Realm realm, String message, String sslPort, Map map) throws Exception {
         log.debug("Generate authentication screen XML...");
         org.w3c.dom.Document adoc = YanelServlet.getDocument(YanelServlet.NAMESPACE, "yanel-auth-screen");
         Element rootElement = adoc.getDocumentElement();
@@ -762,7 +937,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * @param path Path such as for example "/en/index.html"
      * @return two-letter language code, e.g. "en"
      */
-    private String getContentLanguage(String path) {
+    static String getContentLanguage(String path) {
         if (path.length() >= 3 && path.charAt(0) == '/' && path.charAt(3) == '/') {
             return path.substring(1,3);
         } else {
@@ -778,7 +953,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
      * 2. 'global'
      * @return i18n catalogue name
      */
-    private String[] getI18NCatalogueNames(Realm realm) throws Exception {
+    private static String[] getI18NCatalogueNames(Realm realm) throws Exception {
         ArrayList<String> catalogues = new ArrayList<String>();
         String realmCatalogue = realm.getI18nCatalogue();
         if (realmCatalogue != null) {
@@ -791,7 +966,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     /**
      * Get language accepted by browser
      */
-    private String getBrowserLanguage(HttpServletRequest request) {
+    private static String getBrowserLanguage(HttpServletRequest request) {
         String language = request.getHeader("Accept-Language");
         if (language != null) {
             if (language.indexOf(",") > 0) {
@@ -813,13 +988,14 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
     public boolean doLogout(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
         try {
             HttpSession session = request.getSession(true);
-            // TODO: should we logout only from the current realm, or from all realms?
-            // -> logout only from the current realm
+            // TBD: Should we logout only from the current realm, or from all realms? Currently we logout only from the current realm.
             Realm realm = map.getRealm(request.getServletPath());
             IdentityMap identityMap = (IdentityMap)session.getAttribute(YanelServlet.IDENTITY_MAP_KEY);
             if (identityMap != null && identityMap.containsKey(realm.getID())) {
                 log.info("Logout from realm: " + realm.getID());
                 identityMap.remove(realm.getID());
+            } else {
+                log.warn("Identity map contains no such realm '" + realm.getID() + "'!");
             }
 
             String clientSupportedAuthScheme = getClientAuthenticationScheme(request);
@@ -848,13 +1024,14 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             writer.print("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"0;url=" + urlWithoutLogoutQS + "\"/></head><body></body></html>");
 */
 
-            // INFO: Append timestamp in order to workaround 301 redirect cache problem (Also see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6465)
+            // INFO: Append timestamp in order to workaround 301 redirect cache problem. Please note that when "yanel:no-cache" set inside resource configuration, then timestamp is not necessary anymore (see YanelServlet)
             // TODO: Check if url still has a query string (see above)
             urlWithoutLogoutQS = urlWithoutLogoutQS + "?yanel.refresh=" + new java.util.Date().getTime();
-            log.debug("Redirect to original request: " + urlWithoutLogoutQS);
+            log.debug("Redirect to original request with refresh query string attached: " + urlWithoutLogoutQS);
 
             response.setHeader("Location", urlWithoutLogoutQS.toString());
-            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
+            // 307 SC_TEMPORARY_REDIRECT
+            response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_TEMPORARILY); // INFO: We use 302 instead 301, because otherwise a proxy server, which might be in between might cache the response of Yanel, which means a second logout won't work, because the request won't be forwarded to Yanel by the proxy server
 
             return true;
         } catch (Exception e) {

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
+  <cd:environment id="development">
+    <cd:tests>
+      <cd:test type="human" href="https://test.yulup.com/en/index.html">Yulup user registration</cd:test>
+      <cd:test type="human" href="http://www.yulup.com/en/projects/continuous/bdd-scenarios/user-registration.html">User registration</cd:test>
+    </cd:tests>
+  </cd:environment>
+  <cd:environment id="staging"/>
+  <cd:environment id="production">
+    <cd:tests>
+      <cd:test type="human" href="http://www.yulup.com/en/index.html">Yulup user registration</cd:test>
+    </cd:tests>
+  </cd:environment>
+</cd:cd>

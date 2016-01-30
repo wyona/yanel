@@ -82,7 +82,8 @@ public class ContactResource extends Resource implements ViewableV1, TrackableV1
 
     private Path path = null;
 
-    private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+    //private String defaultEmailRegEx = "(\\w+)@(\\w+\\.)(\\w+)(\\.\\w+)*";
+    private String defaultEmailRegEx = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
 
     private TrackingInformationV1 trackInfo;
 

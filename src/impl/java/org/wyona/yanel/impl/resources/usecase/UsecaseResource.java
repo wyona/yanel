@@ -25,7 +25,10 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.jelly.JellyContext;
 import org.apache.commons.jelly.XMLOutput;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.util.PathUtil;
@@ -34,9 +37,12 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import org.wyona.yarep.core.Repository;
 import org.xml.sax.InputSource;
 
+/**
+ *
+ */
 public class UsecaseResource extends BasicXMLResource {
 
-    private static Logger log = Logger.getLogger(UsecaseResource.class);
+    private static Logger log = LogManager.getLogger(UsecaseResource.class);
 
     @Override
     public View getView(String viewID) throws Exception {
@@ -85,7 +91,7 @@ public class UsecaseResource extends BasicXMLResource {
             } else if (viewDescriptor.getType().equals(ConfigurableViewDescriptor.TYPE_CUSTOM)) {
                 view = renderCustomView(viewDescriptor);
             } else {
-                throw new UsecaseException("No such type '" + viewDescriptor.getType() + "' of view '" + viewID + "' of usecase resource " + getName() + " implemented!");
+                throw new UsecaseException("No such type '" + viewDescriptor.getType() + "' of view '" + viewID + "' of usecase resource " + getName() + " implemented! Use one of the following types: " + ConfigurableViewDescriptor.TYPE_JELLY + ", " + ConfigurableViewDescriptor.TYPE_JELLY_XML + ", " + ConfigurableViewDescriptor.TYPE_JELLY_TEXT + ", " + ConfigurableViewDescriptor.TYPE_CUSTOM);
             }
             view.setHttpHeaders(viewDescriptor.getHttpHeaders());
             return view;

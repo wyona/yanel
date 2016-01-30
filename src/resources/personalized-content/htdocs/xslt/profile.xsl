@@ -80,12 +80,12 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 
 <table>
 <xsl:for-each select="boost:url">
-  <tr><td><xsl:value-of select="@date"/></td><td><xsl:value-of select="."/></td></tr>
+  <tr><td><xsl:value-of select="@date"/></td><td><a href="{.}"><xsl:value-of select="."/></a></td></tr>
 </xsl:for-each>
 </table>
   </xsl:when>
   <xsl:otherwise>
-    <p>No interests detected yet.</p>
+    <p>No clickstream detected yet.</p>
   </xsl:otherwise>
 </xsl:choose>
   </xsl:template>

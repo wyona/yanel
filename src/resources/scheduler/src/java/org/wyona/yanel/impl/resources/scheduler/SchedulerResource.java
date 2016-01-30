@@ -9,7 +9,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -27,7 +28,7 @@ import org.wyona.commons.xml.XMLHelper;
  */
 public class SchedulerResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(SchedulerResource.class);
+    private static Logger log = LogManager.getLogger(SchedulerResource.class);
     
     /**
      * @see org.wyona.yanel.impl.resources.BasicXMLResource#getContentXML(String)
@@ -45,7 +46,8 @@ public class SchedulerResource extends BasicXMLResource {
         rootEl.setAttribute("current-time", "" + new java.util.Date());
 
         if (schedulers == null || schedulers.isEmpty()) {
-            rootEl.appendChild(doc.createElement("no-schedulers-running"));
+            Element noSchedulerRunningEl = (Element) rootEl.appendChild(doc.createElement("no-schedulers-running"));
+            noSchedulerRunningEl.appendChild(doc.createTextNode("Scheduler is probably disabled inside yanel.xml"));
         } else {
             Element numberOfSchedulersEl = (Element)rootEl.appendChild(doc.createElement("number-of-schedulers"));
             numberOfSchedulersEl.appendChild(doc.createTextNode("" + schedulers.size()));

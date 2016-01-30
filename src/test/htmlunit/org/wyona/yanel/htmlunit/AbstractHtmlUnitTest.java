@@ -31,8 +31,9 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import com.gargoylesoftware.htmlunit.html.ClickableElement;
+//import com.gargoylesoftware.htmlunit.html.ClickableElement;
 import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
@@ -139,13 +140,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         // this.webClient = new WebClient(BrowserVersion.MOZILLA_1_0);
         // this.webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER_6_0);
         this.webClient = new WebClient();
-        this.webClient.addRequestHeader("Accept-Language", this.config
-                .getString("htmlunit.language"));
-        this.webClient.setRedirectEnabled(true);
-        this.webClient.setAlertHandler(new CollectingAlertHandler(this.collectedAlerts));
+        this.webClient.addRequestHeader("Accept-Language", this.config.getString("htmlunit.language"));
+        //this.webClient.setRedirectEnabled(true); // DEPRECATED since version 2
+        //this.webClient.setAlertHandler(new CollectingAlertHandler(this.collectedAlerts)); // DEPRECATED since version 2
 
         // disable javascript because it lead to problems with complex scripts.
-        this.webClient.setJavaScriptEnabled(false);
+        //this.webClient.setJavaScriptEnabled(false); // DEPRECATED since version 2
         this.webClient.setRefreshHandler(new ThreadedRefreshHandler());
     }
 
@@ -163,13 +163,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
             this.logger.error("Exception in testcase [" + this.testName + "]", t);
             if (this.currentPage != null) {
                 WebResponse response = this.currentPage.getWebResponse();
-                this.logger.error("Response URL: " + response.getUrl());
+                this.logger.error("Response URL: " + response.getWebRequest().getUrl());
                 this.logger.error("Response status code: " + response.getStatusCode());
                 this.logger.error("Response status message: " + response.getStatusMessage());
                 this.logger.error("Response content type: " + response.getContentType());
-                this.logger.error("Response content charset: " + response.getContentCharSet());
-                this.logger.error("Response load time in ms: "
-                        + response.getLoadTimeInMilliSeconds());
+                this.logger.error("Response content charset: " + response.getContentCharset());
+                this.logger.error("Response load time in ms: " + response.getLoadTime());
                 this.logger.info(this.currentPage.asXml());
             }
             // print alerts:
@@ -208,6 +207,9 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         this.currentPage = handlePage(page);
     }
 
+    /**
+     *
+     */
     protected void loadErrorPage(String pageURL, int expectedErrorCode) throws Exception {
         int statusCode;
         try {
@@ -216,10 +218,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
         } catch (FailingHttpStatusCodeException e) {
             statusCode = e.getStatusCode();
         }
-        assertTrue("Response status for reserved "+pageURL+" error page not "+
-         expectedErrorCode+" but "+statusCode, statusCode == expectedErrorCode);
+        assertTrue("Response status for reserved "+pageURL+" error page not "+ expectedErrorCode+" but "+statusCode, statusCode == expectedErrorCode);
     }
 
+    /**
+     *
+     */
     protected void loadResource(String resourceURL) throws Exception {
         URL url = new URL(baseURL + resourceURL);
         Page resource = webClient.getPage(url);
@@ -233,10 +237,12 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
      * @param element
      * @throws Exception
      */
+/*
     protected void click(ClickableElement element) throws Exception {
         Page page = element.click();
         this.currentPage = handlePage(page);
     }
+*/
 
     /**
      * Clicks the given button of the first form in the current page.
@@ -248,7 +254,7 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
     protected void clickButton(String name) throws Exception {
         HtmlForm form = (HtmlForm) this.currentPage.getForms().get(0);
         HtmlSubmitInput button = (HtmlSubmitInput) form.getInputByName(name);
-        click(button);
+        //click(button);
     }
 
     /**
@@ -278,8 +284,10 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
      * page
      */
     protected void clickLinkWithText(String linkText) throws Exception {
+/*
         HtmlAnchor link = currentPage.getFirstAnchorByText(linkText);
         click(link);
+*/
     }
 
     /**
@@ -288,9 +296,11 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
     protected void clickLink(String linkPath) throws Exception {
 
         final HtmlElement documentElement = currentPage.getDocumentElement();
+/*
         final List<?> links = documentElement.getHtmlElementsByAttribute("a", "href", linkPath);
         HtmlAnchor link = (HtmlAnchor) links.get(0);
         click(link);
+*/
     }
 
     /**
@@ -321,8 +331,16 @@ public abstract class AbstractHtmlUnitTest extends TestCase {
      */
     protected void assertPageContainsText(String expectedContent) {
         String page = currentPage.asText();
-        assertFalse("provided content \"" + expectedContent + "\" not found on this page", page
-                .indexOf(expectedContent) == -1);
+        assertFalse("provided content \"" + expectedContent + "\" not found on this page", page.indexOf(expectedContent) == -1);
     }
 
+    /**
+     * Asserts that the response of the resource contains the given content.
+     * 
+     * @param expectedContent Expected content
+     */
+    protected void assertResourceContainsText(String expectedContent) {
+        String content = response.getContentAsString();
+        assertFalse("Expected content \"" + expectedContent + "\" not found in the response!", content.indexOf(expectedContent) == -1);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2014 Wyona
  */
 
 package bar.foo.yanel.impl.resources;
@@ -10,7 +10,8 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 
 /**
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class FromScratchResource extends ExecutableUsecaseResource {
     
-    private static Logger log = Logger.getLogger(FromScratchResource.class);
+    private static Logger log = LogManager.getLogger(FromScratchResource.class);
     
     
     /*

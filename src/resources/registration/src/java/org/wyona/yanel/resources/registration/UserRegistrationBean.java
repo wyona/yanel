@@ -19,8 +19,14 @@ public class UserRegistrationBean {
     private String city;
     private String phone;
 
+    private boolean preAuthenticated = false;
+    private String preAuthUsername = null;
+
+    private boolean confirmedByAdministrator = false;
+    private String adminConfirmationKey = null;
+
     /**
-     *
+     * @param firstname First name
      */
     public UserRegistrationBean(String gender, String firstname, String lastname, String email, String password, String city, String phone) {
         this.gender = gender;
@@ -40,6 +46,65 @@ public class UserRegistrationBean {
     }
 
     /**
+     * Set flag whether user is pre authenticated
+     */
+    public void setPreAuthenticated(boolean preAuthenticated) {
+        this.preAuthenticated = preAuthenticated;
+    }
+
+    /**
+     * Check whether user is pre authenticated
+     * @return true when user is pre authenticated
+     */
+    public boolean isPreAuthenticated() {
+        return preAuthenticated;
+    }
+
+    /**
+     * Set pre authenticated username
+     * @param name Username
+     */
+    public void setPreAuthenticatedUsername(String name) {
+        this.preAuthUsername = name;
+    }
+
+    /**
+     * Get pre authenticated username
+     * @return pre authenticated username when pre authenticated and otherwise null
+     */
+    public String getPreAuthenticatedUsername() {
+        return preAuthUsername;
+    }
+
+    /**
+     * Set flag whether administrator has confirmed registration request
+     */
+    public void setAdministratorConfirmed(boolean hasConfirmed) {
+        this.confirmedByAdministrator = hasConfirmed;
+    }
+
+    /**
+     *
+     */
+    public boolean hasAdministratorConfirmedRegistration() {
+        return confirmedByAdministrator;
+    }
+
+    /**
+     *
+     */
+    public void setAdministratorConfirmationKey(String key) {
+        this.adminConfirmationKey = key;
+    }
+
+    /**
+     *
+     */
+    public String getAdministratorConfirmationKey() {
+        return adminConfirmationKey;
+    }
+
+    /**
      *
      */
     public String getUUID() {
@@ -54,17 +119,31 @@ public class UserRegistrationBean {
     }
 
     /**
-     *
+     * Get first name
      */
     public String getFirstname() {
         return firstname;
     }
 
     /**
-     *
+     * Set first name
+     */
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    /**
+     * Get last name
      */
     public String getLastname() {
         return lastname;
+    }
+
+    /**
+     * Set last name
+     */
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     /**

@@ -35,7 +35,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import com.wyona.boost.client.BoostService;
 import com.wyona.boost.client.ServiceException;
@@ -47,14 +48,19 @@ import com.wyona.boost.client.HistoryEntry;
  */
 public class RedirectResourceV102 extends Resource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(RedirectResourceV102.class);
+    private static final Logger log = LogManager.getLogger(RedirectResourceV102.class);
     
     public static String IDENTITY_MAP_KEY = "identity-map";
     private int TMP_REDIRECT_STATUS_CODE = 307;
+    private String LOCATION = "Location";
 
     // Only a temporary variable needed during creation (roundtrip)
     private String defaultHrefSetByCreator;
     private static String REDIRECT_URL = "redirectURL";
+
+    private static final String CONNECTION_TIMEOUT_PROPERTY_NAME = "connection-timeout";
+    private static final String SOCKET_TIMEOUT_PROPERTY_NAME = "socket-timeout";
+    private static final String LIMIT_PROPERTY_NAME = "limit";
     
     /**
      *
@@ -73,15 +79,35 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         View view = new View();
         view.setResponse(false); // this resource writes the response itself
 
-        HttpServletResponse response = getResponse();
+        HttpServletResponse response = getEnvironment().getResponse();
+
+        response.setStatus(TMP_REDIRECT_STATUS_CODE);
+        String location = getLocation();
+        if (location.indexOf("/") == 0) { // INFO: Redirect is absolute path
+            // TBD: An alternative approach would be to use "getRequestURLQS(...)" in order to have a complete URL according to http://en.wikipedia.org/wiki/HTTP_location
+            log.debug("Current path: " + getPath() + ", Back 2 realm: " + org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + ", Absolute redirect path: " + location);
+            location = org.wyona.yanel.core.util.PathUtil.backToRealm(getPath()) + location.substring(1);
+        }
+        //log.debug("Location: " + location);
+        response.setHeader(LOCATION, location);
+
+        return view;
+    }
+
+    /**
+     * Get location from resource configuration
+     * @return redirect URL
+     */
+    private String getLocation() throws Exception {
 
         String defaultHref = getResourceConfigProperty("href");
+        if (defaultHref == null) {
+            throw new Exception("No default redirect has been set inside resource configuration!");
+        } else {
+            log.debug("Default href: " + defaultHref);
+        }
 
-        if (defaultHref == null) throw new Exception("No default redirect has been set inside resource configuration!");
-
-        // Default
-        response.setStatus(TMP_REDIRECT_STATUS_CODE);
-        response.setHeader("Location", defaultHref);
+        String location = defaultHref;
 
         // Username
         String currentUser = null;
@@ -99,20 +125,22 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             // INFO: Personalization
             Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
             if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
-                String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
-                String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
-                String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
-                //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
-                Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
-                String cookieVal = cookie.getValue();
                 try {
+                    String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
+                    String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
+                    String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
+                    //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
+                    Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
+                    if (cookie == null) {
+                        throw new Exception("No yanel analytics cookie yet, probably because this is the very first request: " + getEnvironment().getRequest().getServletPath());
+                    }
+                    String cookieVal = cookie.getValue();
                     Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
                     String clickstreamLang = getLanguage(clickStream);
                     if (clickstreamLang != null) {
                         log.warn("DEBUG: User language from personal click stream: " + clickstreamLang);
-                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                        response.setHeader("Location", personalizedHref.replace("@LANG", clickstreamLang));
-                        return view;
+                        location =personalizedHref.replace("@LANG", clickstreamLang);
+                        return location;
                     } else {
                         log.warn("Not able to detect user language from click stream.");
                     }
@@ -135,9 +163,8 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 try {
                     String lang = languageRedirectConfigs[i].getAttribute("code");
                     if (lang.equals(localizationLanguage) || lang.equals("*")) {
-                        response.setStatus(TMP_REDIRECT_STATUS_CODE);
                         String href = languageRedirectConfigs[i].getAttribute("href");
-                        response.setHeader("Location", href);
+                        location = href;
 
                         String if_logged_in = languageRedirectConfigs[i].getAttribute("if-logged-in", "false");
                         if("true".equals(if_logged_in) && !isLoggedIn) {
@@ -150,7 +177,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                                 //log.debug("Client language '" + localizationLanguage + "' matched and device '" + device + "' is supported. Let's check whether client is a mobile device ...");
                                 if (isMobileDevice()) {
                                     //log.debug("Client is mobile device, hence redirect to: " + href);
-                                    return view;
+                                    return location;
                                 } else {
                                     //log.debug("Client is not a mobile device.");
                                     continue;
@@ -162,7 +189,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                         } else {
                             //log.debug("No device specified (Language: " + localizationLanguage + ").");
                         }
-                        return view;
+                        return location;
                     }
                 } catch (Exception e) {
                     log.error(e.getMessage(), e);
@@ -175,8 +202,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 for (int i = 0; i < userRedirectConfigs.length; i++) {
                     try {
                         if (userRedirectConfigs[i].getAttribute("name") == currentUser || (currentUser).equals(userRedirectConfigs[i].getAttribute("name"))) {
-                            response.setStatus(TMP_REDIRECT_STATUS_CODE);
-                            response.setHeader("Location", userRedirectConfigs[i].getAttribute("href"));
+                            location = userRedirectConfigs[i].getAttribute("href");
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -185,7 +211,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                 }
             }
         }
-        return view;
+        return location;
     }
     
     /**
@@ -305,8 +331,23 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
      */
     private Iterable<HistoryEntry> getClickstream(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
+        if (isAttributeConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setConnectionTimeout(getAttributeValue(CONNECTION_TIMEOUT_PROPERTY_NAME));
+        } else {
+            log.warn("No connection timeout configured.");
+        }
+        if (isAttributeConfigured(SOCKET_TIMEOUT_PROPERTY_NAME)) {
+            bsc.setSocketTimeout(getAttributeValue(SOCKET_TIMEOUT_PROPERTY_NAME));
+        } else {
+            log.warn("No socket timeout configured.");
+        }
         BoostService boost = new BoostService(bsc);
-        return boost.getClickStream(cookie);
+
+        if (isAttributeConfigured(LIMIT_PROPERTY_NAME)) {
+            return boost.getClickStream(cookie, getAttributeValue(LIMIT_PROPERTY_NAME));
+        } else {
+            return boost.getClickStream(cookie);
+        }
     }
 
     /**
@@ -325,7 +366,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     count++; // WARN: If we increase the count as an argument of the Integer below, then it somehow does not get increased!
                     usedLangs.put(language, new Integer(count));
                 } else {
-                    //log.warn("DEBUG: Add language '" + language + "' to has map.");
+                    //log.warn("DEBUG: Add language '" + language + "' to hash map.");
                     usedLangs.put(language, new Integer(1));
                 }
             } else {
@@ -353,10 +394,12 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
     /**
      * Get requested language
-     * @param url Requested URL, which might contain requested language either as prefix or suffix
+     * @param url Requested URL, which might contain requested language either as prefix or suffix, e.g. 'http://127.0.0.1:8080/yanel/yanel-website/de/ueber.html'
+     * @return language, e.g. 'de'
      */
     private String getLanguage(String url) {
         try {
+            //log.debug("Try to get language from url '" + url + "' ...");
             String path = new java.net.URL(url).getPath();
             if (path.length() >= 17 && path.charAt(13) == '/' && path.charAt(16) == '/') {
                 String lang = path.substring(14,16);
@@ -369,5 +412,51 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             log.error(e, e);
         }
         return null;
+    }
+
+    /**
+     * Check whether attribute is configured
+     * @param name Name of attribute, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return true when attribute is configured
+     */
+    private boolean isAttributeConfigured(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+
+            // INFO: Personalization
+            Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
+            if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
+                String value = personalizedRedirectConfigs[0].getAttribute(name, null);
+                if (value != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get value of attribute
+     * @param name Name of attribute, e.g. 'connection-timeout' or 'socket-timeout'
+     * @return value of attribute
+     */
+    private int getAttributeValue(String name) throws Exception {
+        ResourceConfiguration rc = getConfiguration();
+        Document customConfigDoc = rc.getCustomConfiguration();
+        if (customConfigDoc != null) {
+            Configuration config = ConfigurationUtil.toConfiguration(customConfigDoc.getDocumentElement());
+
+            // INFO: Personalization
+            Configuration[] personalizedRedirectConfigs = config.getChildren("personalized");
+            if (personalizedRedirectConfigs != null && personalizedRedirectConfigs.length > 0) {
+                String value = personalizedRedirectConfigs[0].getAttribute(name, null);
+                if (value != null) {
+                    return new Integer(value).intValue();
+                }
+            }
+        }
+        return 0;
     }
 }

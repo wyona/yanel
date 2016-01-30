@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package foo.bar.yanel.impl.resources;
+package org.wyona.yanel.impl.resources.image;
 
 import org.wyona.yanel.junit.AbstractYanelTest;
 import org.wyona.yanel.impl.resources.image.ImageResource;

@@ -25,7 +25,8 @@ import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
@@ -45,7 +46,7 @@ import org.wyona.yarep.core.RepositoryFactory;
  */
 public class RealmManager {
 
-    private static Logger log = Logger.getLogger(RealmManager.class);
+    private static Logger log = LogManager.getLogger(RealmManager.class);
 
     private static String YANEL_CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
@@ -105,11 +106,20 @@ public class RealmManager {
         }
 
 
-        // 2.) Getting realms.xml from user home directory
+        // 2.) Getting realms.xml from user home directory or rather hidden yanel directory inside user home directory
         log.debug("User home directory: " + System.getProperty("user.home"));
+
+        File userHomeDotYanelRealmsConfigFile = new File(System.getProperty("user.home") + "/.yanel", "realms.xml");
+        if (userHomeDotYanelRealmsConfigFile.isFile()) {
+            log.warn("DEBUG: Use hidden folder inside user home directory: " + userHomeDotYanelRealmsConfigFile.getParentFile().getAbsolutePath());
+            return userHomeDotYanelRealmsConfigFile;
+        } else {
+            log.warn("No realms configuration found inside hidden folder at user home directory: " + userHomeDotYanelRealmsConfigFile.getAbsolutePath());
+        }
+
         File userHomeRealmsConfigFile = new File(System.getProperty("user.home"), "realms.xml");
         if (userHomeRealmsConfigFile.isFile()) {
-            log.warn("Use user home directory: " + System.getProperty("user.home"));
+            log.warn("DEPRECATED: Use user home directory: " + System.getProperty("user.home"));
             return userHomeRealmsConfigFile;
         } else {
             log.warn("No realms configuration found within user home directory: " + userHomeRealmsConfigFile.getAbsolutePath());
@@ -305,11 +315,7 @@ public class RealmManager {
                     
                     ReverseProxyConfig rpc = rcc[i].getReverseProxyConfig();
                     if (rpc != null) {
-                        int proxyPort = rpc.getPort();
-                        int proxySSLPort = rpc.getSSLPort();
-                        String prefixValue = rpc.getPrefix();
-                        log.debug("Prefix value: " + prefixValue);
-                        realm.setProxy(rpc.getHostName(), proxyPort, proxySSLPort, prefixValue);
+                        realm.setReverseProxyConfig(rpc);
                     }
                 } catch (Exception e) {
                     String errorMsg = "Error setting up realm [" + realmId + "]: '" + realmConfigFile + "': " + e;
@@ -439,7 +445,7 @@ public class RealmManager {
             if (!realm.getID().equals(rootRealm.getID())) {
                 log.debug("Check whether to inherit root realm properties to another realm: " + realm.getName());
                 if ((realm.getProxyHostName() == null) && (!key.equals(rootRealm.getID())) && rootRealm.isProxySet()) {
-                    realm.setProxy(rootRealm.getProxyHostName(), rootRealm.getProxyPort(), rootRealm.getProxySSLPort(), rootRealm.getProxyPrefix());
+                    realm.setReverseProxyConfig(rootRealm.getReverseProxyConfig());
                     log.info("Inherit root realm properties to realm: " + key);
                 }
                 if (realm.getIdentityManager() == null) {

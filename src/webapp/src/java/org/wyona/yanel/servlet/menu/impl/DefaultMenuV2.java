@@ -15,14 +15,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This menu implements the new tinymce suffix (In order to stay backwards compatible this new version was created)
  */
 public class DefaultMenuV2 extends DefaultMenu {
 
-    private static Logger log = Logger.getLogger(DefaultMenuV2.class);
+    private static Logger log = LogManager.getLogger(DefaultMenuV2.class);
 
     /**
      * Implements the new tinymce suffix
@@ -50,7 +51,7 @@ public class DefaultMenuV2 extends DefaultMenu {
             sb.append("<li>TODO: Edit page with tinyMCE&#160;&#160;&#160;</li>");
             sb.append("<li>TODO: Edit page with Xinha&#160;&#160;&#160;</li>");
         }
-        sb.append("<li><a href=\"http://www.yulup.org\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
+        sb.append("<li><a href=\"https://addons.mozilla.org/de/firefox/addon/wyona-yulup/\">Edit page with Yulup&#160;&#160;&#160;</a></li>");
         sb.append("</ul>");
         sb.append("</li>");
         sb.append("<li>Source editor</li>");

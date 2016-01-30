@@ -19,7 +19,8 @@ package org.wyona.yanel.core.util;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.wyona.yanel.core.util.WildcardMatcherHelper;
 
 /**
@@ -39,7 +40,8 @@ import org.wyona.yanel.core.util.WildcardMatcherHelper;
 public class WildcardReplacerHelper {
     private String stringWithReplaceTokens = null;
     private String pattern = null;
-    private static Category log = Category.getInstance(WildcardReplacerHelper.class);
+
+    private static Logger log = LogManager.getLogger(WildcardReplacerHelper.class);
 
     public WildcardReplacerHelper () {
     }

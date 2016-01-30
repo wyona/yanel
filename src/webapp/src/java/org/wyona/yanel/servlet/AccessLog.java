@@ -8,14 +8,15 @@ import java.util.UUID;
 import java.net.URLEncoder;
 import java.io.UnsupportedEncodingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * First attempt to "standardize" access logging for resources
  */
 public class AccessLog {
 
-    private static Logger log = Logger.getLogger(AccessLog.class);
+    private static Logger log = LogManager.getLogger(AccessLog.class);
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
 
@@ -101,6 +102,7 @@ public class AccessLog {
         } catch(Exception e) {
             log.error(e, e);
         }
+        // TODO: Extract email from referer
         return getLogMessage(url, realmID, cookie.getValue(), request.getHeader("referer"), request.getHeader("User-Agent"),tags, TAG_SEPARATOR);
     }
 

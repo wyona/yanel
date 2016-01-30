@@ -32,14 +32,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Controller to do redirects
  */
 public class RedirectResourceV101 extends Resource implements ViewableV2, CreatableV2 {
 
-    private static Logger log = Logger.getLogger(RedirectResourceV101.class);
+    private static final Logger log = LogManager.getLogger(RedirectResourceV101.class);
     
     public static String IDENTITY_MAP_KEY = "identity-map";
 
@@ -86,8 +87,9 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
         Identity identity = getIdentity(getRequest());
         if (identity != null) {
             currentUser = identity.getUsername();
+            log.debug("User '" + currentUser + "' is signed in.");
         }
-        boolean isLoggedIn = currentUser != null;
+        boolean isLoggedIn = isSignedIn(currentUser);
 
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
@@ -156,6 +158,23 @@ public class RedirectResourceV101 extends Resource implements ViewableV2, Creata
             }
         }
         return view;
+    }
+
+    /**
+     * Check whether user is signed in
+     * @param currentUser User ID when signed in and null otherwise
+     * @return true when user is signed in and false otherwise
+     */
+    private boolean isSignedIn(String currentUser) throws Exception {
+        if (getYanel().isPreAuthenticationEnabled()) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            if (preAuthReqHeaderName != null && getEnvironment().getRequest().getHeader(preAuthReqHeaderName) != null) {
+                String preAuthUserName = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+                log.debug("Pre authenticated user: " + preAuthUserName);
+                return true;
+            }
+        }
+        return currentUser != null;
     }
     
     /**

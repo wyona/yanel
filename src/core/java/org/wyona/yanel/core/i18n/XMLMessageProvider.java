@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -36,7 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *  
  */
 public class XMLMessageProvider implements MessageProvider {
-    private static final Logger log = Logger.getLogger(XMLMessageProvider.class.getName());
+    private static final Logger log = LogManager.getLogger(XMLMessageProvider.class.getName());
 
     private static SAXParserFactory factory = SAXParserFactory.newInstance();
     

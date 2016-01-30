@@ -1,7 +1,6 @@
 /*
  * Copyright 2011 Wyona
  */
-
 package org.wyona.yanel.impl.resources.image;
 
 import org.wyona.yanel.core.Resource;
@@ -11,7 +10,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yarep.core.Node;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.AffineTransformOp;
@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
  */
 public class MobileImageResource extends ImageResource  {
     
-    private static Logger log = Logger.getLogger(MobileImageResource.class);
+    private static Logger log = LogManager.getLogger(MobileImageResource.class);
 
     /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)

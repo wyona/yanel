@@ -23,6 +23,7 @@
   <xsl:param name="deletion" select="'false'"/>
   <xsl:param name="yanel.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yanel.reservedPrefix" select="'RESERVEDPREFIX_IS_NULL'"/>
+  <xsl:param name="yanel.pre-authentication-enabled" select="'IS_PRE_AUTH_ENABLED_IS_NULL'"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -63,6 +64,7 @@
 <!--
   <xsl:template match="form">
 -->
+    <xsl:if test="$yanel.pre-authentication-enabled != 'true'">
     <h2>Change Password</h2>
     <form name="user-password-form" method="post" action="#">
       <p>
@@ -93,6 +95,7 @@
         </table>
       </p>
     </form>
+    </xsl:if>
 
     <h2>Change Identity</h2>
     <form name="user-profile-form" method="post" action="#">
@@ -178,9 +181,36 @@
      
     <xsl:call-template name="process-all-groups"/>         
 -->
+
+    <h2>Aliases</h2>
+    <xsl:choose>
+      <xsl:when test="aliases">
+    <ul>
+      <xsl:for-each select="aliases/alias">
+      <li><xsl:value-of select="."/></li>
+      </xsl:for-each>
+    </ul>
+      </xsl:when>
+      <xsl:otherwise>
+        <p>No aliases yet.</p>
+      </xsl:otherwise>
+    </xsl:choose>
+
+    <!-- TBD <xsl:if test="$yanel.pre-authentication-enabled != 'true'"> -->
+    <h2>History</h2>
+    <table>
+      <tr>
+        <th>Usecase</th><th>Description</th><th>Date</th>
+      </tr>
+    <xsl:for-each select="history/event">
+      <tr>
+        <td><xsl:value-of select="@usecase"/></td><td><xsl:value-of select="@description"/></td><td><xsl:value-of select="@date"/></td>
+      </tr>
+    </xsl:for-each>
+    </table>
   
 
-<!-- One shouldn't be able to delete oneself! -->
+<!-- TBD: One shouldn't be able to delete oneself! -->
 <!--
     <h2>Delete User</h2>
     <form name="user-deletion-form" method="post" action="#">

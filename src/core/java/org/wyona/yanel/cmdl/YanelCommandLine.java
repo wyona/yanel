@@ -28,6 +28,7 @@ import org.wyona.yanel.core.api.attributes.CreatableV2;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV1;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
+import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
@@ -42,13 +43,16 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
- *
+ * Yanel command line interface, in order to execute requests/resources from the command line
  */
 public class YanelCommandLine {
 
     private static Category log = Category.getInstance(YanelCommandLine.class);
+    //private static Logger log = LogManager.getLogger(YanelCommandLine.class);
 
     /**
      *
@@ -80,7 +84,7 @@ public class YanelCommandLine {
 
         String url = null;
         if (args.length != 1 || args[0].length() == 0) { // INFO: Check whether an argument has been set
-            System.out.println("\nPlease enter a path (e.g. /index.html):");
+            System.out.println("\nPlease enter a path (including the realm prefix), e.g. '/index.html' or '/yanel-website/en/documentation/misc/yanel-command-line.html':");
             try {
                 String value = br.readLine();
                 if (value.equals("")) {
@@ -90,7 +94,9 @@ public class YanelCommandLine {
                 System.out.println("The following value has been entered: " + value);
                 url = value;
             } catch (Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             url = args[0];
@@ -117,14 +123,22 @@ public class YanelCommandLine {
         //PolicyManager pm = (PolicyManager) yanel.getBeanFactory().getBean("policyManager");
         PolicyManager pm = realm.getPolicyManager();
     
-
-        String[] groupnames = {"admin", "accounting"};
-        Identity identity = new Identity("lenya", groupnames, "lenya");
-        if (pm.authorize(path, identity, new Role("view"))) {
-            System.out.println("Access granted: " + path + " (Realm ID: " + realm.getID() + ")");
+        Identity identity = null;
+        if (pm.authorize(path, new Identity(), new Role("view"))) {
+            identity = new Identity();
+            System.out.println("Access granted for WORLD: " + path + " (Realm ID: " + realm.getID() + ")");
         } else {
-            // TODO: Deny access resp. start login process!
-            System.out.println("Access denied: " + path);
+            String[] groupnames = {"admin", "accounting"};
+            identity = new Identity("lenya", groupnames, "lenya");
+            System.out.println("Access denied for WORLD, hence let's try user '" + identity.getUsername() + "' ...");
+            if (pm.authorize(path, identity, new Role("view"))) {
+                System.out.println("Access granted for user '" + identity.getUsername() + "': " + path + " (Realm ID: " + realm.getID() + ")");
+            } else {
+                System.out.println("Access denied for user '" + identity.getUsername() + "' as well: " + path);
+
+                // TODO: Abort or start login process!
+                System.out.println("Let's continue anyway ...");
+            }
         }
 
         Resource res = null;
@@ -145,7 +159,7 @@ public class YanelCommandLine {
             System.out.println("Resource path: " + res.getPath());
         } catch(Exception e) {
             System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
-            log.error(e.getMessage(), e);
+            log.error(e, e);
             return;
         }
 
@@ -173,7 +187,9 @@ public class YanelCommandLine {
                     System.out.println("Line " + k + ": " + line);
                 }
             } catch(Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement viewable V1 interface!");
@@ -181,7 +197,19 @@ public class YanelCommandLine {
 
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Viewable", "2")) {
             System.out.println(res.getClass().getName() + " does implement viewable V2 interface!");
-            System.out.println("View Descriptors: " + ((ViewableV2) res).getViewDescriptors());
+            ViewDescriptor[] vds = ((ViewableV2) res).getViewDescriptors();
+            System.out.println("View Descriptors: ");
+            for (int i = 0; i < vds.length; i++) {
+                System.out.println(" - Id: " + vds[i].getId() + ", Mime-Type: " + vds[i].getMimeType());
+            }
+            if (viewId == null && vds.length > 0) {
+                if (vds.length > 0) {
+                    viewId = vds[0].getId();
+                } else {
+                    log.error("No view ID set!");
+                }
+            }
+            System.out.println("View ID: " + viewId);
             try {
                 View view = ((ViewableV2) res).getView(viewId);
                 System.out.println("mime-type: " + view.getMimeType());
@@ -194,7 +222,9 @@ public class YanelCommandLine {
                     System.out.println("Line " + k + ": " + line);
                 }
             } catch(Exception e) {
-                System.err.println(e);
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement viewable V2 interface!");
@@ -204,7 +234,9 @@ public class YanelCommandLine {
             try {
                 java.io.Reader reader = ((ModifiableV1) res).getReader(new Path(url));
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                log.error(e, e);
+                return;
             }
         } else {
             System.out.println(res.getClass().getName() + " does NOT implement modifiable V1 interface!");
@@ -224,7 +256,8 @@ public class YanelCommandLine {
                 return;
             }
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
         if (ResourceAttributeHelper.hasAttributeImplemented(tapeRes, "Creatable", "1")) {
@@ -251,7 +284,8 @@ public class YanelCommandLine {
             rtd = rtr.getResourceTypeDefinition(rti);
             invoiceRes.setRTD(rtd);
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
 
@@ -264,7 +298,9 @@ public class YanelCommandLine {
                     String value = br.readLine();
                     System.out.println("The following value has been entered: " + value);
                 } catch (Exception e) {
-                    System.err.println(e);
+                    System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+                    log.error(e, e);
+                    return;
                 }
                 if (i == names.length -1) {
                     propNames = propNames + names[i];
@@ -288,7 +324,8 @@ public class YanelCommandLine {
             websearchRes.setRTD(rtd);
             if (ResourceAttributeHelper.hasAttributeImplemented(websearchRes, "Continuable", "1")) System.out.println("yeah");
         } catch(Exception e) {
-            System.err.println(e);
+            System.err.println("Exception (also see log4j: tail -f logs/log4j-cmdl.log): " + e);
+            log.error(e, e);
             return;
         }
 */

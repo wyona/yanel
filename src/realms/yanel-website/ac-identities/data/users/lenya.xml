@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<user xmlns="http://www.wyona.org/security/1.0" id="lenya">
+<name>Lenya</name>
+<email>lenya@foo.bar</email>
+<language>de</language>
+<password algorithm="bcrypt-MD5">$2a$12$JS6.9Z.oqbSYx16nYyf0AO8PE94jKAmb7j7gKN6EhFrtTV0h/PpEC</password>
+<description>Dummy User</description>
+<expire>2069-02-16T00:00:00</expire>
+<aliases/>
+<groups>
+<group id="editor"/>
+</groups>
+</user>

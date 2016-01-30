@@ -4,6 +4,7 @@ SCRIPT_DIR=$PWD
 #SCRIPT_DIR=$PWD/`dirname $0`
 
 JAVA_HOME_MACOSX=/System/Library/Frameworks/JavaVM.framework/Home
+JAVA_HOME_MACOSX_YOSEMITE=/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home
 
 # ----- Check for JAVA_HOME
 JAVA_HOME="$JAVA_HOME"
@@ -11,12 +12,13 @@ if [ "$JAVA_HOME" = "" ];then
   echo "ERROR: No JAVA_HOME set!"
   echo "       Have you installed JDK (Java Development Kit)? If so, then set JAVA_HOME ..."
   echo ""
-  echo "       Mac OS X : Depending on the shell you're using either use"
-  echo "                  export JAVA_HOME=$JAVA_HOME_MACOSX"
-  echo "                  or"
-  echo "                  setenv JAVA_HOME $JAVA_HOME_MACOSX"
-  echo "       Linux    : export JAVA_HOME=/usr/local/jdk-1.6.0 (whereas '/usr/local/jdk-1.6.0' is just an example path)"
-  echo "       Windows  : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
+  echo "       Mac OS X          : Depending on the shell you're using either use"
+  echo "                           export JAVA_HOME=$JAVA_HOME_MACOSX"
+  echo "                           or"
+  echo "                           setenv JAVA_HOME $JAVA_HOME_MACOSX"
+  echo "       Mac OS X Yosemite : run $JAVA_HOME_MACOSX_YOSEMITE and set JAVA_HOME accordingly"
+  echo "       Linux             : export JAVA_HOME=/usr/local/jdk-1.6.0 (whereas '/usr/local/jdk-1.6.0' is just an example path)"
+  echo "       Windows           : Click Start, click 'My Computer', right click on window, select 'Properties', click the 'Advanced' tab, click 'Environment Variables'"
   echo ""
   if [ -d $JAVA_HOME_MACOSX ]; then
       echo "INFO: You seem to use Mac OS X as operating system. Do you want to set '$JAVA_HOME_MACOSX' as JAVA_HOME? (YES/no)"
@@ -30,7 +32,20 @@ if [ "$JAVA_HOME" = "" ];then
           echo ""
           sleep 3
       fi
+  elif [ -f $JAVA_HOME_MACOSX_YOSEMITE ]; then
+      echo "INFO: You seem to use Mac OS X Yosemite as operating system. Do you want to set '`$JAVA_HOME_MACOSX_YOSEMITE`' as JAVA_HOME? (YES/no)"
+      read ANSWER
+      if [ "$ANSWER" = "no" ]; then
+          echo "WARNING: JAVA_HOME has not been set. Please make sure to set it manually and then re-run this script."
+          exit 1
+      else
+          export JAVA_HOME=`$JAVA_HOME_MACOSX_YOSEMITE`
+          echo "INFO: JAVA_HOME has been set to '`$JAVA_HOME_MACOSX_YOSEMITE`' while processing this shell script."
+          echo ""
+          sleep 3
+      fi
   else
+      #echo "Operating system not detected."
       exit 1
   fi
 fi
@@ -49,7 +64,7 @@ unset CATALINA_HOME
 PATH=$SCRIPT_DIR/tools/maven-2.0.4/bin:$ANT_HOME/bin:$PATH
 #echo $PATH
 
-# ----- Yanel subcommands:
+# ----- Yanel subcommands
 #mvn --version
 $OUR_ANT -version
 if [ "$1" = "start" ]; then
@@ -98,9 +113,13 @@ elif [ "$1" = "cmdl" ]; then
 else
   echo "----------------------------------------------"
   echo ""
-  echo "WARNING: No such command '$1' implemented!"
+  if [ "$1" = "" ]; then
+    echo "WARNING: Please make sure to use an option!"
+  else
+    echo "WARNING: No such option '$1' available!"
+  fi
   echo ""
-  echo "The following commands exist:"
+  echo "The following options exist:"
   echo ""
   echo "start        - Startup yanel webapp"
   echo "stop         - Shutdown yanel webapp"

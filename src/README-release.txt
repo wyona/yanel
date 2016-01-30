@@ -11,10 +11,10 @@ Checklist for releasing a new Yanel version/snapshot:
 - (no need to publish Yanel Maven artifacts yet, as they are only used internally for now)
 - update release-specific Yanel website pages:
  (you can simply go there, log in and use Yulup for direct editing)
-  - Unix download: http://yanel.wyona.org/en/download/unix.html
-  - Windows download: http://yanel.wyona.org/en/download/windows.html
-  - [TODO: not sure how to edit this: ] news: http://yanel.wyona.org/news/index.html
-  - home: http://yanel.wyona.org/ (all available languages!) (for official releases maybe do not specify the revision for clarity, e.g. "0.9" instead of "0.9-r41485")
+  - Unix download: http://www.yanel.org/en/download/unix.html
+  - Windows download: http://www.yanel.org/en/download/windows.html
+  - [TODO: not sure how to edit this: ] news: http://www.yanel.org/news/index.html
+  - home: http://www.yanel.org/ (all available languages!) (for official releases maybe do not specify the revision for clarity, e.g. "0.9" instead of "0.9-r41485")
   - features?
  ...and *don't forget to commit* the changes!
 - update the website itself on the server:

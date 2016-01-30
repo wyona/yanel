@@ -64,9 +64,15 @@ public interface Realm {
     public File getConfigFile();
 
     /**
-     *
+     * Set reverse proxy configuration
+     * @param reverseProxyConfig TODO
      */
-    public void setProxy(String hostName, int port, int sslPort, String prefix);
+    public void setReverseProxyConfig(ReverseProxyConfig reverseProxyConfig);
+
+    /**
+     * Get reverse proxy configuration
+     */
+    public ReverseProxyConfig getReverseProxyConfig();
 
     /**
      *
@@ -74,7 +80,7 @@ public interface Realm {
     public boolean isProxySet();
 
     /**
-     *
+     * TODO: What is the difference to getReverseProxyConfig().getHostName()?
      */
     public String getProxyHostName();
 
@@ -148,7 +154,7 @@ public interface Realm {
 
     /**
      * Please note that the root-dir element is optional
-     * @deprecated
+     * @deprecated Use new File(realm.getConfigFile().getParent()) instead
      */
     public File getRootDir();
 

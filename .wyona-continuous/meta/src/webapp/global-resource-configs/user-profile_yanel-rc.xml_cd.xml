@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
+  <cd:environment id="development">
+    <cd:tests>
+      <cd:test type="human" href="https://www.yulup.com/en/projects/yanel/bdd-scenarios/change_email_address,_but_do_not_change_login_alias.html">Change email, but not login alias</cd:test>
+      <cd:test type="human" href="https://www.yulup.com/en/projects/yanel/bdd-scenarios/change_email_address_and_login_alias.html">Change email and login alias</cd:test>
+    </cd:tests>
+  </cd:environment>
+  <cd:environment id="staging"/>
+  <cd:environment id="production"/>
+</cd:cd>

@@ -13,7 +13,7 @@
        5. error
        6. fatal (the most serious)
     -->
-    <debugLevel>4</debugLevel>
+    <debugLevel>3</debugLevel>
     <baseUrl>http://localhost:8080/yanel/</baseUrl>
     <reservedPrefix>yanel/</reservedPrefix>
     <language>en</language>

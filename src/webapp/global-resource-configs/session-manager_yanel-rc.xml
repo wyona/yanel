@@ -3,6 +3,10 @@
 <yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
   <yanel:rti name="sessionmanager" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
+<!-- WARN: For security reasons do not disable hashing (of session IDs or CAS tickets)
+  <yanel:property name="hash" value="false"/>
+-->
+
   <yanel:custom-config>
     <views>
       <view id="default" type="xml">

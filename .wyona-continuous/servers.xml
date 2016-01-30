@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
+  <cd:production>
+    <cd:servers>
+      <cd:server username="TODO" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node1"></cd:server>
+      <cd:server username="TODO" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node2"></cd:server>
+    </cd:servers>
+  </cd:production>
+<!--
+  <cd:staging>
+    <cd:servers>
+      <cd:server username="TODO" hostname="www.yanel.org" base-dir="/home/wyona/src/yanel-node2"></cd:server>
+    </cd:servers>
+  </cd:staging>
+-->
+</cd:cd>

@@ -5,4 +5,4 @@ http://$YOURSERVER/$SERVLETPREFIX/yanel-website/en/documentation/testing-framewo
 e.g. http://localhost:8080/yanel/yanel-website/en/documentation/testing-framework.html
 
 on the internet:
-http://yanel.wyona.org/en/documentation/testing-framework.html
+http://www.yanel.org/en/documentation/testing-framework.html

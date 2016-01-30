@@ -11,7 +11,8 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 
 import org.wyona.yarep.core.Node;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.AffineTransformOp;
@@ -23,7 +24,7 @@ import javax.imageio.ImageIO;
  */
 public class ImageResource extends Resource implements ViewableV2  {
     
-    private static Logger log = Logger.getLogger(ImageResource.class);
+    private static Logger log = LogManager.getLogger(ImageResource.class);
 
     private String DEFAULT_CACHE_DIRECTORY = "/cached-images";
 
@@ -34,6 +35,9 @@ public class ImageResource extends Resource implements ViewableV2  {
         return getRealm().getRepository().existsNode(getPath());
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#getSize()
+     */
     public long getSize() throws Exception {
         // TODO Auto-generated method stub
         return 0;
@@ -101,6 +105,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Get destination width
+     * @return TODO
      */
     private int getDestWidth() throws Exception {
         // TODO: Get destination width from query string: getEnvironment().getRequest().getParameter("width")
@@ -135,6 +140,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Get scale factor
+     * @param sourceWidth TODO
      */
     private double getScaleFactor(double sourceWidth, double sourceHeight, double destWidth, double destHeight) {
         if (destWidth > 0 && destHeight <= 0) {
@@ -203,6 +209,7 @@ public class ImageResource extends Resource implements ViewableV2  {
 
     /**
      * Check whether cache node exists and if so, then compare last modified
+     * @return TODO
      */
     private boolean existsMoreRecentCacheNode() throws Exception {
         String cacheRootPath = getResourceConfigProperty("cache-root-path");

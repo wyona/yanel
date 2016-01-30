@@ -30,7 +30,9 @@ import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.WildcardFilter;
-import org.apache.log4j.Category;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.commons.io.FileUtil;
 import org.wyona.yanel.core.map.RealmManager;
@@ -40,7 +42,7 @@ import org.wyona.yanel.core.map.RealmManager;
  */
 public class ResourceTypeRegistry {
 
-    private static Category log = Category.getInstance(ResourceTypeRegistry.class);
+    private static Logger log = LogManager.getLogger(ResourceTypeRegistry.class);
 
     public static String CONFIGURATION_FILE = Yanel.DEFAULT_CONFIGURATION_FILE;
 
@@ -153,8 +155,9 @@ public class ResourceTypeRegistry {
             
             Configuration resourceTypes[] = config.getChildren("resource-type");
             
+            log.debug("Try to register " + resourceTypes.length + " resource types ...");
+
             for (int i = 0; i < resourceTypes.length; i++) {
-                log.debug("Try to register resource type(s)...");
                 boolean hasPackageAttribute = false;
                 String packageName = null;
                 try {
@@ -167,8 +170,7 @@ public class ResourceTypeRegistry {
                 if (hasPackageAttribute && packageName != null && packageName.trim().length() > 0) {
                     log.info("Loading resource(s) from package: " + packageName);
 
-                    // TODO: Config itself, e.g. org/wyona/yanel/impl/resources/redirect/my-resource.xml (What does that TODO mean?!)
-
+                    // WARN: Please note that when there are two jars containing the same package, then the loading of the resource configuration is likely to fail! See for example the problem with yanel-HtmlUnitTests.jar or yanel-JunitTests.jar
                     URL packageURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/'));
                     if (packageURL == null) { // TODO: Make more fault tolerant!
                         throw new ConfigurationException("Could not determine package URL for package name: " + packageName + " (Probably package name is wrong/misspelt (check WEB-INF/classes/resource-types.xml) or corresponding library/resource does not exists (check WEB-INF/lib))!)");
@@ -183,16 +185,19 @@ public class ResourceTypeRegistry {
                         log.debug("Jar file: " + jarFile);
                         java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile(jarFile);
                         java.util.Enumeration entries = zipFile.entries();
+                        boolean containsResourceConfig = false;
                         while (entries.hasMoreElements()) {
                             String entryName = ((java.util.zip.ZipEntry) entries.nextElement()).getName();
                             //log.debug("Entry: " + entryName);
                             if (entryName.indexOf("resource.xml") >= 0 || entryName.indexOf("resource-") >= 0) { // INFO: see for example src/resources/user-mgmt/
+                                containsResourceConfig = true;
                                 log.info("Resource definition: " + entryName);
                                 URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(entryName);
                                 //URL resourceURL = ResourceTypeRegistry.class.getClassLoader().getResource(packageName.replace('.','/') + "/resource.xml");
                                 log.info("Resource config URL: " + resourceURL);
                                 try {
-                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
+                                    ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL);
+                                    //ResourceTypeDefinition rtd = new ResourceTypeDefinition(resourceURL.openStream());
                                     log.debug("Universal Name: " + rtd.getResourceTypeUniversalName());
                                     log.debug("Classname: " + rtd.getResourceTypeClassname());
                                     hm.put(rtd.getResourceTypeUniversalName(), rtd);
@@ -200,7 +205,12 @@ public class ResourceTypeRegistry {
                                     log.error("Exception re registring resource with package '" + packageName + "' and resource definition URL '" + resourceURL + "'!");
                                     log.error(exception, exception);
                                 }
+                            } else {
+                                log.debug("Entry '" + entryName + "' of package '" + packageURL.getFile() + "' is not a resource configuration!");
                             }
+                        }
+                        if (!containsResourceConfig) {
+                            log.error("Package '" + packageURL.getFile() + "' does not contain a resource configuration associated with the package name '" + packageName + "'!");
                         }
                     } else if (new File(packageURL.getPath()).isDirectory()) {
                         log.debug("Library seems to be extracted: " + packageURL.getPath());
@@ -274,7 +284,7 @@ public class ResourceTypeRegistry {
      */
     public ResourceTypeDefinition getResourceTypeDefinition(String universalName) throws Exception {
         if (!hm.containsKey(universalName)) {
-            throw new Exception("Unknown resource type: " + universalName);
+            throw new Exception("Unknown resource type '" + universalName + "'! Either jar not available or more than one jar contains the same package associated with.");
         }
         return (ResourceTypeDefinition) hm.get(universalName);
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="login"
+  namespace="http://www.wyona.org/yanel/resource/1.0.0"
+  class="org.wyona.yanel.impl.resources.login.LoginResource"
+  >
+<description>
+Generic Yanel login
+</description>
+
+<rtd>
+</rtd>
+</resource>

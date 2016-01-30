@@ -10,8 +10,6 @@ HTTP Session manager
 </description>
 
 <rtd>
-<!--
-  <property name="foo" default-value="bar"/>
--->
+  <property name="hash" default-value="true"/>
 </rtd>
 </resource>

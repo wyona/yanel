@@ -18,7 +18,8 @@ package org.wyona.yanel.core;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
@@ -28,7 +29,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
  */
 public class ResourceTypeDefinition {
 
-    private Logger log = Logger.getLogger(ResourceTypeDefinition.class);
+    private Logger log = LogManager.getLogger(ResourceTypeDefinition.class);
 
     private String uname;
     private String classname;
@@ -37,7 +38,7 @@ public class ResourceTypeDefinition {
     private File configFile;
 
     // TODO: In order to resolve other stuff, e.g. XSLTs, htdocs, icons, ...
-    //TODO: private URL configURL;
+    private java.net.URL configURL;
 
     /**
      *
@@ -49,23 +50,45 @@ public class ResourceTypeDefinition {
     }
 
     /**
+     * Load resource type definition from URL
+     * @param url URL pointing to resource type definition
+     */
+    public ResourceTypeDefinition(java.net.URL url) throws Exception {
+        this.configURL = url;
+        // TODO: Throw exception instead catching it
+        try {
+            initRTD(url.openStream());
+        } catch(Exception e) {
+            log.error("Failed to load '" + url + "' ...");
+            log.error(e, e);
+        }
+    }
+
+    /**
      * Load resource type definition from input stream
      * @param in InputStream containing resource type definition
      */
     public ResourceTypeDefinition(java.io.InputStream in) {
-        // TODO: Set configURL
-        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
-        Configuration config;
         try {
-            config = builder.build(in);
-            String localName = config.getAttribute("name", null);
-            String namespace= config.getAttribute("namespace", null);
-            uname = "<{" + namespace + "}" + localName + "/>";
-            classname = config.getAttribute("class", null);
-            description = config.getChild("description").getValue();
+            initRTD(in);
         } catch(Exception e) {
             log.error(e, e);
         }
+    }
+
+    /**
+     *
+     */
+    private void initRTD(java.io.InputStream in) throws Exception {
+        // TODO: Set configURL
+        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
+        Configuration config;
+        config = builder.build(in);
+        String localName = config.getAttribute("name", null);
+        String namespace= config.getAttribute("namespace", null);
+        uname = "<{" + namespace + "}" + localName + "/>";
+        classname = config.getAttribute("class", null);
+        description = config.getChild("description").getValue();
     }
 
     /**

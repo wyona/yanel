@@ -51,14 +51,14 @@ public interface WorkflowableV1 {
      * @param revision
      * @throws WorkflowException
      */
-    void doTransition(String transitionID, String revision) throws WorkflowException;
+    public void doTransition(String transitionID, String revision) throws WorkflowException;
 
     /**
      * Indicates whether this resource is live or not.
      * @return true if this resource is live, false otherwise.
      * @throws WorkflowException
      */
-    boolean isLive() throws WorkflowException;
+    public boolean isLive() throws WorkflowException;
     
     /**
      * Gets the view of the live version of this resource.
@@ -66,7 +66,7 @@ public interface WorkflowableV1 {
      * @return live view
      * @throws Exception
      */
-    View getLiveView(String viewid) throws Exception;
+    public View getLiveView(String viewid) throws Exception;
     
     /**
      * Gets the workflow state of the given revision.
@@ -74,7 +74,7 @@ public interface WorkflowableV1 {
      * @return workflow state or null if the revision has no workflow state
      * @throws WorkflowException
      */
-    String getWorkflowState(String revision) throws WorkflowException;
+    public String getWorkflowState(String revision) throws WorkflowException;
     
     /**
      * Sets the workflow state of the given revision, for example a "review" status
@@ -82,7 +82,7 @@ public interface WorkflowableV1 {
      * @param revision
      * @throws WorkflowException
      */
-    void setWorkflowState(String state, String revision) throws WorkflowException;
+    public void setWorkflowState(String state, String revision) throws WorkflowException;
     
     /**
      * Gets the workflow date of the given revision, that is the date when
@@ -91,7 +91,7 @@ public interface WorkflowableV1 {
      * @return workflow date or null if the revision has no workflow date
      * @throws WorkflowException
      */
-    Date getWorkflowDate(String revision) throws WorkflowException;
+    public Date getWorkflowDate(String revision) throws WorkflowException;
     
     
     /**
@@ -100,7 +100,7 @@ public interface WorkflowableV1 {
      * @return workflow variable or null if this resource has no workflow variable with the given name.
      * @throws WorkflowException
      */
-    String getWorkflowVariable(String name) throws WorkflowException;
+    public String getWorkflowVariable(String name) throws WorkflowException;
     
     /**
      * Sets the workflow variable with the given name, for example a "live" flag
@@ -108,14 +108,14 @@ public interface WorkflowableV1 {
      * @param value
      * @throws WorkflowException
      */
-    void setWorkflowVariable(String name, String value) throws WorkflowException;
+    public void setWorkflowVariable(String name, String value) throws WorkflowException;
     
     /**
      * Removes the workflow variable with the given name.
      * @param name
      * @throws WorkflowException
      */
-    void removeWorkflowVariable(String name) throws WorkflowException;
+    public void removeWorkflowVariable(String name) throws WorkflowException;
     
     /**
      * Gets the introspection xml containing the workflow information.
@@ -124,9 +124,9 @@ public interface WorkflowableV1 {
      * @return workflow introspection xml
      * @throws WorkflowException
      */
-    String getWorkflowIntrospection() throws WorkflowException;
+    public String getWorkflowIntrospection() throws WorkflowException;
     
-    //boolean canDoTransition(String transitionID) throws WorkflowException;
-    //String[] getPossibleTransitions() throws WorkflowException;
+    //public boolean canDoTransition(String transitionID) throws WorkflowException;
+    //public String[] getPossibleTransitions() throws WorkflowException;
 }
 

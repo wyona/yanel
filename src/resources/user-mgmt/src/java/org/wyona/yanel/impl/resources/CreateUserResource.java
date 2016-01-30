@@ -16,7 +16,8 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.UserManager;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
  */
 public class CreateUserResource extends ExecutableUsecaseResource {
 
-    private static final Logger log = Logger.getLogger(CreateUserResource.class);
+    private static final Logger log = LogManager.getLogger(CreateUserResource.class);
 
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
@@ -40,6 +41,9 @@ public class CreateUserResource extends ExecutableUsecaseResource {
     private static final String PARAM_PASSWORD1 = "password1";
     private static final String PARAM_PASSWORD2 = "password2";
 
+    /**
+     *
+     */
     @Override
     public void execute() throws UsecaseException {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
@@ -61,8 +65,11 @@ public class CreateUserResource extends ExecutableUsecaseResource {
                 if (log.isDebugEnabled()) {
                 	log.debug("setting alias: " + alias + " for user: " + id + " " + name + " " + email);
                 }
-                // TODO: Does alias exist already!
-                userManager.createAlias(alias, id);
+                if (!userManager.existsAlias(alias)) {
+                    userManager.createAlias(alias, id);
+                } else {
+                    log.error("Alias '" + alias + "' already exists!");
+                }
             }
             
             // Create alias from email
@@ -70,18 +77,14 @@ public class CreateUserResource extends ExecutableUsecaseResource {
                 if (log.isDebugEnabled()) {
                 	log.debug("setting email as alias for user: " + id + " " + name + " " + email);
                 }
-                // TODO: Does alias exist already!
-                userManager.createAlias(email, id);
+                if (!userManager.existsAlias(email)) {
+                    userManager.createAlias(email, id);
+                } else {
+                    log.error("Alias '" + email + "' already exists!");
+                }
             }
 
-            // Create access policy
-            org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
-            org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
-            org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
-            usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
-            policy.addUsecasePolicy(usecasePolicy);
-            // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
-            policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
+            createUserProfileAccessPolicy(id);
 
             addInfoMessage("User '" + id + "' (" + name + ") created successfully. (IMPORTANT: Please make sure to add user either to an existing group or to an access policy, because otherwise user will not have any explicite rights.)");
         } catch (AccessManagementException e) {
@@ -91,6 +94,22 @@ public class CreateUserResource extends ExecutableUsecaseResource {
             log.error(e, e);
             throw new UsecaseException(e.getMessage(), e);
         }
+    }
+
+    /**
+     * Create user profile access policy 
+     * @param id User ID
+     */
+    private void createUserProfileAccessPolicy(String id) throws Exception {
+        // TODO: Also see src/resources/registration/src/java/org/wyona/yanel/resources/registration/UserRegistrationResource.java
+
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+        org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+        usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
+        policy.addUsecasePolicy(usecasePolicy);
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
     }
 
     @Override

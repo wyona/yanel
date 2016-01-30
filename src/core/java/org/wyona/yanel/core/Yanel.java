@@ -29,12 +29,15 @@ import java.io.File;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This class is a singleton.
  */
 public class Yanel {
+    private static Logger log = LogManager.getLogger(Yanel.class);
 
     private Map map = null;
     private ResourceTypeRegistry rtr = null;
@@ -60,13 +63,12 @@ public class Yanel {
     private String truststoreSrc = null;
     private String truststorePwd = null;
     private boolean schedulerEnabled;
+    private boolean preAuthenticationEnabled;
+    private String preAuthReqHeaderName = null;
 
     private String smtpUsername, smtpPassword;
 
-    // TODO: It would be good to have an administrative contact per Yanel instance
-    //private String adminName, adminEmail;
-
-    private static Logger log = Logger.getLogger(Yanel.class);
+    private String adminName, adminEmail;
 
     /**
      * Private constructor
@@ -84,7 +86,7 @@ public class Yanel {
            return;
        }
 
-       File configFile = new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
+       File configFile = getConfigFile();
        DefaultConfigurationBuilder builder = new DefaultConfigurationBuilder();
        Configuration config = builder.buildFromFile(configFile);
        
@@ -109,27 +111,52 @@ public class Yanel {
        Configuration versionConfig = config.getChild("version");
        version = versionConfig.getAttribute("version");
        revision = versionConfig.getAttribute("revision");
+
        reservedPrefix = config.getChild("reserved-prefix").getValue();
+
+       if (config.getChild("pre-auth-request-header", false) != null) {
+           preAuthenticationEnabled = config.getChild("pre-auth-request-header").getAttributeAsBoolean("enabled");
+           preAuthReqHeaderName = config.getChild("pre-auth-request-header").getValue();
+       } else {
+           preAuthenticationEnabled = false;
+           preAuthReqHeaderName = null;
+       }
 
        if (config.getChild("scheduler", false) != null) {
            schedulerEnabled = config.getChild("scheduler").getAttributeAsBoolean("enabled");
        } else {
-           log.warn("Scheduler not configured within configuration: " + configFile);
+           log.warn("Scheduler not configured inside global Yanel configuration: " + configFile);
            schedulerEnabled = false;
        }
 
-/* TODO: It would be good to have an administrative contact per Yanel instance
        if (config.getChild("administrator", false) != null) {
            adminName = config.getChild("administrator").getValue();
            adminEmail = config.getChild("administrator").getAttribute("email");
        } else {
-           log.warn("Administrator not configured inside global yanel configuration: " + configFile);
+           log.warn("Administrator name and email not configured inside global Yanel configuration: " + configFile);
            adminName = null;
            adminEmail = null;
        }
-*/
 
        isInitialized = true;
+    }
+
+    /**
+     * Get 'yanel.xml' configuration file
+     */
+    private File getConfigFile() {
+       // 1.) Getting yanel.xml from hidden yanel directory inside user home directory
+       log.debug("User home directory: " + System.getProperty("user.home"));
+       File userHomeDotYanelConfigFile = new File(System.getProperty("user.home") + "/.yanel", DEFAULT_CONFIGURATION_FILE_XML);
+        if (userHomeDotYanelConfigFile.isFile()) {
+            log.warn("DEBUG: Use hidden folder inside user home directory: " + userHomeDotYanelConfigFile.getParentFile().getAbsolutePath());
+            return userHomeDotYanelConfigFile;
+        } else {
+            log.warn("No yanel configuration found inside hidden folder at user home directory: " + userHomeDotYanelConfigFile.getAbsolutePath());
+        }
+
+       // 2.) Getting yanel.xml from classpath
+       return new File(Yanel.class.getClassLoader().getResource(DEFAULT_CONFIGURATION_FILE_XML).getFile());
     }
 
     /**
@@ -283,6 +310,38 @@ public class Yanel {
     }
 
     /**
+     * Check whether pre-authentication is enabled
+     * @return true when pre-authentication is enabled and false otherwise
+     */
+    public boolean isPreAuthenticationEnabled() {
+        return preAuthenticationEnabled;
+    }
+
+    /**
+     * Get pre-authentication request header name, e.g. "SM_USER"
+     * @return request header name and null when not set
+     */
+    public String getPreAuthenticationRequestHeaderName() {
+        return preAuthReqHeaderName;
+    }
+
+    /**
+     * Get administrator name
+     * @return administrator name and null when not set
+     */
+    public String getAdministratorName() {
+        return adminName;
+    }
+
+    /**
+     * Get administrator email
+     * @return administrator email and null when not set
+     */
+    public String getAdministratorEmail() {
+        return adminEmail;
+    }
+
+    /**
      * Check whether scheduler is enabled
      */
     public boolean isSchedulerEnabled() {
@@ -304,23 +363,34 @@ public class Yanel {
      */
     private void configureSMTP(Configuration config, File configFile) throws Exception {
        if (config.getChild("smtp", false) != null) {
-
-           String smtpPortSt = config.getChild("smtp").getAttribute("port");
+           Configuration smtpConfig = config.getChild("smtp");
+           String smtpPortSt = smtpConfig.getAttribute("port");
            try {
                smtpPort = Integer.parseInt(smtpPortSt);
            } catch(NumberFormatException e) {
                log.warn("Mail server not configured, because SMTP port '" + smtpPortSt + "' does not seem to be a number! Check within configuration: " + configFile);
            }
 
-           smtpHost = config.getChild("smtp").getAttribute("host");
+           smtpHost = smtpConfig.getAttribute("host");
 
            // INFO: SMTP Authentication (optional), which is normally necessary in order to relay messages to other hosts/domains
-           smtpUsername = config.getChild("smtp").getAttribute("username", null);
-           smtpPassword = config.getChild("smtp").getAttribute("password", null);
+           smtpUsername = smtpConfig.getAttribute("username", null);
+           smtpPassword = smtpConfig.getAttribute("password", null);
 
            java.util.Properties props = new java.util.Properties();
            props.put("mail.smtp.host", smtpHost);
            props.put("mail.smtp.port", smtpPortSt);
+
+           // INFO: Set generic mail.smtp.* attributes, like for example 'mail.smtp.localhost'
+           String[] mailSmtpAttrNames = smtpConfig.getAttributeNames();
+           if (mailSmtpAttrNames != null && mailSmtpAttrNames.length > 0) {
+               for (int i = 0; i < mailSmtpAttrNames.length; i++) {
+                   if (mailSmtpAttrNames[i].startsWith("mail.smtp.")) {
+                       props.put(mailSmtpAttrNames[i], smtpConfig.getAttribute(mailSmtpAttrNames[i]));
+                   }
+               } 
+           }
+
            // http://java.sun.com/products/javamail/javadocs/javax/mail/Session.html
            javax.mail.Session session = null;
            if (smtpUsername != null && smtpPassword != null) {

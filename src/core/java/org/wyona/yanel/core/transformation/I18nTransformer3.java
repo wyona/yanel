@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import javax.xml.transform.URIResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.i18n.MessageManager;
 import org.wyona.yanel.core.i18n.MessageProvider;
@@ -84,7 +85,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class I18nTransformer3 extends AbstractTransformer {
 
-    private static Logger log = Logger.getLogger(I18nTransformer3.class);
+    private static Logger log = LogManager.getLogger(I18nTransformer3.class);
     
     private static final int STATE_OUTSIDE = 0;
     private static final int STATE_INSIDE_TEXT = 1;
@@ -122,7 +123,7 @@ public class I18nTransformer3 extends AbstractTransformer {
      * @param catalogues i18n catalogue names
      * @param language Localization or content language
      * @param userLanguage Localization of user (normally based on user profile setting)
-     * @param defaultLanguage TODO
+     * @param defaultLanguage Default language, e.g. set inside realm configuration
      * @param resolver
      */
     public I18nTransformer3(String[] catalogues, String language, String userLanguage, String defaultLanguage, URIResolver resolver) {
@@ -131,8 +132,13 @@ public class I18nTransformer3 extends AbstractTransformer {
         if (userLanguage != null) {
             this.userLocale = new Locale(userLanguage);
         } else {
-            log.warn("No user language set. Fallback to localization/content language: " + language);
-            this.userLocale = new Locale(language);
+            if (language != null) {
+                log.warn("No user language set. Fallback to localization/content language: " + language);
+                this.userLocale = new Locale(language);
+            } else {
+                log.warn("No user language and content language set. Fallback to default language: " + defaultLanguage);
+                this.userLocale = new Locale(defaultLanguage);
+            }
         }
     }
 

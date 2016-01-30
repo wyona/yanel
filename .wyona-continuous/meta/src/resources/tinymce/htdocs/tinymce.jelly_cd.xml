@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<cd:cd xmlns:cd="http://www.wyona.org/continuous-deployment/1.0.0">
+  <cd:environment id="development">
+    <cd:tests>
+      <cd:test type="human">http://127.0.0.1:8080/yanel/test/use-cases/</cd:test>
+    </cd:tests>
+  </cd:environment>
+  <cd:environment id="staging"/>
+  <cd:environment id="production"/>
+</cd:cd>

@@ -9,7 +9,8 @@
 -->
 
 <!-- TODO: Enhance build process such that it will compare the version attribute of this 'template' with the local configuration local.web.xml
-<changes version="2013121800">
+<changes version="2015052600">
+  <change version="2015052600">Parameter memory.growth.threshold added</change>
   <change version="2013121800">YanelFilter init-param added</change>
   <change version="2011111000">access log tag separator added</change>
   <change version="2011090100">list of mobile devices added</change>
@@ -33,11 +34,32 @@
   <display-name>Yanel</display-name>
   <description>Yanel</description>
 
+        <!-- Javamelody START -->
+<!-- See http://lists.wyona.org/pipermail/yanel-development/2014-March/006193.html
+        <filter>
+          <filter-name>javamelody</filter-name>
+          <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
+        </filter>
+        <filter-mapping>
+          <filter-name>javamelody</filter-name>
+          <url-pattern>/*</url-pattern>
+        </filter-mapping>
+        <listener>
+          <listener-class>net.bull.javamelody.SessionListener</listener-class>
+        </listener>
+-->
+        <!-- Javamelody END -->
+
   <servlet>
     <servlet-name>YanelServlet</servlet-name>
     <servlet-class>org.wyona.yanel.servlet.YanelServlet</servlet-class>
 
 <!-- NOTE: ssl-port parameter is being added during build process (see src/build/add-ssl-port.xsl) -->
+
+    <init-param>
+      <param-name>memory.growth.threshold</param-name>
+      <param-value>150</param-value>
+    </init-param>
 
     <init-param>
       <param-name>exception-and-info-screen-xslt</param-name>

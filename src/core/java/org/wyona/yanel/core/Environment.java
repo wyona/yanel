@@ -21,14 +21,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.wyona.security.core.api.Identity;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The environment stores items which belong to the environment from which a resource
  * is called, i.e. the request, the response, the identity, the state of view, and the resource container path.
  */
 public class Environment {
-    private static Logger log = Logger.getLogger(Environment.class);
+    private static Logger log = LogManager.getLogger(Environment.class);
 
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -38,9 +39,11 @@ public class Environment {
     private ToolbarState toolbarState;
 
     /**
-     * @param identity
-     * @param stateOfView
-     * @param resourceContainerPath
+     * @param request TODO
+     * @param response TODO
+     * @param identity TODO
+     * @param stateOfView TODO
+     * @param resourceContainerPath TODO
      */
     public Environment(HttpServletRequest request, HttpServletResponse response, Identity identity, String stateOfView, String resourceContainerPath) {
         setRequest(request);

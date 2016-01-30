@@ -19,14 +19,15 @@ package org.wyona.yanel.core.util;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.Resource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Utility class for path manipulations
  */
 public class PathUtil extends org.wyona.commons.io.PathUtil {
 
-    private static Logger log = Logger.getLogger(PathUtil.class);
+    private static final Logger log = LogManager.getLogger(PathUtil.class);
 
     /**
      *
@@ -40,13 +41,17 @@ public class PathUtil extends org.wyona.commons.io.PathUtil {
    }
 
    /**
-    *
+    * Get resource configuration path
+    * @return path with suffix '.yanel-rc', e.g. '/people/michael-wechner/index.html.yanel-rc' or in the case of ROOT '/.yanel-rc'
     */
    public static String getRCPath(String path) {
-       // Remove trailing slash except for ROOT ...
+       // INFO: Remove trailing slash except for ROOT ...
        if (path.length() > 1 && path.charAt(path.length() - 1) == '/') {
+           //log.debug("Path '" + path + "' contains trailing slash, hence remove trailing slash...");
            return path.substring(0, path.length() - 1) + ".yanel-rc";
        }
+
+       //log.debug("Path '" + path + "' has no trailing slash.");
        return path + ".yanel-rc";
    }
    

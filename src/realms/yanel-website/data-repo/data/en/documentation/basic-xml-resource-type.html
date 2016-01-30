@@ -5,12 +5,17 @@
     <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
   </head>
   <body>
-    <h1>BasicXMLResource</h1>BasicXMLResource is a base class for resources that generate XML. you
-    can extend this class if you want to develop a resource-type which will proceed xml.<br/>It
-    already has implemented a bunch of nice thing which you could like. e.g. XSLT, <a shape="rect"
-    href="i18n.html">i18n</a>, XInclude, ConfigurableViewDescriptor and <a href="configuration/CatalogManager_properties.html">catalog resolving</a>. <br/>At the moment folowing
-    resource-types extending BasicXMLResource: xml, user-mgmt (via <a href="executable-usecase-resource.html">ExecutableUsecaseResource</a>).<br/>
-    <br/>
+    <h1>BasicXMLResource</h1>
+<p>
+    BasicXMLResource is a base class for resources that generate XML. you
+    can extend this class if you want to develop a resource-type which will proceed xml.
+</p>
+<p>
+    It already has implemented a bunch of nice thing which you could like. e.g. XSLT, <a shape="rect"
+    href="i18n.html">i18n</a>, XInclude, ConfigurableViewDescriptor and <a href="configuration/CatalogManager_properties.html">catalog resolving</a>.</p>
+<p>
+At the moment the following resource-types for example are extending BasicXMLResource: xml, user-mgmt (via <a href="executable-usecase-resource.html">ExecutableUsecaseResource</a>).
+</p>
     <h2>Resource Configuration Properties:</h2>
     <tt>&lt;yanel:property name=&quot;i18n-catalogue&quot;
     value=&quot;VALUE&quot;/&gt;</tt> see: <a href="i18n.html">i18n</a>
@@ -20,6 +25,8 @@
     <tt>&lt;yanel:property name=&quot;mime-type&quot; value=&quot;VALUE&quot;/&gt;</tt>
     <br/>
     <tt>&lt;yanel:property name=&quot;source-view-mime-type&quot; value=&quot;VALUE&quot;/&gt;</tt>
+    <br/>
+    <tt>&lt;yanel:property name=&quot;viewid&quot; value=&quot;VALUE&quot;/&gt;</tt>
     <br/>
     <br/>
     <h3/>
@@ -50,8 +57,8 @@
           </td>
           <td valign="top">A single view. <br/>id can be 'default' or 'source' for built in views.
             Or any other id for a custom view. A view is accessed via id through a request parameter
-              <b>yanel.resource.viewid <br/>
-            </b>type can bye xml, jelly, redirect (implementation not finished yet), custom. Default
+              <b>yanel.resource.viewid</b> or by setting the resource configuration property <b>viewid</b><br/><br/>
+             Type can be xml, jelly, redirect (implementation not finished yet), custom. Default
             is xml. </td>
         </tr>
         <tr>
@@ -76,7 +83,7 @@
           <td valign="top">If no serializer is specified for a view, the serializer will be chosen
             depending on the mime-type, whereas the default serializer is XHTML_STRICT<br/>Possible
             Serializers (key):<br/>
-            <b>HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT</b>
+            <b>HTML_TRANSITIONAL, XHTML_STRICT, XML, TEXT, HTML5</b>
           </td>
         </tr>
         <tr>

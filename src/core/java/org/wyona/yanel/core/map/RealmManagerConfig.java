@@ -18,7 +18,8 @@ package org.wyona.yanel.core.map;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.ConfigurationException;
 
@@ -30,7 +31,7 @@ import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
  */
 public class RealmManagerConfig {
 
-    private static Logger log = Logger.getLogger(RealmManagerConfig.class);
+    private static Logger log = LogManager.getLogger(RealmManagerConfig.class);
 
     private File realmsConfigFile;
 
@@ -86,12 +87,22 @@ public class RealmManagerConfig {
                 Configuration proxy = realmElements[i].getChild("reverse-proxy", false);
                 if (proxy != null) {
                     int proxyPort = new Integer(proxy.getChild("port").getValue("-1")).intValue();
+
                     int proxySSLPort = new Integer(proxy.getChild("ssl-port").getValue("-1")).intValue();
+
                     String prefixValue = proxy.getChild("prefix").getValue("");
                     if (prefixValue.length() == 0) prefixValue = null;
                     log.debug("Prefix value: " + prefixValue);
+
+                    String reversePrefixValue = proxy.getChild("reverse-prefix").getValue("");
+                    if (reversePrefixValue.length() == 0) reversePrefixValue = null;
+                    log.debug("Reverse prefix value: " + reversePrefixValue);
+
                     String hostName = proxy.getChild("host-name").getValue();
-                    rcc.setReverseProxyConfig(new ReverseProxyConfig(hostName, proxyPort, proxySSLPort, prefixValue));
+
+                    ReverseProxyConfig rpc = new ReverseProxyConfig(hostName, proxyPort, proxySSLPort, prefixValue);
+                    rpc.setReversePrefix(reversePrefixValue);
+                    rcc.setReverseProxyConfig(rpc);
                 }
 
                 realmContextConfigsVec.add(rcc);

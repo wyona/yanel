@@ -1,4 +1,14 @@
-<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><head>  <title>Login Screen Customization</title>  <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/></head><body>  <h1>Login Screen Customization</h1>
+<?xml version="1.0"?>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>  <title>Login Customization</title>
+    <link rel="neutron-introspection" type="application/neutron+xml" href="?yanel.resource.usecase=introspection"/>
+  </head>
+
+<body>
+<h1>Login Customization</h1>
+
+<h2>Login Screen/View Customization</h2>
 
 <ul>
 <li>Create a directory <code>$REALM_DIR/src/webapp/xslt</code></li>
@@ -13,5 +23,13 @@ whereas the filename <code>xslt/login-screen.xsl</code> is configurable globally
 <p>
 <b>NOTE for Developers</b>: The realm dir ($REALM_DIR) is being resolved based on the <code>Realm.getRootDir()</code> and <code>Realm.getConfigFile()</code> or rather see the <code>YanelServlet</code> and in particular <code>org.wyona.yanel.servlet.security.impl.DefaultWebAuthenticatorImpl#getXHTMLAuthenticationForm(...)</code> for further details.
 </p>
+
+<h2>Login Logic/Controller Customization</h2>
+
+<ul>
+<li>Create a directory <code>$REALM_DIR/src/webapp/global-resource-configs</code></li>
+<li>Copy <code>$YANEL_SRC/src/webapp/global-resource-configs/login_yanel-rc.xml</code> into <code>$REALM_DIR/src/webapp/global-resource-configs</code></li>
+<li>Start customizing <code>$REALM_DIR/src/webapp/global-resource-configs/login_yanel-rc.xml</code></li>
+</ul>
 </body>
 </html>

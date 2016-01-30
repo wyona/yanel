@@ -2,15 +2,19 @@
 
 <configuration>
   <appenders>
-    <File name="A1" fileName="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log" append="false">
+    <RollingFile name="A1" fileName="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log" filePattern="@LOG4J_DIR@/log4j2-cnode@CNODE_ID@.log.%i">
 <!--
-    <File name="A1" fileName="${catalina.base}/logs/log4j2-cnode@CNODE_ID@.log" append="false">
+    <RollingFile name="A1" fileName="${sys:catalina.base}/logs/log4j2-cnode@CNODE_ID@.log" filePattern="${sys:catalina.base}/logs/log4j2-cnode@CNODE_ID@.log.%i" append="false">
 -->
       <PatternLayout pattern="%-4r %d{yyyy-MM-dd HH:mm:ss,SSS Z} [%t] %-5p %c.%M():%L %x %X - %m%n"/>
 <!--
       <PatternLayout pattern="%t %-5p %c{2} - %m%n"/>
 -->
-    </File>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="1000 KB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="5"/>
+    </RollingFile>
     <Console name="STDOUT" target="SYSTEM_OUT">
       <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
     </Console>
@@ -18,6 +22,10 @@
 
   <loggers>
     <logger name="org.apache.log4j.xml" level="debug">
+      <appender-ref ref="A1"/>
+    </logger>
+
+    <logger name="org.wyona.yanel.core.ResourceTypeRegistry" level="debug">
       <appender-ref ref="A1"/>
     </logger>
 
