@@ -252,7 +252,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
             transformerIntern.setParameter("yanel.back2context", backToContext()+backToRoot());
             transformerIntern.setParameter("yarep.back2realm", backToRoot());
             transformerIntern.setParameter("yarep.parent", getParent(getPath()));
-            transformerIntern.setParameter("yanel.htdocs", PathUtil.getGlobalHtdocsPath(this));
+            transformerIntern.setParameter("yanel.globalHtdocsPath", PathUtil.getGlobalHtdocsPath(this));
 
             java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
             transformerIntern.transform(new StreamSource(xmlInputStream), new StreamResult(baos));
