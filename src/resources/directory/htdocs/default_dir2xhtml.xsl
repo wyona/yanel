@@ -20,14 +20,14 @@
   <xsl:param name="yanel.back2context" select="'BACK2CONTEXT_IS_NULL'"/>
   <xsl:param name="yarep.back2realm" select="'BACK2REALM_IS_NULL'"/>
   <xsl:param name="yarep.parent" select="'YAREPPARENT_IS_NULL'"/>
-  <xsl:param name="yanel.htdocs" select="'YANELHTDOCS_IS_NULL'"/>
+  <xsl:param name="yanel.globalHtdocsPath" select="'YANELHTDOCS_IS_NULL'"/>
 
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
       <head>
         <title><i18n:text key="collection"/>: <xsl:value-of select="/dir:directory/@yanel:path"/>
         </title>
-        <script src="{$yanel.htdocs}yanel-js/sorttable.js" type="text/javascript"/>
+        <script src="{$yanel.globalHtdocsPath}yanel-js/sorttable.js" type="text/javascript"/>
       </head>
       <body>
         <div>
