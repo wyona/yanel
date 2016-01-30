@@ -8,7 +8,7 @@ Collection (resp. Directory, resp. Folder) resource
 <rtd>
   <property name="default-xslt"/> <!-- OPTIONAL: Allows to overwrite default XSLT (htdocs/default_dir2xhtml.xsl) to transform from XML to XHTML -->
 
-  <property name="disable-default-xslt" default="false"/> <!-- OPTIONAL: When set to true and property 'default-xslt' is not set, then also the default XSLT 'htdocs/default_dir2xhtml.xsl' is not applied, which means one can use 'views' of the BasicXMLResource -->
+  <property name="default-xslt_disabled" default="false"/> <!-- OPTIONAL: When set to true and property 'default-xslt' is not set, then also the default XSLT 'htdocs/default_dir2xhtml.xsl' is not applied, which means one can use 'views' of the BasicXMLResource -->
 
   <property name="xslt"/> <!-- OPTIONAL: Can be used multiple times (see XML resource) after the default XSLT was applied, unless the default XSLT was disabled. For example to apply a global XSLT generating a global header and navigation -->
 
