@@ -19,7 +19,7 @@
 <!-- TODO: Also include sub-directories
     <xsl:apply-templates select="/dir:directory/*"/>
 -->
-  { "myData":[
+[
 <xsl:for-each select="/dir:directory/dir:file">
 {
 "name":"<xsl:value-of select="@name"/>",
@@ -28,7 +28,6 @@
 }<xsl:if test="position() != last()">,</xsl:if>
 </xsl:for-each>
 ]
-  }
   </xsl:template>
 
   <xsl:template match="dir:directory">
