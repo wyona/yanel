@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         try {
             if (yanelPath != null) {
                 if (yanelPath.startsWith("file:")) {
-                    log.warn("List children of actual file system directory ...");
+                    log.info("List children of actual file system directory '" + yanelPath + "' ...");
                     sb.append(getContentXMLOfFileSystemDirectory(yanelPath.substring(5)));
                 } else {
                     sb.append(getContentXMLOfYarepNode(yanelPath));
@@ -180,11 +180,11 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                 if (children[i].isResource()) {
                     calendar.setTimeInMillis(children[i].getLastModified());
                     String lastModified = DateUtil.format(calendar.getTime());
-                    log.warn("DEBUG: File last modified: " + lastModified);
+                    log.debug("File last modified: " + lastModified);
                     if (getResourceConfigProperty("date-format") != null) {
                         java.text.DateFormat df = new java.text.SimpleDateFormat(getResourceConfigProperty("date-format"));
                         lastModified = df.format(children[i].getLastModified());
-                        log.warn("DEBUG: File last modified (formatted): " + lastModified);
+                        log.debug("File last modified (formatted): " + lastModified);
                     }
                     sb.append("<dir:file");
                     sb.append(" path=\"" + children[i].getPath() + "\" name=\"" + children[i].getName() + "\" lastModified=\"" + children[i].getLastModified() + "\" date=\"" + lastModified + "\" size=\"" + children[i].getSize() + "\"");
@@ -192,7 +192,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
                     if (workflowState != null) {
                         sb.append(" workflow-state=\"" + workflowState + "\"");
                     } else {
-                        log.warn("DEBUG: Node '" + children[i].getPath() + "' has no workflow state set.");
+                        log.debug("Node '" + children[i].getPath() + "' has no workflow state set.");
                     }
                     sb.append("/>");
                 } else if (children[i].isCollection()) {
@@ -238,6 +238,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      */
     @Override
     public View getXMLView(String viewId, InputStream xmlInputStream) throws Exception {
+        log.warn("DEBUG: ViewId: " + viewId);
         if (viewId == null || !viewId.equals("source")) {
             TransformerFactory tfactory = TransformerFactory.newInstance();
             Transformer transformerIntern = tfactory.newTransformer(getXSLTStreamSource());
@@ -295,7 +296,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         }
 
         // INFO: If no property 'default-xslt' set, then fallback to XSLT part of this resource
-        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "xslt" + File.separator + "dir2xhtml.xsl");
+        File defaultXSLTFile = org.wyona.commons.io.FileUtil.file(rtd.getConfigFile().getParentFile().getAbsolutePath(), "htdocs" + File.separator + "default_dir2xhtml.xsl");
         if (log.isDebugEnabled()) log.debug("XSLT file: " + defaultXSLTFile);
         return new StreamSource(defaultXSLTFile);
     }
@@ -313,7 +314,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
         }
         if (mimeType != null) return mimeType;
 
-        // NOTE: Assuming fallback re dir2xhtml.xsl ...
+        // NOTE: Assuming fallback re default_dir2xhtml.xsl ...
         return "application/xhtml+xml";
     }
 
