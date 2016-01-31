@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Wyona
+ * Copyright 2011 - 2016 Wyona
  */
 package org.wyona.yanel.impl.resources.search;
 
@@ -12,7 +12,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * Re-indexing resource. This resource can be used to start the re-indexing
@@ -21,7 +22,7 @@ import org.apache.log4j.Logger;
  * most likely don't want your users to start re-indexing processes.
  */
 public class ReindexResource extends BasicXMLResource {
-    private static Logger log = Logger.getLogger(ReindexResource.class);
+    private static Logger log = LogManager.getLogger(ReindexResource.class);
 
     private static String REPO_NAME = "repository";
     private static String REINDEX_XMLNS = "http://www.wyona.org/yanel/reindex/1.0";

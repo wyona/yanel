@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Wyona
+ * Copyright 2011 - 2016 Wyona
  */
 package org.wyona.yanel.impl.resources.search;
 
@@ -13,7 +13,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * This resource can be used to clean the index of a repository.
@@ -21,7 +22,7 @@ import org.apache.log4j.Logger;
  * most likely don't want your users to clean the index.
  */
 public class CleanIndexResource extends BasicXMLResource {
-    private static Logger log = Logger.getLogger(CleanIndexResource.class);
+    private static Logger log = LogManager.getLogger(CleanIndexResource.class);
 
     private static String REPO_NAME = "repository";
     private static String REINDEX_XMLNS = "http://www.wyona.org/yanel/clean-index/1.0";

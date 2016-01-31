@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Wyona
+ * Copyright 2009 - 2016 Wyona
  */
 
 package org.wyona.yanel.impl.resources.search;
@@ -10,7 +10,8 @@ import org.wyona.yanel.impl.resources.BasicXMLResource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.meguni.parser.Parser;
 import org.wyona.meguni.util.ResultSet;
@@ -29,7 +30,7 @@ import org.apache.commons.lang.StringEscapeUtils;
  */
 public class SearchResource extends BasicXMLResource {
     
-    private static Logger log = Logger.getLogger(SearchResource.class);
+    private static Logger log = LogManager.getLogger(SearchResource.class);
 
     private static String PROVIDER_NAME = "provider";
     private static String QUERY_NAME = "q";

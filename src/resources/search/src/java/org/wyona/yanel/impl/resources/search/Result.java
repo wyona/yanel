@@ -2,14 +2,15 @@ package org.wyona.yanel.impl.resources.search;
 
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class Result {
 
-    private static Logger log = Logger.getLogger(Result.class);
+    private static Logger log = LogManager.getLogger(Result.class);
 
     private String url;
     private String title;
