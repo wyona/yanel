@@ -12,7 +12,12 @@ Search a local repository, but also allow searching with third-party search engi
 <rtd>
   <!-- OPTIONAL: If this is property is set, then the corresponding property is searched instead fulltext -->
   <property name="property-name"/>
-  <property name="max-entries-per-page"/>
-  <property name="max-navigation-links"/>
+
+  <!-- OPTIONAL: Pagination parameters -->
+  <property name="max-entries-per-page" default="3"/>
+  <property name="max-navigation-links" default="1"/>
+
+  <!-- OPTIONAL: When set to true, then also the revisions of a node are included in the result set -->
+  <property name="include-revisions" default="true"/>
 </rtd>
 </resource>
