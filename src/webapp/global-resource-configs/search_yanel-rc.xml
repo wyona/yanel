@@ -6,6 +6,9 @@
 <!--
   <yanel:property name="property-name" value="yarep_checkoutUserID"/>
 -->
+<!--
+  <yanel:property name="include-revisions" value="false"/>
+-->
 
   <yanel:custom-config>
     <views xmlns="http://www.wyona.org/yanel/rti/1.0">
