@@ -223,6 +223,7 @@ public class SearchResource extends BasicXMLResource {
     }
 
     /**
+     * Search inside Yanel realm repository
      * @param query Search terms
      */
     private Result[] getLocalResults(String query) throws Exception {
@@ -238,13 +239,30 @@ public class SearchResource extends BasicXMLResource {
                 nodes = getRealm().getRepository().getSearcher().search(query);
             }
 
+            boolean includeRevisions = true;
+            if (getResourceConfigProperty("include-revisions") != null) {
+                includeRevisions = new Boolean(getResourceConfigProperty("include-revisions")).booleanValue();
+            }
+
             if (nodes != null && nodes.length > 0) {
-                Result[] results = new Result[nodes.length];
+                java.util.List<Result> results = new java.util.ArrayList<Result>();
                 for (int i = 0; i < nodes.length; i++) {
+                    String path = nodes[i].getPath();
                     // TODO: Check access policy if user is actually allowed to see this result
-                    results[i] = new Result(nodes[i].getPath(), getTitle(nodes[i].getPath(), nodes[i].getInputStream(), nodes[i].getMimeType()), "TODO: excerpt", nodes[i].getMimeType(), null);
+                    boolean isRevision = false;
+                    if (nodes[i] instanceof org.wyona.yarep.core.Revision) {
+                        String revisionName = ((org.wyona.yarep.core.Revision) nodes[i]).getRevisionName();
+                        log.warn("DEBUG: Node '" + nodes[i].getPath() + "' is revision: " + revisionName);
+                        path = path + "?yanel.resource.revision=" + revisionName;
+                        isRevision = true;
+                    }
+                    if (isRevision && !includeRevisions) {
+                        // INFO: Do not add revision to result set
+                    } else {
+                        results.add(new Result(path, getTitle(nodes[i].getPath(), nodes[i].getInputStream(), nodes[i].getMimeType()), "TODO: excerpt", nodes[i].getMimeType(), null));
+                    }
                 }
-                return results;
+                return results.toArray(new Result[0]);
             } else {
                log.info("Nothing found for query: " + query);
                 return new Result[0];
@@ -309,6 +327,7 @@ public class SearchResource extends BasicXMLResource {
     private String getTitle(String path, InputStream in, String mimeType) throws Exception {
         log.debug("Get title of node: " + path);
         if (mimeType != null) {
+            log.debug("Node '" + path + "' has content type '" + mimeType + "', therefore choose Tika parser accordingly ...");
 
             // NOTE: Please also see src/impl/java/org/wyona/yarep/impl/search/lucene/LuceneConfig.java
             org.apache.tika.config.TikaConfig tikaConfig;
