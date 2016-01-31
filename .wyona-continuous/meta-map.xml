@@ -3,5 +3,6 @@
 <meta-map xmlns="http://www.wyona.org/continuous-deployment/1.0.0">
   <matcher pattern="/src/realms/yanel-website/data-repo/data/**.html" meta-path="/documentation.xml"/>
   <matcher pattern="/src/resources/directory/**" meta-path="/collection-resource.xml"/>
+  <matcher pattern="/src/resources/search/**" meta-path="/search-resource.xml"/>
   <matcher pattern="/src/resources/*/src/java/**.java" meta-path="/junit.xml"/>
 </meta-map>
