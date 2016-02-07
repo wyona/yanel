@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007 -2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -349,7 +349,7 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     }
 
     /**
-     * Delete node
+     * org.wyona.yanel.core.api.attributes.ModifiableV2#delete()
      */
     public boolean delete() throws Exception {
         getRealm().getRepository().getNode(getPath()).delete();
