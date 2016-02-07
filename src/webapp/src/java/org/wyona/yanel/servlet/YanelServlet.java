@@ -59,6 +59,7 @@ import org.wyona.yanel.core.ToolbarState;
 import org.wyona.yanel.core.Yanel;
 import org.wyona.yanel.core.api.attributes.AnnotatableV1;
 import org.wyona.yanel.core.api.attributes.IntrospectableV1;
+import org.wyona.yanel.core.api.attributes.DeletableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV1;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
 import org.wyona.yanel.core.api.attributes.TranslatableV1;
@@ -1058,28 +1059,40 @@ public class YanelServlet extends HttpServlet {
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
                 if (((ModifiableV2) res).delete()) {
                     // TODO: Also delete resource config! What about access policies?!
-                    log.debug("Resource has been deleted: " + res);
-
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    response.setContentType("text/html" + "; charset=" + "UTF-8");
-                    String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(res.getPath());
-                    StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Page has been deleted! <a href=\"" + backToRealm + res.getPath().substring(1) +"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
-                    PrintWriter w = response.getWriter();
-                    w.print(sb);
+                    log.debug("Resource '" + res + "' has been deleted via ModifiableV2 interface.");
+                    setResourceDeletedResponse(res, response);
                     return;
                 } else {
                     log.warn("Deletable (or rather ModifiableV2) resource '" + res + "' could not be deleted!");
                     response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     return;
                 }
+            } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Deletable", "1")) {
+                // TODO: Finish implementation, set resource input
+                ((DeletableV1) res).delete(null);
+                log.debug("Resource '" + res + "' has been deleted via DeletableV2 interface.");
+                setResourceDeletedResponse(res, response);
+                return;
             } else {
-                log.error("Resource '" + res + "' has interface ModifiableV2 not implemented." );
+                log.error("Resource '" + res + "' has neither interface ModifiableV2 nor DeletableV1 implemented." );
                 response.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED);
                 return; // QUESTION: According to the spec http://docs.oracle.com/javaee/1.4/api/javax/servlet/http/HttpServlet.html#doDelete%28javax.servlet.http.HttpServletRequest,%20javax.servlet.http.HttpServletResponse%29 one should rather throw a ServletException, right?
             }
         } catch (Exception e) {
             throw new ServletException("Could not delete resource with URL <" + request.getRequestURL() + ">: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     *
+     */
+    private void setResourceDeletedResponse(Resource res, HttpServletResponse response) throws Exception {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/html" + "; charset=" + "UTF-8");
+        String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(res.getPath());
+        StringBuilder sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Page has been deleted! <a href=\"" + backToRealm + res.getPath().substring(1) +"\">Check</a> or return to <a href=\"" + backToRealm + "\">Homepage</a>.</body></html>");
+        PrintWriter w = response.getWriter();
+        w.print(sb);
     }
 
     /**
@@ -2625,7 +2638,7 @@ public class YanelServlet extends HttpServlet {
             response.setContentType("text/html" + "; charset=" + "UTF-8");
             StringBuilder sb = new StringBuilder();
             Resource res = getResource(request, response);
-            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
+            if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2") || ResourceAttributeHelper.hasAttributeImplemented(res, "Deletable", "1")) {
                 log.info("Delete has not been confirmed by client yet!");
                 sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Do you really want to delete this page? <a href=\"?" + YANEL_RESOURCE_USECASE + "=delete&confirmed\">YES</a>, <a href=\"" + request.getHeader("referer") + "\">no</a></body></html>");
             } else {
