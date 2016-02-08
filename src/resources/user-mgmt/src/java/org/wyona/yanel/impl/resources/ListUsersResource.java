@@ -22,7 +22,8 @@ import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
 import org.wyona.yanel.impl.resources.usecase.UsecaseResource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.System;
 import java.lang.Integer;
@@ -33,13 +34,14 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 /**
- * Resource to list all users.
+ * Resource to list all users associated with a realm.
  */
 public class ListUsersResource extends UsecaseResource {
+    private static final Logger log =  LogManager.getLogger(ListUsersResource.class);
+
     // Constants
     private static final int DEFAULT_ITEMS_PER_PAGE = 10;
     //private static final int DEFAULT_ITEMS_PER_PAGE = 100;
-    private static final Logger log =  Logger.getLogger(ListUsersResource.class);
 
     // Variables
     private int currentPage = 1;
