@@ -40,6 +40,10 @@
           <th>Name</th>
           <th>Email</th>
           <th>Aliases</th>
+<!--
+          <th>Description</th>
+-->
+          <th>Last login</th>
         </tr>
         <j:forEach var="user" items="${resource.getUsers()}">
           <tr>
@@ -65,6 +69,18 @@
 <!--
             <td valign="top">${user.getDescription()}</td>
 -->
+            <td valign="top">
+              <j:if test="${user.getHistory() != null}">
+                ${user.getHistory().getHistory().get(user.getHistory().getHistory().size() - 1).getDate()}
+<!--
+              <ul>
+              <j:forEach var="history" items="${user.getHistory().getHistory()}">
+                <li>${history.getDate()}</li>
+              </j:forEach>
+              </ul>
+-->
+              </j:if>
+            </td>
           </tr>
         </j:forEach>
       </table>
