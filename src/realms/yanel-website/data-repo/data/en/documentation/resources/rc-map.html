@@ -1,11 +1,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>Resource Type Configuration Map</title>
+<title>Mapping requests onto Resource-Types/Controllers and Resource Type Configuration Map</title>
 </head>
 <body>
 <div class="instructions">
-<h2>Resource Type Configuration Map</h2>
+<h2>Mapping requests onto Resource-Types/Controllers and Resource Type Configuration Map</h2>
+
+<h3>Mapping requests onto Resource-Types/Controllers</h3>
+
+<p>
+The requests are mapped onto resource-types/controllers by default by the class <code>org.wyona.yanel.core.ResourceTypeMatcherV1ImplV2</code>, whereas the chain of responsibility is as follows:
+  <ol>
+    <li>One-to-one mapping (.yanel-rc and then deprecated .yanel-rti)</li>
+    <li>Resource Type Configuration Map (map.rc-map)</li>
+    <li>File/Node resource type (see <code>org.wyona.yanel.core.ResourceManager#getResource(Environment, Realm, String path)</code>)</li>
+  </ol>
+</p>
+
+<h3>Resource Type Configuration Map</h3>
 <p>To configure a bunch of URLs in the same way, one can use a <em>resource type configuration map</em>, which is an XML file called <code>map.rc-map</code>. This file has to be in the repository which is configured as the <em>rti (resource type identifier)</em> repository in a realm (in the file <a href="../realm/realm-configuration.html"><code>realm.xml</code></a>).</p>
 <p>Inside this file, one can define a wildcard matcher to select a group of URLs which points for every match to one <a href="resource_type_configuration.html">resource type configuration</a>, as in this example:</p>
 
