@@ -111,10 +111,10 @@
       <param-value>iPhone,Android,iPod,BlackBerry,PalmSource,PalmOS,Nokia,Sony,SonyEricsson,Samsung,SAMSUNG,Symbian,iemobile,IEMobile</param-value>
     </init-param>
 
-    <!-- Allow client-side caching of static htdocs content. Specify value in hours. -->
+    <!-- Allow client-side caching of static htdocs content. Specify value in hours, whereas 0 means the Expires HTTP header will not be set. -->
     <init-param>
      <param-name>static-content-cache-expires</param-name>
-     <param-value>2</param-value>
+     <param-value>0</param-value>
     </init-param>
   </servlet>
 
