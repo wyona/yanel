@@ -2147,7 +2147,7 @@ public class YanelServlet extends HttpServlet {
                 Source source = resolver.resolve(htdocsPath, null);
                 
                 long sourceLastModified = -1;
-                // Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                // INFO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
                 if (source instanceof YanelStreamSource) {
                     sourceLastModified = ((YanelStreamSource) source).getLastModified();
                     long ifModifiedSince = request.getDateHeader("If-Modified-Since");
@@ -2169,6 +2169,11 @@ public class YanelServlet extends HttpServlet {
                     if(sourceLastModified >= 0) response.setDateHeader("Last-Modified", sourceLastModified);
                     response.setHeader("Content-Type", mimeType);
 
+                    // INFO: Tell the client for how long it should cache the data which will be sent by the response
+                    if (cacheExpires != 0) {
+                        setExpiresHeader(response, cacheExpires);
+                    }
+
                     byte buffer[] = new byte[8192];
                     int bytesRead;
                     OutputStream out = response.getOutputStream();
@@ -2176,10 +2181,7 @@ public class YanelServlet extends HttpServlet {
                         out.write(buffer, 0, bytesRead);
                     }
                     htdocIn.close();
-                    // allow client-side caching:
-                    if (cacheExpires != 0) {
-                        setExpiresHeader(response, cacheExpires);
-                    }
+
                     return;
                 } else {
                     log.error("No such file or directory: " + htdocsPath);
@@ -2192,11 +2194,30 @@ public class YanelServlet extends HttpServlet {
         } else {
             File globalFile = org.wyona.commons.io.FileUtil.file(servletContextRealPath, "htdocs" + File.separator + path.substring(pathPrefix.length()));
             if (globalFile.exists()) {
-                log.debug("Global data: " + globalFile);
+                //log.debug("Get global file: " + globalFile);
+
+                // INFO: Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
+                long ifModifiedSince = request.getDateHeader("If-Modified-Since");
+                if (ifModifiedSince != -1) {
+                    //log.debug("Last modified '" + globalFile.lastModified() + "' versus If-Modified-Since '" +  ifModifiedSince + "'.");
+                    if (globalFile.lastModified() <= ifModifiedSince) {
+                        response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
+                        return;
+                    }
+                }
 
                 // TODO: Set more HTTP headers (size, etc.)
                 String mimeType = guessMimeType(FilenameUtils.getExtension(globalFile.getName()));
                 response.setHeader("Content-Type", mimeType);
+                response.setDateHeader("Last-Modified", globalFile.lastModified());
+
+                // INFO: Tell the client for how long it should cache the data which will be sent by the response
+                if (cacheExpires != 0) {
+                    //log.debug("Client should consider the content of '" + globalFile + "' as stale in '" + cacheExpires + "' hours from now on ...");
+                    setExpiresHeader(response, cacheExpires);
+                } else {
+                    //log.debug("No cache expires set.");
+                }
 
                 byte buffer[] = new byte[8192];
                 int bytesRead;
@@ -2206,10 +2227,7 @@ public class YanelServlet extends HttpServlet {
                     out.write(buffer, 0, bytesRead);
                 }
                 in.close();
-                // allow client-side caching:
-                if (cacheExpires != 0) {
-                    setExpiresHeader(response, cacheExpires);
-                }
+
                 return;
             } else {
                 log.error("No such file or directory: " + globalFile);
@@ -2220,7 +2238,8 @@ public class YanelServlet extends HttpServlet {
     }
  
     /**
-     * Set expire date within HTTP header
+     * Set expire date within HTTP header (see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.21)
+     * @param hours Number of hours from now on, after which the response is considered stale
      */
     private void setExpiresHeader(HttpServletResponse response, int hours) {
         Calendar calendar = Calendar.getInstance();
@@ -2384,6 +2403,7 @@ public class YanelServlet extends HttpServlet {
                     // Compare If-Modified-Since with lastModified and return 304 without content resp. check on ETag
                     long ifModifiedSince = request.getDateHeader("If-Modified-Since");
                     if (ifModifiedSince != -1) {
+                        //log.debug("Client set 'If-Modified-Since' ...");
                         if (res instanceof ModifiableV2) {
                             long resourceLastMod = ((ModifiableV2)res).getLastModified();
                             //log.debug(resourceLastMod + " " +  ifModifiedSince);
