@@ -12,8 +12,8 @@
 <p>
 The requests are mapped onto resource-types/controllers by default by the class <code>org.wyona.yanel.core.ResourceTypeMatcherV1ImplV2</code>, whereas the chain of responsibility is as follows:
   <ol>
-    <li>One-to-one mapping (.yanel-rc and then deprecated .yanel-rti)</li>
-    <li>Resource Type Configuration Map (map.rc-map)</li>
+    <li>One-to-one mapping (<code>.yanel-rc</code> and then deprecated <code>.yanel-rti</code>)</li>
+    <li>Resource Type Configuration Map (<code>map.rc-map</code>)</li>
     <li>File/Node resource type (see <code>org.wyona.yanel.core.ResourceManager#getResource(Environment, Realm, String path)</code>)</li>
   </ol>
 </p>
