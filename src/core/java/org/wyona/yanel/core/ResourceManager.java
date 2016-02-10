@@ -21,7 +21,8 @@ import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import org.wyona.yanel.core.api.ResourceTypeMatcherV1;
 import org.wyona.yanel.core.map.Realm;
@@ -37,7 +38,7 @@ import org.wyona.yarep.core.NoSuchNodeException;
  */
 public class ResourceManager {
 
-    private static Logger log = Logger.getLogger(ResourceManager.class);
+    private static Logger log = LogManager.getLogger(ResourceManager.class);
     
     protected ResourceTypeRegistry rtRegistry;
     private ResourceTypeMatcherV1 resourceTypeMatcher;
@@ -139,8 +140,9 @@ public class ResourceManager {
             return getResource(environment, realm, path, resConfig);
         }
         
-        //log.debug("Fallback to 'file' (aka 'node') resource/controller...");
-        return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
+        //log.debug("For path '" + path + "' fallback to 'file' (aka 'node') resource/controller...");
+        //return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0", null));
+        return getResource(environment, realm, path, new ResourceConfiguration("file", "http://www.wyona.org/yanel/resource/1.0.1", null));
     }
 
     /**
