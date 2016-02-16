@@ -13,7 +13,7 @@ Redirect resource, whereas redirects can also be based on user profile
   <!-- INFO: Default redirect, which is mandatory! Without leading slash it will be a relative redirect and with leading slash an absolute redirect. Also see http://en.wikipedia.org/wiki/HTTP_location -->
   <property name="href"/>
 
-<!-- INFO: The element 'personalized' is optional and was introduced with version 1.0.2 -->
+<!-- INFO: The element 'personalized' is optional and was introduced with version 1.0.2, whereas the domain will be read from the realms configuration attribute 'user-tracking-domain-id' or when not set, then the realm id will be used -->
 <!--
   <yanel:custom-config xmlns:rd="http://www.wyona.org/yanel/resource/redirect-resource/1.0">
     <rd:personalized boost-service-url="http://localhost:9080/boost/api" boost-api-key="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5" href="@LANG/index.html" connection-timeout="500" socket-timeout="1000" limit="50"/>
