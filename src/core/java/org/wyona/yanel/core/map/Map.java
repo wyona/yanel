@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.wyona.yanel.core.map;
 
 import org.wyona.yanel.core.Path;
@@ -58,8 +57,9 @@ public interface Map {
     
     /**
      * Maps the given url to a path in the given realm. A path is relative to the realm.
-     * @param realm
-     * @param url
+     * @param realm Realm the request is supposed to be associated with (e.g. realm mount-point '/yanel-website/')
+     * @param url URL of request, but without servlet context, e.g. '/yanel-website/foo/bar.html'
+     * @return path relative to realm, e.g. '/foo/bar.html'
      * @throws Exception
      */
     public String getPath(Realm realm, String url) throws Exception;
