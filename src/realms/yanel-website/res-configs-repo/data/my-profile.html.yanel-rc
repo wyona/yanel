@@ -5,7 +5,7 @@
 
   <yanel:property name="mime-type" value="application/xml"/>
 
-  <yanel:property name="boost-service-url" value="http://localhost:9080/boost/api"/>
+  <yanel:property name="boost-service-url" value="http://localhost:8080/yanel/boost-website/api"/>
   <yanel:property name="boost-api-key" value="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
 
 <!-- IMPORTANT: Please make sure to configure the truststore when using https: http://www.yanel.org/en/documentation/security/ssl.html
