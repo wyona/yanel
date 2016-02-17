@@ -29,14 +29,15 @@ import org.wyona.yarep.core.RepositoryFactory;
 import org.wyona.yarep.util.RepoPath;
 import org.wyona.yarep.util.YarepUtil;
 
-import org.apache.log4j.Category;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
  */
 public class MapImpl implements Map {
 
-    private static Category log = Category.getInstance(MapImpl.class);
+    private static Logger log = LogManager.getLogger(MapImpl.class);
 
     RealmManager realmConfig;
     
@@ -184,10 +185,8 @@ public class MapImpl implements Map {
     }
 
     /**
-     * Maps the given url to a path. This default implementation does a one-to-one mapping,
-     * but removes the realm prefix (mount-point).
-     * E.g. if the url is /yanel-website/foo/bar.html, it will return /foo/bar.html.
-     * @param url URL of request but without servlet context
+     * @see org.wyona.yanel.core.map.Map#getPath(Realm, String)
+     * This default implementation does a one-to-one mapping, but removes the realm prefix (mount-point).
      */
     public String getPath(Realm realm, String url) throws Exception {
         if (log.isDebugEnabled()) {
