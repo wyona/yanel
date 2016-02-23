@@ -19,9 +19,10 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import com.wyona.boost.client.BoostService;
-import com.wyona.boost.client.ServiceException;
 import com.wyona.boost.client.BoostServiceConfig;
 import com.wyona.boost.client.HistoryEntry;
+import com.wyona.boost.client.Interest;
+import com.wyona.boost.client.ServiceException;
 
 import org.wyona.yarep.core.Node;
 
@@ -105,13 +106,15 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
         // INFO: Get user interests
         try {
-            Iterable<String> userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
+            Iterable<Interest> userInterests = getUserInterests(service, cookieVal, boost_domain, api_key);
 
             // INFO: Add all interests to user profile
             Element interestsEl = doc.createElementNS(NAMESPACE, "interests");
-            for(String interest : userInterests) {
+            for(Interest interest : userInterests) {
                 Element interestEl = doc.createElementNS(NAMESPACE, "interest");
-                interestEl.appendChild(doc.createTextNode(interest));
+                interestEl.appendChild(doc.createTextNode(interest.getTerm()));
+                interestEl.setAttribute("weight", "" + interest.getWeight());
+                interestEl.setAttribute("session", "TODO");
                 interestsEl.appendChild(interestEl);
             }
             root.appendChild(interestsEl);
@@ -119,11 +122,11 @@ public class PersonalizedContentResource extends BasicXMLResource {
             // INFO: Search for related content in data repository of this realm
             Element resultsEl = doc.createElementNS(NAMESPACE, "search-results");
             Searcher search = getRealm().getRepository().getSearcher();
-            for(String interest : userInterests) {
+            for(Interest interest : userInterests) {
                 Node[] nodes;
 
                 try {
-                    nodes = search.search(interest);
+                    nodes = search.search(interest.getTerm());
                 } catch(Exception e) {
                     log.error(e, e);
                     break;
@@ -133,7 +136,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
                 for(int i = nodes.length - 1; i >= 0; i--) {
                     Node node = nodes[i];
                     Element res_node = doc.createElementNS(NAMESPACE, "result");
-                    res_node.setAttribute("interest", interest);
+                    res_node.setAttribute("interest", interest.getTerm());
                     resultsEl.appendChild(res_node);
 
                     Element res_path = doc.createElementNS(NAMESPACE, "path");
@@ -227,7 +230,7 @@ public class PersonalizedContentResource extends BasicXMLResource {
      * @param apiKey Key to access Boost API
      * @return list of interests
      */
-    private Iterable<String> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
+    private Iterable<Interest> getUserInterests(String boostServiceUrl, String cookie, String realm, String apiKey) throws Exception {
         log.warn("DEBUG: Get user interests...");
         BoostServiceConfig bsc = new BoostServiceConfig(boostServiceUrl, realm, apiKey);
         if (isTimeoutConfigured(CONNECTION_TIMEOUT_PROPERTY_NAME)) {
