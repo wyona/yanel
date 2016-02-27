@@ -129,6 +129,12 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     String serviceUrl = personalizedRedirectConfigs[0].getAttribute("boost-service-url");
                     String apiKey = personalizedRedirectConfigs[0].getAttribute("boost-api-key");
                     String personalizedHref = personalizedRedirectConfigs[0].getAttribute("href");
+                    int languagePrefixPosition = 3;
+                    if (personalizedRedirectConfigs[0].getAttribute("language-prefix-position", null) != null)  {
+                        languagePrefixPosition = personalizedRedirectConfigs[0].getAttributeAsInteger("language-prefix-position", 3);
+                    } else {
+                        log.warn("No attribute 'language-prefix-position' set, hence use '" + languagePrefixPosition + "' as default!");
+                    }
                     //log.debug("Personalization of redirect is configured: " + serviceUrl + ", " + apiKey);
                     Cookie cookie = AccessLog.getYanelAnalyticsCookie(getEnvironment().getRequest());
                     if (cookie == null) {
@@ -136,10 +142,10 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                     }
                     String cookieVal = cookie.getValue();
                     Iterable<HistoryEntry> clickStream = getClickstream(serviceUrl, cookieVal, getRealm().getUserTrackingDomain(), apiKey);
-                    String clickstreamLang = getLanguage(clickStream);
+                    String clickstreamLang = getLanguage(clickStream, languagePrefixPosition);
                     if (clickstreamLang != null) {
                         log.warn("DEBUG: User language from personal click stream: " + clickstreamLang);
-                        location =personalizedHref.replace("@LANG", clickstreamLang);
+                        location = personalizedHref.replace("@LANG", clickstreamLang);
                         return location;
                     } else {
                         log.warn("Not able to detect user language from click stream.");
@@ -353,13 +359,14 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     /**
      * Get user language from clickstream
      * @param clickStream URLs which have been requested by user
+     * @param languagePrefixPosition Position where language prefix is located, e.g. '3' ('/yanel/yanel-website/de/ueber.html')
      * @return language with highest count
      */
-    private String getLanguage(Iterable<HistoryEntry> clickStream) {
+    private String getLanguage(Iterable<HistoryEntry> clickStream, int languagePrefixPosition) {
         HashMap usedLangs = new HashMap();
         for(HistoryEntry he : clickStream) {
             //log.debug("Previous request: " + new java.util.Date(he.getTime()).toString() + ", " + he.getURL());
-            String language = getLanguage(he.getURL());
+            String language = getLanguage(he.getURL(), languagePrefixPosition);
             if (language != null) {
                 if (usedLangs.containsKey(language)) {
                     int count = ((Integer) usedLangs.get(language)).intValue();
@@ -394,15 +401,18 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
     /**
      * Get requested language
-     * @param url Requested URL, which might contain requested language either as prefix or suffix, e.g. 'http://127.0.0.1:8080/yanel/yanel-website/de/ueber.html'
+     * @param url Requested URL, which might contain requested language either as prefix or suffix, e.g. 'http://127.0.0.1:8080/yanel/yanel-website/de/ueber.html' or 'https://127.0.0.1:8443/yanel/yulup/en/projects/index.html' or 'https://127.0.0.1:8443/yulup/en/projects/index.html'
+     * @param languagePrefixPosition Position where language prefix is located, e.g. '3' ('/yanel/yanel-website/de/ueber.html')
      * @return language, e.g. 'de'
      */
-    private String getLanguage(String url) {
+    private String getLanguage(String url, int languagePrefixPosition) {
         try {
             //log.debug("Try to get language from url '" + url + "' ...");
-            String path = new java.net.URL(url).getPath();
-            if (path.length() >= 17 && path.charAt(13) == '/' && path.charAt(16) == '/') {
-                String lang = path.substring(14,16);
+            String path = new java.net.URL(url).getPath(); // INFO: For example '/yanel/yulup/en/projects/index.html'
+            //log.debug("Path: " + path);
+            String[] parts = path.split("/"); // INFO: '', 'yanel', 'yulup', 'en', 'projects', 'index.html'
+            if (parts != null && parts.length >= languagePrefixPosition) {
+                String lang = parts[languagePrefixPosition];
                 //log.debug("Language: " + lang + " (Path: " + path + ")");
                 return lang;
             } else {
