@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 Wyona
+ * Copyright 2007 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -403,7 +403,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
      * Get requested language
      * @param url Requested URL, which might contain requested language either as prefix or suffix, e.g. 'http://127.0.0.1:8080/yanel/yanel-website/de/ueber.html' or 'https://127.0.0.1:8443/yanel/yulup/en/projects/index.html' or 'https://127.0.0.1:8443/yulup/en/projects/index.html'
      * @param languagePrefixPosition Position where language prefix is located, e.g. '3' ('/yanel/yanel-website/de/ueber.html')
-     * @return language, e.g. 'de'
+     * @return language (e.g. 'de') or null when no language detected
      */
     private String getLanguage(String url, int languagePrefixPosition) {
         try {
@@ -413,8 +413,13 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             String[] parts = path.split("/"); // INFO: '', 'yanel', 'yulup', 'en', 'projects', 'index.html'
             if (parts != null && parts.length >= languagePrefixPosition) {
                 String lang = parts[languagePrefixPosition];
-                //log.debug("Language: " + lang + " (Path: " + path + ")");
-                return lang;
+                if (lang.length() == 2) {
+                    //log.debug("Language: " + lang + " (Path: " + path + ")");
+                    return lang;
+                } else {
+                    log.warn("Prefix '" + lang + "' does not seem to be a language prefix!");
+                    return null;
+                }
             } else {
                 //log.debug("No language detected for path: " + path);
             }
