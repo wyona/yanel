@@ -172,6 +172,9 @@ public class PersonalizedContentResource extends BasicXMLResource {
 
             // INFO: Add clickstream to user profile
             Element clickstreamEl = doc.createElementNS(NAMESPACE, "clickstream");
+            if (getResourceConfigProperty("limit-clickstream") != null) {
+                clickstreamEl.setAttribute("limit", getResourceConfigProperty("limit-clickstream"));
+            }
             for(HistoryEntry he : clickStream) {
                 //log.debug("URL of history entry: " + he.getURL());
                 Element urlEl = doc.createElementNS(NAMESPACE, "url");
@@ -219,7 +222,12 @@ public class PersonalizedContentResource extends BasicXMLResource {
             bsc.setSocketTimeout(getTimeoutValue(SOCKET_TIMEOUT_PROPERTY_NAME));
         }
         BoostService boost = new BoostService(bsc);
-        return boost.getClickStream(cookie);
+        if (getResourceConfigProperty("limit-clickstream") != null) {
+            return boost.getClickStream(cookie, new Integer(getResourceConfigProperty("limit-clickstream")).intValue());
+        } else {
+            log.warn("No clickstream limit set!");
+            return boost.getClickStream(cookie);
+        }
     }
 
     /**
