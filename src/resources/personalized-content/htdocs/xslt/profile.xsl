@@ -76,7 +76,7 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
               <h2>Clickstream</h2>
 <xsl:choose>
   <xsl:when test="boost:url">
-<p>Your clickstream contains the following URLs:</p>
+<p>Your clickstream contains the following <xsl:value-of select="@limit"/> most recent URLs:</p>
 
 <table>
 <xsl:for-each select="boost:url">
