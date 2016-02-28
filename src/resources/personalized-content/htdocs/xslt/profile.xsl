@@ -80,6 +80,7 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 
 <table>
 <xsl:for-each select="boost:url">
+  <xsl:sort select="position()" data-type="number" order="descending"/>
   <tr><td><xsl:value-of select="@date"/></td><td><a href="{.}"><xsl:value-of select="."/></a></td></tr>
 </xsl:for-each>
 </table>
