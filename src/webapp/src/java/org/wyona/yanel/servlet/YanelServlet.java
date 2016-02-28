@@ -606,7 +606,7 @@ public class YanelServlet extends HttpServlet {
             Environment environment = getEnvironment(request, response);
             res = getResource(request, response);
             if (res != null) {
-                if (ResourceAttributeHelper.hasAttributeImplemented(res, "Trackable", "1")) {
+                if (isTrackable(res)) {
                     //log.debug("Do track: " + res.getPath());
                     trackInfo = new TrackingInformationV1();
                     ((org.wyona.yanel.core.api.attributes.TrackableV1) res).doTrack(trackInfo);
