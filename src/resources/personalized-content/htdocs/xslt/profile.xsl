@@ -62,7 +62,7 @@ Your <a href="http://donottrack.us/" target="_blank">DNT header parameter</a> is
 
 <ul>
 <xsl:for-each select="boost:interest">
-  <li><xsl:value-of select="."/></li>
+  <li><xsl:value-of select="."/> (Occurrence during same session: <xsl:value-of select="@weight"/>)</li>
 </xsl:for-each>
 </ul>
   </xsl:when>
