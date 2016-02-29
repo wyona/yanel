@@ -16,7 +16,8 @@
   <yanel:property name="cookie" value="YA-TODO"/>
 -->
 
-  <yanel:property name="connection-timeout" value="100"/>
+  <yanel:property name="connection-timeout" value="1000"/>
+  <yanel:property name="connection-timeout" value="100" target-environment="dev"/>
   <yanel:property name="socket-timeout" value="2000"/>
 
   <yanel:custom-config>
