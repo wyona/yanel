@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 
-<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.1">
   <yanel:rti name="personalized-content" namespace="http://www.wyona.org/yanel/resource/1.0"/>
 
-  <yanel:property name="mime-type" value="application/xml"/>
+  <yanel:property name="limit-clickstream" value="20"/>
 
-  <yanel:property name="boost-service-url" value="http://localhost:8080/yanel/boost-website/api"/>
-  <yanel:property name="boost-api-key" value="28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
+  <yanel:property name="boost-service-url" value="http://boost.wyona.com/api"/>
+  <yanel:property name="boost-service-url" value="http://localhost:8080/yanel/boost-website/api" target-environment="dev"/>
+  <yanel:property name="boost-api-key" value="TODO_28b1e2ccc6804582208360370c73d4ad1da4b5f0ab8faf322dc65296fe8b68a5"/>
 
 <!-- IMPORTANT: Please make sure to configure the truststore when using https: http://www.yanel.org/en/documentation/security/ssl.html
   <yanel:property name="boost-service-url" value="https://b4.wyona.com/boost/api"/>
