@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Wyona
+ * Copyright 2011 - 2016 Wyona
  */
 
 package org.wyona.yanel.impl.resources.boost;
@@ -252,10 +252,11 @@ public class PersonalizedContentResource extends BasicXMLResource {
     }
 
     /**
-     * Do we exist? Returns 404 if we answer no.
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
+    @Override
     public boolean exists() throws Exception {
+        log.warn("TODO: Implement exists method!");
         return true;
     }
 
