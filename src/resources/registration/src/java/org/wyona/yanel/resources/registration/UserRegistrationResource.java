@@ -284,7 +284,11 @@ public class UserRegistrationResource extends BasicXMLResource {
             return fromEmail;
         } else {
             fromEmail = getYanel().getAdministratorEmail();
-            log.warn("From / sender email address not configured inside resource configuration, hence try to user administrator email '" + fromEmail + "' of Yanel instance ...");
+            if (fromEmail != null) {
+                log.warn("From / sender email address not configured inside resource configuration, hence use administrator email '" + fromEmail + "' of Yanel instance ...");
+            } else {
+                log.error("Neither email inside resource configuration, nor administrator email inside Yanel configured!");
+            }
             return fromEmail;
         }
     }
