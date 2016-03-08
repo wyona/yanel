@@ -12,24 +12,24 @@
 <div class="instructions">
 <h1>How to add a new realm<br/></h1>
 <p>This document explains how to add a new realm to Yanel. We will
-explain this using the Yulup Website as an example.   From now on, we
-will refer to the directories that contain Yanel and the Yulup website
+explain this using the 'Yulup Editor' website as an example.   From now on, we
+will refer to the directories that contain Yanel and the 'Yulup Editor' website
 as $YANEL_HOME and $YULUP_WEBSITE .
 </p>
 <ul>
-  <li>Download the Yulup Website from Wyona's repository using git:
+  <li>Download the 'Yulup Editor' Website from Wyona's repository using git:
     <pre>git clone https://github.com/wyona/yulup.git<br/></pre>
   </li>
   <li>Navigate to $YANEL_HOME and run
     <pre>./build.sh add-realm -Drealm-config=$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml -Drealm-mount-point=/yulup/ -Drealm-id=yulup<br/></pre>
     <p>Note: Usually the realm configuration file is named "realm.xml" and saved in the realm root directory.<br/>
-    Yulup doesn't follow this convention, instead using a file named "yanel-realm-config" saved in "$YULUP_WEBSITE/yanel/config".<br/>
+    The 'Yulup Editor' website doesn't follow this convention, instead using a file named "yanel-realm-config" saved in "$YULUP_WEBSITE/yanel/config".<br/>
     If you name the realm configuration file conventionally as "realm.xml" you can point the "-Drealm-config=" parameter to the directory that contains the file.<br/>
     If you have a chosen a different name, please point that parameter explicitly to the file.
     </p>
   </li>
   <li>Alternatively, you can add the realm node directly into $YANEL_HOME/conf/local/local.realms.xml. If you do not have this file, copy $YANEL_HOME/conf/realms.xml to $YANEL_HOME/conf/local/local.realms.xml first<br/>
-    <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot; user-tracking-domain-id=&quot;boost-0123456789&quot;&gt;<br/>  &lt;name&gt;Yulup Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
+    <pre>&lt;realm id=&quot;yulup&quot; mount-point=&quot;/yulup/&quot; user-tracking-domain-id=&quot;boost-0123456789&quot;&gt;<br/>  &lt;name&gt;Yulup Editor Website&lt;/name&gt;<br/>  &lt;config src=&quot;$YULUP_WEBSITE/yanel/config/yanel-realm-config.xml&quot;/&gt;<br/>&lt;/realm&gt;</pre>
     <b>NOTE for Windows users:</b> Also use forward slashes, e.g.
     <pre>D:/realms/foo/yanel/config/yanel-realm-config.xml<br/></pre>
     </li>
@@ -50,10 +50,10 @@ The attribute 'user-tracking-domain-id' is optional and if not set, then the rea
 
 <h2>Some publicly available Third-Party realms</h2>
 <ul>
-  <li><a href="http://raw.github.com/wyona/yulup/website/yanel/config/yanel-realm-config.xml">Yulup Website</a></li>
-  <li><a href="http://raw.github.com/wyona/yulup/demo/yanel/config/yanel-realm-config.xml">Yulup Demo</a></li>
-  <li><a href="http://raw.github.com/wyona/osr-101/trunk/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> </li>
-  <li><a href="http://raw.github.com/wyona/yanel/src/realms/from-scratch-realm-template/yanel/config/yanel-realm-config.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
+  <li><a href="https://github.com/wyona/yulup/blob/master/website/yanel/config/yanel-realm-config.xml">'Yulup Editor' Website</a></li>
+  <li><a href="https://github.com/wyona/yulup/blob/master/demo/yanel/config/yanel-realm-config.xml">'Yulup Editor' Demo</a></li>
+  <li><a href="https://github.com/wyona/osr-101/blob/master/yanel/config/yanel-realm-config.xml">OSR-101 (Neutron Protocol Website)</a> </li>
+  <li><a href="https://github.com/wyona/yanel/blob/master/src/realms/from-scratch-realm-template/realm.xml">Yanel from Scratch Realm</a> (U: anonymous, P: anonymous)</li>
 </ul>
 
 <h1>Developer Notes</h1>
