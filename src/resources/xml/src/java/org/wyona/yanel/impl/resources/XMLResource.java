@@ -105,9 +105,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
     /**
      * Get initial content as XML
      * @param revisionName Name of revision for which source XML will be retrieved / generated
-     * @return TODO
+     * @return XML as InputStream
      */
-    private InputStream getSourceXML(String revisionName) throws Exception {
+    protected InputStream getSourceXML(String revisionName) throws Exception {
         String sourcePath = getCustomSourcePath();
 
         if (sourcePath != null) {
