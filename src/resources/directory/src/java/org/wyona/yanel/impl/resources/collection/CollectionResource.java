@@ -282,8 +282,17 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      * @return i18n catalogue name
      */
     protected String[] getI18NCatalogueNames() throws Exception {
+        String[] cataloguesOfSuperClass = super.getI18NCatalogueNames();
+        java.util.ArrayList<String> catalogues = new java.util.ArrayList<String>();
+        for (int i = 0; i < cataloguesOfSuperClass.length; i++) {
+            catalogues.add(cataloguesOfSuperClass[i]);
+        }
+        catalogues.add("directory");
+        return catalogues.toArray(new String[catalogues.size()]);
+/*
         String[] array = {"global","directory"};
         return array;
+*/
     }
 
     /**
