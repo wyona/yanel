@@ -568,6 +568,8 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
             return "image/svg+xml";
         } else if (suffix.equals("ico")) {
             return "image/x-icon";
+        } else if (suffix.equals("woff2")) {
+            return "font/woff2";
         } else {
             log.warn("Could not determine mime-type from suffix '" + suffix + "' (path: " + getPath() + "). Return application/octet-stream!");
             return "application/octet-stream";
