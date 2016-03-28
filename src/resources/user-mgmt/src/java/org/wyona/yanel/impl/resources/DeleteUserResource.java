@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,7 +41,15 @@ public class DeleteUserResource extends ExecutableUsecaseResource {
                 log.debug("deleting user: " + id);
             }
             UserManager userManager = getRealm().getIdentityManager().getUserManager();
+
+            User user = userManager.getUser(id);
+            
             userManager.removeUser(id);
+
+            org.wyona.security.core.UserHistory history = user.getHistory();
+            history.addEntry(new org.wyona.security.core.UserHistory().new HistoryEntry(new java.util.Date(), "user-removed", "successful"));
+            user.setHistory(history);
+
             addInfoMessage("User " + id + " deleted successfully.");
 
             deleteUserProfileAccessPolicy(id);
