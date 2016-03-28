@@ -15,7 +15,7 @@
         <br/>
         Confirm new Password: <input type="password" name="password2"/>
         <br/>
-        
+
         Group Affiliation:
         <table border="1">
           <j:forEach var="group" items="${resource.getGroups()}">
@@ -38,6 +38,27 @@
         <input type="submit" name="submit" value="Ok"/>
         <input type="submit" name="cancel" value="Cancel"/>
       </form>
+
+        <br/><br/>
+        <h3>History</h3>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Usecase</th>
+              <th>Description</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+          <j:forEach var="entry" items="${resource.getHistoryEntries()}">
+            <tr>
+              <td>${entry.getUsecase()}</td>
+              <td>${entry.getDescription()}</td>
+              <td>${entry.getDate()}</td>
+            </tr>
+          </j:forEach>
+          </tbody>
+        </table>
     </body>
   </html>
 </j:jelly>

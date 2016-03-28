@@ -1,5 +1,5 @@
 /*
- * Copyright 2007-2009 Wyona
+ * Copyright 2007 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.wyona.yanel.impl.resources;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.api.Group;
 import org.wyona.security.core.api.GroupManager;
@@ -24,6 +26,8 @@ import org.wyona.security.core.api.User;
 import org.wyona.security.core.api.UserManager;
 import org.wyona.yanel.impl.resources.usecase.ExecutableUsecaseResource;
 import org.wyona.yanel.impl.resources.usecase.UsecaseException;
+
+import org.wyona.security.core.UserHistory;
 
 
 /**
@@ -38,7 +42,7 @@ import org.wyona.yanel.impl.resources.usecase.UsecaseException;
  */
 public class UpdateUserResource extends ExecutableUsecaseResource {
 
-    private static final Logger log = Logger.getLogger(UpdateUserResource.class);
+    private static final Logger log = LogManager.getLogger(UpdateUserResource.class);
     
     private static final String PARAM_USER_ID = "userID";
     private static final String PARAM_NAME = "name";
@@ -185,6 +189,17 @@ public class UpdateUserResource extends ExecutableUsecaseResource {
         UserManager userManager = getRealm().getIdentityManager().getUserManager();
         User user = userManager.getUser(id);
         return user;
+    }
+
+    /**
+     * Get all user history entries
+     */
+    public UserHistory.HistoryEntry[] getHistoryEntries() throws Exception {
+        UserManager userManager = getRealm().getIdentityManager().getUserManager();
+        User user = userManager.getUser(getParameterAsString(PARAM_USER_ID));
+        UserHistory history = user.getHistory();
+        java.util.List<UserHistory.HistoryEntry> entries = history.getHistory();
+        return entries.toArray(new UserHistory.HistoryEntry[entries.size()]);
     }
     
     public Group[] getGroups() throws AccessManagementException {
