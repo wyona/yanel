@@ -86,7 +86,7 @@
 -->
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-core" version="1.5.3-r22ea6b25cccbd0466d1b540bc8065798f4b439d2"/>
 
       <!-- TODO: Add to yanel.xml, because these libs are only needed during runtime -->
       <dependency groupId="avalon-framework" artifactId="avalon-framework-api" version="4.3"/>
@@ -104,8 +104,8 @@
 <!-- IMPORTANT: Please also see src/build/targets/webapp/webapp.xml re ambiguous libs -->
       <dependency groupId="xalan" artifactId="xalan" version="2.7.1"/>
 
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
-      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.5.2-rd9f62d5695fe6211b685786dd0f57d1037c6fb14"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-impl" version="1.5.3-r22ea6b25cccbd0466d1b540bc8065798f4b439d2"/>
+      <dependency groupId="wyona-org-security" artifactId="wyona-org-security-util" version="1.5.3-r22ea6b25cccbd0466d1b540bc8065798f4b439d2"/>
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="yarep" artifactId="yarep-impl" version="1.4.4-rad86f74baf45f5625305b9ef561784ea8b6013c8"/>
       <dependency groupId="spring" artifactId="spring"
@@ -149,6 +149,9 @@
       <dependency groupId="com.ibm.icu" artifactId="icu4j" version="3.4.4"/>
 
       <dependency groupId="mysql" artifactId="mysql-connector-java" version="5.1.12"/>
+<!--
+      <dependency groupId="mysql" artifactId="mysql-connector-java" version="5.5.47"/>
+-->
 
       <!-- See http://jdbc.postgresql.org/download.html or http://mvnrepository.com/artifact/org.postgresql/postgresql/9.3-1101-jdbc41 -->
       <dependency groupId="postgresql" artifactId="postgresql" version="9.3-1101.jdbc4"/>
