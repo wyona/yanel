@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Wyona
+ * Copyright 2010 - 2016 Wyona
  */
 package org.wyona.yanel.resources.registration;
 
@@ -405,7 +405,12 @@ public class UserRegistrationResource extends BasicXMLResource {
         // TODO: user.setProperty(GENDER, gender);
         user.setLanguage(getContentLanguage());
         user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
-       return user;
+
+        org.wyona.security.core.UserHistory history = user.getHistory();
+        history.addEntry(new org.wyona.security.core.UserHistory().new HistoryEntry(new Date(), "user-activated", "successful"));
+        user.setHistory(history);
+
+        return user;
     }
 
     /**
