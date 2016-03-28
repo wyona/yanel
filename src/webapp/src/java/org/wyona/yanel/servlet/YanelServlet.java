@@ -1664,6 +1664,10 @@ public class YanelServlet extends HttpServlet {
             Resource res = null;
             doLogAccess(request, response, status, res, trackInfo);
 
+            if (successfulLogout) {
+                // TODO: Add logout to org.wyona.security.core.UserHistory
+            }
+
             return successfulLogout;
         } catch (Exception e) {
             log.error(e, e);
