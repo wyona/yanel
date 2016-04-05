@@ -163,7 +163,7 @@
 
 
       <!-- INFO: Contains resource: org.wyona.yanel.impl.resources.jellyadapterofcmdv3 -->
-      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="1.0.1-r7c074f5d6f27233fa1e3ef2f4451e608caed583f"/>
+      <dependency groupId="wyona-org-yanel" artifactId="yanel-resource-creatable-modifiable-deletable-v3" version="1.0.2-rb2d454da168fb165faf1bc25b69191541507da60"/>
 
       <!-- INFO: Log to Boost -->
       <dependency groupId="wyona-com-boost" artifactId="Log4JAppender" version="4.9.0-r0ec55e61af5"/>
