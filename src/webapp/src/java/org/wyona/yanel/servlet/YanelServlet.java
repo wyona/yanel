@@ -1377,7 +1377,14 @@ public class YanelServlet extends HttpServlet {
                 if (sslPort != null) {
                     url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
                 }
-                log.warn("Redirect to original request: " + url);
+
+                String hashFragment = request.getParameter("yanel.login.hash.fragment");
+                if (hashFragment != null && hashFragment.length() > 0) {
+                    log.debug("Hash fragment: " + hashFragment);
+                    url = new URL(url.getProtocol(), url.getHost(), url.getPort(), url.getFile() + "#" + hashFragment);
+                }
+
+                log.warn("DEBUG: Redirect to original request: " + url);
 
                 //response.sendRedirect(url.toString()); // 302
                 // TODO: Yulup has a bug re TEMPORARY_REDIRECT (or is the problem that the load balancer is rewritting 302 reponses?!)
