@@ -41,6 +41,16 @@
         <p>Authorization was denied. Please, enter your username and password.</p>
         <xsl:apply-templates select="/yanel:yanel-auth-screen/yanel:message"/>
           <form method="POST">
+            <input type="hidden" name="yanel.login.hash.fragment" id="hash_fragment"/>
+<script type="text/javascript">
+var hashFragment = window.location.hash.substr(1);
+if (hashFragment.length > 0) {
+    //alert("DEBUG: Hash fragment: '" + hashFragment + "'");
+    document.getElementById('hash_fragment').value = hashFragment;
+    //document.write("DEBUG: Hash fragment: " + hashFragment);
+}
+</script>
+
             Username:<xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-default/@username}"/></xsl:when><xsl:when test="/yanel:yanel-auth-screen/yanel:login-preset"><input type="text" name="yanel.login.username" value="{/yanel:yanel-auth-screen/yanel:login-preset/@username}"/></xsl:when><xsl:otherwise><input type="text" name="yanel.login.username"/></xsl:otherwise></xsl:choose>
             <i18n:text key="password"/>: <input type="password" name="yanel.login.password"/>(<a id="forgotpw" href="{$yanel.back2realm}{$yanel.reservedPrefix}/user-forgot-pw.html"><i18n:text key="forgot.password"/></a>)<br/>
             <xsl:choose><xsl:when test="/yanel:yanel-auth-screen/yanel:login-default"><input type="checkbox" name="remember-my-login-name" checked="checked"/></xsl:when><xsl:otherwise><input type="checkbox" name="remember-my-login-name"/></xsl:otherwise></xsl:choose> Remember my login name (for 1 day (<a href="">More info</a>). Uncheck if on a shared computer!)
