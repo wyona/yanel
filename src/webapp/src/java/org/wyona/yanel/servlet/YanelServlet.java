@@ -1378,6 +1378,7 @@ public class YanelServlet extends HttpServlet {
                     url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
                 }
 
+                // INFO: Hash fragment is set by login screen, e.g. src/resources/login/htdocs/login-screen.xsl
                 String hashFragment = request.getParameter("yanel.login.hash.fragment");
                 if (hashFragment != null && hashFragment.length() > 0) {
                     log.debug("Hash fragment: " + hashFragment);
