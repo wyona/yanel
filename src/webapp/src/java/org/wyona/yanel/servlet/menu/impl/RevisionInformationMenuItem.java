@@ -3,7 +3,9 @@
  */
 package org.wyona.yanel.servlet.menu.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
@@ -25,7 +27,7 @@ import org.wyona.yanel.servlet.menu.TransitionMenuContentImpl;
  */
 public class RevisionInformationMenuItem implements RevisionInformationMenuContent {
     
-    private static Logger log = Logger.getLogger(RevisionInformationMenuItem.class);
+    private static Logger log = LogManager.getLogger(RevisionInformationMenuItem.class);
     private static String NBSP = "&#160;&#160;&#160;";
     
     private Resource resource;
@@ -88,7 +90,14 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
         value += "<li class=\"haschild\">Show more details" + NBSP + "<ul>";
         value += "<li>Revision name: " + this.revisionInfo.getName() + "</li>";
         value += "<li>Creation date of revision: " + formatDate(this.revisionInfo.getDate()) + "</li>";
-        value += "<li>Author: " + this.revisionInfo.getUser() + "</li>";
+
+        org.wyona.security.core.api.UserManager um = resource.getRealm().getIdentityManager().getUserManager();
+        try {
+            value += "<li>Author: " + um.getUser(this.revisionInfo.getUser()).getName() + " (" + this.revisionInfo.getUser() + ")</li>";
+        } catch(Exception e) {
+            value += "<li>Author: " + this.revisionInfo.getUser() + "</li>";
+            log.error(e, e);
+        }
 
         String comment = this.revisionInfo.getComment();
         if (comment != null && comment.length() > 0) {
