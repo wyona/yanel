@@ -11,7 +11,7 @@ import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 
 import org.wyona.yanel.servlet.menu.Menu;
-import org.wyona.yanel.servlet.menu.impl.RevisionInformationMenuItem;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
