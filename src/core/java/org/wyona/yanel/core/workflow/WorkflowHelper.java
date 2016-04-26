@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.VersionableV2;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.api.attributes.WorkflowableV1;
+import org.wyona.yanel.core.api.attributes.WorkflowableV2;
 import org.wyona.yanel.core.attributes.versionable.RevisionInformation;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.util.DateUtil;
@@ -35,7 +36,7 @@ import org.wyona.yarep.core.Revision;
 
 /**
  * This class provides some helper methods related to workflow for resources 
- * which are WorkflowableV1, VersionableV2, and ViewableV2 and which implement workflow
+ * which are WorkflowableV1, WorkflowableV2, VersionableV2, and ViewableV2 and which implement workflow
  * according to the following conditions:
  * - there is a resource config property 'workflow-schema' which points to the schema
  * - the workflow information is stored as properties of a repository node in the repository
@@ -208,9 +209,13 @@ public class WorkflowHelper {
 
     /**
      * Check if resource is associated with workflow
+     * @return true when resource is associated with workflow and false otherwise
      */
     public static boolean hasWorkflow(Resource resource) throws WorkflowException {
         try {
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "2") && ((WorkflowableV2)resource).getWorkflow() != null) {
+                return true;
+            }
             if (resource.getResourceConfigProperty(WORKFLOW_SCHEMA_PROPERTY_NAME) != null) {
                 return true;
             } else {
@@ -229,6 +234,10 @@ public class WorkflowHelper {
      */
     public static Workflow getWorkflow(Resource resource) throws WorkflowException {
         try {
+            if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "2")) {
+                return ((WorkflowableV2)resource).getWorkflow();
+            }
+
             String workflowSchema = resource.getResourceConfigProperty(WORKFLOW_SCHEMA_PROPERTY_NAME);
             if (workflowSchema == null) {
                 return null;
