@@ -101,6 +101,7 @@ import org.wyona.yanel.servlet.security.impl.AutoLogin;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.Usecase;
 import org.wyona.security.core.api.User;
+import org.wyona.security.core.api.UserManager;
 
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -3002,6 +3003,8 @@ public class YanelServlet extends HttpServlet {
             liveRevisionName = WorkflowHelper.getLiveRevision(res);
         }
 
+        UserManager userManager = res.getRealm().getIdentityManager().getUserManager();
+
         if (ResourceAttributeHelper.hasAttributeImplemented(res, "Versionable", "3")) {
             //log.debug("Resource '" + res.getPath() + "' has VersionableV3 implemented...");
             java.util.Iterator<RevisionInformation> it = ((VersionableV3)res).getRevisions(false);
@@ -3010,7 +3013,7 @@ public class YanelServlet extends HttpServlet {
                     Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
                     while(it.hasNext()) {
                         RevisionInformation revisionInfo = (RevisionInformation)it.next();
-                        Element revisionElement = appendRevision(revisionsElement, revisionInfo); 
+                        Element revisionElement = appendRevision(revisionsElement, revisionInfo, userManager); 
                         appendWorkflow(revisionElement, workflow, workflowableResource, doc, revisionInfo, liveRevisionName);
                     }
                 } else {
@@ -3026,7 +3029,7 @@ public class YanelServlet extends HttpServlet {
             if (revisionsInfo != null && revisionsInfo.length > 0) {
                 Element revisionsElement = (Element) resourceElement.appendChild(doc.createElement(REVISIONS_TAG_NAME));
                 for (int i = revisionsInfo.length - 1; i >= 0; i--) {
-                    Element revisionElement = appendRevision(revisionsElement, revisionsInfo[i]);
+                    Element revisionElement = appendRevision(revisionsElement, revisionsInfo[i], userManager);
                     appendWorkflow(revisionElement, workflow, workflowableResource, doc, revisionsInfo[i], liveRevisionName);
                 }
             } else {
@@ -3063,7 +3066,7 @@ public class YanelServlet extends HttpServlet {
      * @param revisionsEl Parent revisions DOM element
      * @param ri Detailed information about this particular revision
      */
-    private Element appendRevision(Element revisionsEl, RevisionInformation ri) {
+    private Element appendRevision(Element revisionsEl, RevisionInformation ri, UserManager userManager) {
         Document doc = revisionsEl.getOwnerDocument();
         Element revisionElement = (Element) revisionsEl.appendChild(doc.createElement("revision"));
         log.debug("Revision: " + ri.getName());
@@ -3072,8 +3075,13 @@ public class YanelServlet extends HttpServlet {
         revisionElement.appendChild(XMLHelper.createTextElement(doc, "date", "" + ri.getDate(), null));
      
         if (ri.getUser() != null) {
-            log.debug("User: " + ri.getUser());
+            log.debug("User ID: " + ri.getUser());
             revisionElement.appendChild(XMLHelper.createTextElement(doc, "user", ri.getUser(), null));
+            try {
+                revisionElement.appendChild(XMLHelper.createTextElement(doc, "user-name", userManager.getUser(ri.getUser()).getName(), null));
+            } catch(Exception e) {
+                log.warn(e, e);
+            }
         } else {
             revisionElement.appendChild(doc.createElement("no-user"));
         }
