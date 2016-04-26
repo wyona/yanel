@@ -530,6 +530,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
 
     /**
      * Get custom XSLT of realm to generate login screen
+     * @param xsltLoginScreenDefault Default XSLT, e.g. 'xslt/login-screen.xsl' (see web.xml)
      */
     private static File getRealmLoginScreenXSLT(Realm realm, String xsltLoginScreenDefault) {
         File realmDir = realm.getRootDir();
