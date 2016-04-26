@@ -10,9 +10,10 @@
 
 <!-- NOTE: Do not use relative paths to reference resource types, because the paths are not being resolved re the location of (local.)resource-types.xml -->
 
-<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2015072700">
+<resource-types xmlns="http://www.wyona.org/yanel/1.0" version="2016042600">
 
   <changes>
+    <change version="2016042600">Revisions resource type added</change>
     <change version="2015072700">Login resource type added</change>
     <change version="2015072300">XML source editor resource type added</change>
     <change version="2014051100">CAS resource directory renamed</change>
@@ -97,6 +98,7 @@
   <resource-type src="@YANEL_SRC_DIR@/src/resources/zip/" compile="true" copy-dir-name="yanel-zip"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/calendar/" compile="true" copy-dir-name="yanel-calendar"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/resource-creator/" compile="true"/>
+  <resource-type src="@YANEL_SRC_DIR@/src/resources/resource-revisions/" compile="true"/>
   <resource-type src="@YANEL_SRC_DIR@/src/resources/davcollection/" compile="true" copy-dir-name="yanel-davcollection"/>
 
   <resource-type src="@YANEL_SRC_DIR@/src/resources/pdf/" compile="true" copy-dir-name="yanel-pdf"/>
