@@ -22,7 +22,7 @@ import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.workflow.WorkflowException;
 
 /**
- * DEV (not released yet, this interface still might change ...)
+ * RELEASED, do NOT change!
  * &lt;br/&gt;
  * A workflow is composed of states and transitions. Each revision of a workflowable resource 
  * has a state, which can be changed by performing transitions.
