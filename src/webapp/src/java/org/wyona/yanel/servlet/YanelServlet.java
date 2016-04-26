@@ -144,7 +144,7 @@ public class YanelServlet extends HttpServlet {
     private Sitetree sitetree;
 
     private long MEMORY_GROWTH_THRESHOLD = 300;
-    private File xsltInfoAndException;
+    private String defaultXsltInfoAndException;
     private String xsltLoginScreenDefault;
     private boolean displayMostRecentVersion = true;
 
@@ -214,7 +214,7 @@ public class YanelServlet extends HttpServlet {
             MEMORY_GROWTH_THRESHOLD = new Long(config.getInitParameter("memory.growth.threshold")).longValue();
         }
 
-        xsltInfoAndException = org.wyona.commons.io.FileUtil.file(servletContextRealPath, config.getInitParameter("exception-and-info-screen-xslt"));
+        defaultXsltInfoAndException = config.getInitParameter("exception-and-info-screen-xslt");
         xsltLoginScreenDefault = config.getInitParameter("login-screen-xslt");
         displayMostRecentVersion = new Boolean(config.getInitParameter("workflow.not-live.most-recent-version")).booleanValue();
         try {
@@ -1738,7 +1738,8 @@ public class YanelServlet extends HttpServlet {
      * Generate a "Yanel" response (page information, 404, internal server error, ...)
      */
     private void setYanelOutput(HttpServletRequest request, HttpServletResponse response, Document doc) throws ServletException {
-        String path = getResource(request, response).getPath();
+        Resource resource = getResource(request, response);
+        String path = resource.getPath();
         String backToRealm = org.wyona.yanel.core.util.PathUtil.backToRealm(path);
         
         try {
@@ -1760,10 +1761,9 @@ public class YanelServlet extends HttpServlet {
                 // create identity transformer which serves as a dom-to-sax transformer
                 TransformerIdentityImpl transformer = new TransformerIdentityImpl();
 
-                // create xslt transformer:
+                // INFO: Create xslt transformer:
                 SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
-                // TODO: Make xslt configurable per realm (see http://bugzilla.wyona.com/cgi-bin/bugzilla/show_bug.cgi?id=6985)
-                TransformerHandler xsltTransformer = saxTransformerFactory.newTransformerHandler(new StreamSource(xsltInfoAndException));
+                TransformerHandler xsltTransformer = saxTransformerFactory.newTransformerHandler(new StreamSource(getXsltInfoAndException(resource)));
                 xsltTransformer.getTransformer().setParameter("yanel.back2realm", backToRealm);
                 xsltTransformer.getTransformer().setParameter("yanel.reservedPrefix", reservedPrefix);
                 
@@ -1785,6 +1785,19 @@ public class YanelServlet extends HttpServlet {
             }
         } catch (Exception e) {
             throw new ServletException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get XSLT file to render meta information and exception screen
+     */
+    private File getXsltInfoAndException(Resource resource) {
+        File realmDir = new File(resource.getRealm().getConfigFile().getParent());
+        File customXslt = org.wyona.commons.io.FileUtil.file(realmDir.getAbsolutePath(), "src" + File.separator + "webapp" + File.separator + defaultXsltInfoAndException);
+        if (customXslt.isFile()) {
+            return customXslt;
+        } else {
+            return org.wyona.commons.io.FileUtil.file(servletContextRealPath, defaultXsltInfoAndException);
         }
     }
 
