@@ -103,10 +103,11 @@ public class EmailAction implements Action {
 
     /**
      * Get subject
+     * @param workflowable Resource which has implemented WorkflowableV1
      */
     protected String getSubject(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         Resource resource = (Resource) workflowable;
-        return "[" + resource.getRealm().getName() + "] The workflow state of the resource '" + resource.getPath() + "' has been changed: " + workflowable.getWorkflowState(revision);
+        return "[" + resource.getRealm().getName() + "] The workflow state of '" + new java.io.File(resource.getPath()).getName() + "' has been changed to '" + workflowable.getWorkflowState(revision) + "'";
     }
 
     /**
