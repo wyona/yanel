@@ -115,6 +115,19 @@ public class EmailAction implements Action {
      */
     protected String getText(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         Resource resource = (Resource) workflowable;
-        return "Please review the workflow state change of the resource: " + resource.getPath();
+        String url = removeQueryString(org.wyona.yanel.servlet.Utils.getRequestURLQS(resource.getRealm(), resource.getEnvironment().getRequest(), resource.getPath(), false));
+        return "Please review the workflow state change of the resource: " + url;
+    }
+
+    /**
+     * @url URL which might contain a query string, e.g. 'http://127.0.0.1:8080/yanel/test/index.html?param=value'
+     * @return URL without query string, e.g. 'http://127.0.0.1:8080/yanel/test/index.html'
+     */
+    private static String removeQueryString(String url) {
+        if (url.indexOf("?") > 0) {
+            return url.substring(0, url.indexOf("?"));
+        } else {
+            return url;
+        }
     }
 }
