@@ -115,8 +115,11 @@ public class EmailAction implements Action {
      */
     protected String getText(WorkflowableV1 workflowable, Workflow workflow, String revision) throws WorkflowException {
         Resource resource = (Resource) workflowable;
+
+        // TODO: We cannot use the webapp package ahead of the impl package, because of compilation order, but maybe we could copy this method to the core or impl package and set the one inside the webapp packaged to deprecated
         //String url = removeQueryString(org.wyona.yanel.servlet.Utils.getRequestURLQS(resource.getRealm(), resource.getEnvironment().getRequest(), resource.getPath(), false));
         String url = resource.getPath();
+
         return "Please review the workflow state change of the resource: " + url;
     }
 
