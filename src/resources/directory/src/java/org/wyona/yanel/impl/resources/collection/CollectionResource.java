@@ -61,24 +61,32 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
      * Get collection (directory listing) as XML
      */
     private InputStream getContentXML() throws Exception {
-        String yanelPath = getResourceConfigProperty("yanel-path");
         StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         try {
-            if (yanelPath != null) {
-                if (yanelPath.startsWith("file:")) {
-                    log.info("List children of actual file system directory '" + yanelPath + "' ...");
-                    sb.append(getContentXMLOfFileSystemDirectory(yanelPath.substring(5)));
-                } else {
-                    sb.append(getContentXMLOfYarepNode(yanelPath));
-                }
+            String yanelPath = getCollectionPath();
+            if (yanelPath.startsWith("file:")) {
+                log.info("List children of actual file system directory '" + yanelPath + "' ...");
+                sb.append(getContentXMLOfFileSystemDirectory(yanelPath.substring(5)));
             } else {
-                sb.append(getContentXMLOfYarepNode(getPath()));
+                sb.append(getContentXMLOfYarepNode(yanelPath));
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
 
         return new java.io.StringBufferInputStream(sb.toString());
+    }
+
+    /**
+     *
+     */
+    private String getCollectionPath() throws Exception {
+        String yanelPath = getResourceConfigProperty("yanel-path");
+        if (yanelPath != null) {
+            return yanelPath;
+        } else {
+            return getPath();
+        }
     }
 
     /**
@@ -105,6 +113,7 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
 
         // TODO: Make ordering/sorting configurable!
         log.warn("TODO: Make order/sorting configurable!");
+        log.warn("DEBUG: Path: " + path);
         File[] children = new File(path).listFiles();
         Calendar calendar = Calendar.getInstance();
         if (children != null) {
@@ -296,11 +305,18 @@ public class CollectionResource extends BasicXMLResource implements ViewableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
     public boolean exists() throws Exception {
-        log.warn("Not implemented yet!");
-        return true;
+        String yanelPath = getCollectionPath();
+        if (yanelPath.startsWith("file:") && new File(yanelPath.substring(5)).isDirectory()) {
+            return true;
+        }
+        if (getRealm().getRepository().existsNode(yanelPath)) {
+            return true;
+        }
+        log.warn("No such collection '" + yanelPath + "'!");
+        return false;
     }
 
     /**
