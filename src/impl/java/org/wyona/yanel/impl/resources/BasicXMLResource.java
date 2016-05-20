@@ -323,101 +323,99 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         xmlReader.setEntityResolver(catalogResolver);
         xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
 
-        SourceResolver uriResolver = new SourceResolver(this);
-        ListingErrorHandler errorListener = new ListingErrorHandler(new PrintWriter(errorWriter));
+            SourceResolver uriResolver = new SourceResolver(this);
+            ListingErrorHandler errorListener = new ListingErrorHandler(new PrintWriter(errorWriter));
 
-        // create xslt transformer:
-        SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
-        tf.setURIResolver(uriResolver);
-        tf.setErrorListener(errorListener);
+            // create xslt transformer:
+            SAXTransformerFactory tf = (SAXTransformerFactory)TransformerFactory.newInstance();
+            tf.setURIResolver(uriResolver);
+            tf.setErrorListener(errorListener);
 
-        String[] xsltPaths = null;
-        if (viewDescriptor != null) {
-            xsltPaths = viewDescriptor.getXSLTPaths();
-        } else {
-            log.warn("View descriptor is null!");
-        }
-        if (xsltPaths == null || xsltPaths.length == 0) {
-            xsltPaths = getXSLTPath(getPath());
-        }
-        
-
-        Repository repo = getRealm().getRepository();
-        TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
-        for (int i = 0; i < xsltPaths.length; i++) {
-            String xsltPath = xsltPaths[i];
-            int schemeEndIndex = xsltPath.indexOf(':');
-            if (xsltPaths[i].startsWith("file:")) {
-                // TODO: Handle "file:" in SourceResolver
-                log.info("Scheme: file (" + xsltPaths[i] + ")");
-                xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5)), xsltPaths[i]));
-            } else if (schemeEndIndex >= 0) {
-                String scheme = xsltPath.substring(0, schemeEndIndex);
-                log.info("Scheme: " + scheme + " (" + xsltPath + ")");
-                
-                Source source = uriResolver.resolve(xsltPath, xsltPath);
-
-                xsltHandlers[i] = getTransformerHandler(source, tf); // per default, this is very slow.
-                /*XXX BACKWARD-COMPATIBILITY from now on we
-                    throw new SourceException("No resolver could be loaded for scheme: " + scheme);
-                instead of simply only doing
-                    log.error("No such protocol implemented: " + xsltPaths[i].substring(0, xsltPaths[i].indexOf(":/")));
-                and then probably also throwing some other exception anyway... 
-                */
+            String[] xsltPaths = null;
+            if (viewDescriptor != null) {
+                xsltPaths = viewDescriptor.getXSLTPaths();
             } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Default Content repository will be used!");
-                    }
-                xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream(), "yanelrepo:" + xsltPaths[i]));
+                log.warn("View descriptor is null!");
             }
-            xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
-            xsltHandlers[i].getTransformer().setErrorListener(errorListener);
-            //log.debug("Requested view ID: " + viewDescriptor.getId());
-            passTransformerParameters(xsltHandlers[i].getTransformer());
-        }
-
-        identity = getEnvironment().getIdentity();
-        user = null;
-        String userID = identity.getUsername();
-        if (userID != null) {
-            user = getRealm().getIdentityManager().getUserManager().getUser(userID);
-            //log.debug("User ID: " + userID + ", " + user.getID());
-        }
-        // create i18n transformer:
-        I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(identity, user), getRealm().getDefaultLanguage(), uriResolver);
-        i18nTransformer.setEntityResolver(catalogResolver);
-
-        // create xinclude transformer:
-        XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
-        xIncludeTransformer.setResolver(uriResolver);
-
-        // create serializer:
-        Serializer serializer = createSerializer(viewDescriptor);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        // chain everything together (create a pipeline):
-        if (xsltHandlers.length > 0) {
-            xmlReader.setContentHandler(xsltHandlers[0]);
-            for (int i=0; i<xsltHandlers.length-1; i++) {
-                xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
+            if (xsltPaths == null || xsltPaths.length == 0) {
+                xsltPaths = getXSLTPath(getPath());
             }
-            xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(xIncludeTransformer));
-        } else {
-            xmlReader.setContentHandler(new SAXResult(xIncludeTransformer).getHandler());
-        }
-        xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
-        i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
-        serializer.setOutputStream(baos);
+            
+            Repository repo = getRealm().getRepository();
+            // TBD: Introduce javax.xml.transform.Templates in order to cache transformers (see for example http://www.javaworld.com/article/2073394/java-xml/transparently-cache-xsl-transformations-with-jaxp.html)
+            TransformerHandler[] xsltHandlers = new TransformerHandler[xsltPaths.length];
+            identity = getEnvironment().getIdentity();
+            user = null;
+            String userID = identity.getUsername();
+            if (userID != null) {
+                user = getRealm().getIdentityManager().getUserManager().getUser(userID);
+                //log.debug("User ID: " + userID + ", " + user.getID());
+            }
+            for (int i = 0; i < xsltPaths.length; i++) {
+                String xsltPath = xsltPaths[i];
+                int schemeEndIndex = xsltPath.indexOf(':');
+                if (xsltPaths[i].startsWith("file:")) {
+                    // TODO: Handle "file:" in SourceResolver
+                    log.info("Scheme: file (" + xsltPaths[i] + ")");
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(new java.io.FileInputStream(xsltPaths[i].substring(5)), xsltPaths[i]));
+                } else if (schemeEndIndex >= 0) {
+                    String scheme = xsltPath.substring(0, schemeEndIndex);
+                    log.info("Scheme: " + scheme + " (" + xsltPath + ")");
+                    Source source = uriResolver.resolve(xsltPath, xsltPath);
+                    xsltHandlers[i] = getTransformerHandler(source, tf);
+                    /*XXX BACKWARD-COMPATIBILITY from now on we
+                        throw new SourceException("No resolver could be loaded for scheme: " + scheme);
+                    instead of simply only doing
+                        log.error("No such protocol implemented: " + xsltPaths[i].substring(0, xsltPaths[i].indexOf(":/")));
+                    and then probably also throwing some other exception anyway... 
+                    */
+                } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Default Content repository will be used!");
+                        }
+                    xsltHandlers[i] = tf.newTransformerHandler(new StreamSource(repo.getNode(xsltPaths[i]).getInputStream(), "yanelrepo:" + xsltPaths[i]));
+                }
+                xsltHandlers[i].getTransformer().setURIResolver(uriResolver);
+                xsltHandlers[i].getTransformer().setErrorListener(errorListener);
+                //log.debug("Requested view ID: " + viewDescriptor.getId());
+                passTransformerParameters(xsltHandlers[i].getTransformer());
+            }
 
-        // execute pipeline:
-        xmlReader.parse(new InputSource(xmlInputStream)); // TODO: as of different sources the parse method is not thread-safe! should be called within a synchronized block.
+            // create i18n transformer:
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(identity, user), getRealm().getDefaultLanguage(), uriResolver);
+            i18nTransformer.setEntityResolver(catalogResolver);
 
-        return new ByteArrayInputStream(baos.toByteArray());
+            // create xinclude transformer:
+            XIncludeTransformer xIncludeTransformer = new XIncludeTransformer();
+            xIncludeTransformer.setResolver(uriResolver);
+
+            // create serializer:
+            Serializer serializer = createSerializer(viewDescriptor);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            // chain everything together (create a pipeline):
+            if (xsltHandlers.length > 0) {
+                xmlReader.setContentHandler(xsltHandlers[0]);
+                for (int i=0; i<xsltHandlers.length-1; i++) {
+                    xsltHandlers[i].setResult(new SAXResult(xsltHandlers[i+1]));
+                }
+                xsltHandlers[xsltHandlers.length-1].setResult(new SAXResult(xIncludeTransformer));
+            } else {
+                xmlReader.setContentHandler(new SAXResult(xIncludeTransformer).getHandler());
+            }
+            xIncludeTransformer.setResult(new SAXResult(i18nTransformer));
+            i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
+            serializer.setOutputStream(baos);
+
+            // execute pipeline:
+            xmlReader.parse(new InputSource(xmlInputStream));
+
+            return new ByteArrayInputStream(baos.toByteArray());
     }
 
     /**
-     * Override this method for your needs, e.g. with caching
+     * Override this method for your needs, e.g. with cached XSL Templates
      * @param source
      * @param tf
      * @return
