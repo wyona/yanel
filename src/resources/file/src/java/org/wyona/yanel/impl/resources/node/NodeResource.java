@@ -609,7 +609,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      * Get repository node
      */
-    private Node getNode() throws ResourceNotFoundException {
+    protected Node getNode() throws ResourceNotFoundException {
         try {
             String path = getRepoPath();
             try {
@@ -626,7 +626,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     /**
      * Get repository path (We do not overwrite the getPath() method, because it's still used inside this class at many places without checking for the 'src' property!)
      */
-    private String getRepoPath() throws Exception {
+    protected String getRepoPath() throws Exception {
         String path = getPath();
         if (getResourceConfigProperty("src") != null) {
             path = getResourceConfigProperty("src");
