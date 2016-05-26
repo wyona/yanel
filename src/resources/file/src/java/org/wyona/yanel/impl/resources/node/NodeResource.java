@@ -30,7 +30,6 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.servlet.communication.HttpRequest;
-
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
@@ -42,13 +41,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 import org.apache.commons.fileupload.util.Streams;
+
 
 /**
  * Generic Node Resource
@@ -99,8 +102,42 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
+        // Support Google Recommendations as of 2016: 
+        // 1) Expires: https://developers.google.com/speed/docs/insights/LeverageBrowserCaching
+        // 2) If-Modified-Since: https://varvy.com/ifmodified.html
+        try {
+            // Expires
+            Date expires = getDatePlusSomeDays(new Date(), 7);
+            String string = getHttpHeaderDate(expires);
+            getEnvironment().getResponse().setHeader("Expires", string);
+            
+            // Not Modified since...
+            long ifModifiedSince = getEnvironment().getRequest().getDateHeader("If-Modified-Since");
+            if (ifModifiedSince != -1) {
+                long resourceLastMod = getLastModified();
+                if (resourceLastMod != -1 && resourceLastMod <= ifModifiedSince) {
+                    getEnvironment().getResponse().setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
+                }
+            }
+            
+        } catch (Exception e) {
+            log.error(e,e);
+        }
+
         return view;
     }
+    private Date getDatePlusSomeDays(Date date, int increment) {
+        Calendar cal = Calendar.getInstance(Locale.GERMANY);
+        cal.setTime(date);
+        cal.add(Calendar.DATE, increment);
+        return cal.getTime();
+    }
+    private String getHttpHeaderDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf.format(date);
+    }
+    
 
     /**
      * Get mime type
