@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 import org.wyona.yanel.core.map.Realm;
 
 /**
- * Heartbeat job
+ * Heartbeat job example that will not be executed again if one is already running. 
+ * Use this example for jobs that can take a lot more time than the scheduled time (e.g. job might run for 4h, but we let it run every 30min if it is not already running)
  */
 @DisallowConcurrentExecution
 public class HeartbeatJobNonConcurrent implements Job {
