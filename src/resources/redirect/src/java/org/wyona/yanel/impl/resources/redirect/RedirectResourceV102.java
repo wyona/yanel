@@ -73,6 +73,18 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
     }
 
     /**
+     * Get status code, whereas 307 used as default
+     * @return status code, e.g. 307 or 301
+     */
+    protected int getStatus() throws Exception {
+        String statusCode = getResourceConfigProperty("status-code");
+        if (statusCode != null) {
+            return new Integer(statusCode).intValue();
+        }
+        return TMP_REDIRECT_STATUS_CODE;
+    }
+
+    /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#getView(String)
      */
     public View getView(String viewId) throws Exception {
@@ -81,7 +93,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
 
         HttpServletResponse response = getEnvironment().getResponse();
 
-        response.setStatus(TMP_REDIRECT_STATUS_CODE);
+        response.setStatus(getStatus());
         String location = getLocation();
         if (location.indexOf("/") == 0) { // INFO: Redirect is absolute path
             // TBD: An alternative approach would be to use "getRequestURLQS(...)" in order to have a complete URL according to http://en.wikipedia.org/wiki/HTTP_location
