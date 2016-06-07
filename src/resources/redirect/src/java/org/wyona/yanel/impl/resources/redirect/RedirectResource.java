@@ -78,7 +78,8 @@ public class RedirectResource extends Resource implements ViewableV2, CreatableV
         if (defaultHref == null) throw new Exception("No default redirect has been set!");
 
         // Default
-        response.setStatus(307);
+        int redirectCode = HttpServletResponse.SC_MOVED_PERMANENTLY; // In the age of SEO it is important to allow link juice, so only 301 should be used for redirects. See https://moz.com/learn/seo/redirection
+        response.setStatus(redirectCode); 
         response.setHeader("Location", defaultHref);
 
         ResourceConfiguration rc = getConfiguration();
@@ -96,7 +97,7 @@ public class RedirectResource extends Resource implements ViewableV2, CreatableV
             for (int i = 0; i < languageRedirectConfigs.length; i++) {
                 try {
                     if (languageRedirectConfigs[i].getAttribute("code").equals(localizationLanguage)) {
-                        response.setStatus(307);
+                        response.setStatus(redirectCode);
                         response.setHeader("Location", languageRedirectConfigs[i].getAttribute("href"));
                     }
                 } catch (Exception e) {
