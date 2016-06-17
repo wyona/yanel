@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -106,10 +106,11 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         // 1) Expires: https://developers.google.com/speed/docs/insights/LeverageBrowserCaching
         // 2) If-Modified-Since: https://varvy.com/ifmodified.html
         try {
-            // Expires
+            // INFO: Expires in 7 days
+            // TODO: Make number of days configurable
             Date expires = getDatePlusSomeDays(new Date(), 7);
-            String string = getHttpHeaderDate(expires);
-            getEnvironment().getResponse().setHeader("Expires", string);
+            String formattedExpiryDate = getHttpHeaderDate(expires);
+            getEnvironment().getResponse().setHeader("Expires", formattedExpiryDate);
             
             // Not Modified since...
             long ifModifiedSince = getEnvironment().getRequest().getDateHeader("If-Modified-Since");
@@ -119,25 +120,34 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
                     getEnvironment().getResponse().setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
                 }
             }
-            
         } catch (Exception e) {
             log.error(e,e);
         }
 
         return view;
     }
+
+    /**
+     * Get date in the future
+     * @param date Some date
+     * @param increment Additonal number of days
+     * @return date in the future
+     */
     private Date getDatePlusSomeDays(Date date, int increment) {
         Calendar cal = Calendar.getInstance(Locale.GERMANY);
         cal.setTime(date);
         cal.add(Calendar.DATE, increment);
         return cal.getTime();
     }
+
+    /**
+     * Get formatted date according to HTTP header definition
+     */
     private String getHttpHeaderDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         return sdf.format(date);
     }
-    
 
     /**
      * Get mime type
