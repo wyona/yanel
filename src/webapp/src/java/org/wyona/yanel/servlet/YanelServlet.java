@@ -1071,7 +1071,7 @@ public class YanelServlet extends HttpServlet {
             } else if (ResourceAttributeHelper.hasAttributeImplemented(res, "Deletable", "1")) {
                 // TODO: Finish implementation, set resource input
                 ((DeletableV1) res).delete(null);
-                log.debug("Resource '" + res + "' has been deleted via DeletableV2 interface.");
+                log.debug("Resource '" + res + "' has been deleted via DeletableV1 interface.");
                 setResourceDeletedResponse(res, response);
                 return;
             } else {
@@ -2432,7 +2432,7 @@ public class YanelServlet extends HttpServlet {
                         //log.debug("Client set 'If-Modified-Since' ...");
                         if (res instanceof ModifiableV2) {
                             long resourceLastMod = ((ModifiableV2)res).getLastModified();
-                            //log.debug(resourceLastMod + " " +  ifModifiedSince);
+                            log.debug("Resource was last modified: " + new Date(resourceLastMod) + ", 'If-Modified-Since' sent by client: " +  new Date(ifModifiedSince));
                             if (resourceLastMod <= ifModifiedSince) {
                                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
                                 return response;
@@ -2676,7 +2676,7 @@ public class YanelServlet extends HttpServlet {
         String confirmed = request.getParameter("confirmed");
         if (confirmed != null) {
             String path = getResource(request, response).getPath();
-            log.warn("Really delete resource at " + path);
+            log.debug("Really delete resource at " + path);
             doDelete(request, response);
             return;
         } else {
