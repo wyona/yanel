@@ -102,23 +102,14 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
-        // Support Google Recommendations as of 2016: 
+        // INFO: Support Google Recommendations as of 2016: 
         // 1) Expires: https://developers.google.com/speed/docs/insights/LeverageBrowserCaching
-        // 2) If-Modified-Since: https://varvy.com/ifmodified.html
+        // 2) If-Modified-Since: https://varvy.com/ifmodified.html (See YanelServlet checking ModifiableV2)
         try {
-            // INFO: Expires in 7 days
-            // TODO: Make number of days configurable
-            Date expires = getDatePlusSomeDays(new Date(), 7);
-            String formattedExpiryDate = getHttpHeaderDate(expires);
-            getEnvironment().getResponse().setHeader("Expires", formattedExpiryDate);
-            
-            // Not Modified since...
-            long ifModifiedSince = getEnvironment().getRequest().getDateHeader("If-Modified-Since");
-            if (ifModifiedSince != -1) {
-                long resourceLastMod = getLastModified();
-                if (resourceLastMod != -1 && resourceLastMod <= ifModifiedSince) {
-                    getEnvironment().getResponse().setStatus(javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED);
-                }
+            if (getResourceConfigProperty("days-to-expiration") != null) {
+                Date expires = getDatePlusSomeDays(new Date(), new Integer(getResourceConfigProperty("days-to-expiration")).intValue());
+                String formattedExpiryDate = getHttpHeaderDate(expires);
+                getEnvironment().getResponse().setHeader("Expires", formattedExpiryDate);
             }
         } catch (Exception e) {
             log.error(e,e);
@@ -214,7 +205,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getLastModified()
      */
     public long getLastModified() throws Exception {
        Node node = getNode();
