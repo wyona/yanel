@@ -18,5 +18,8 @@ Generic node resource
   <!-- For example (IMPORTANT: Do not forget the leading slash!)
     <yanel:property name="src" value="/index.html"/>
   -->
+
+  <!-- INFO: Optional, whereas when set, then the HTTP header 'Expires' will be set, based on the current date and the number of days to expiration (e.g. 7) -->
+  <property name="days-to-expiration"/>
 </rtd>
 </resource>
