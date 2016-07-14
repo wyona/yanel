@@ -957,10 +957,13 @@ public class YanelServlet extends HttpServlet {
 
                 if (outputFormat != null && CONTENT_TYPE_XHTML.equals(outputFormat.toLowerCase())) {
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><body><p>The action " + transition
-                                         + " has been performed.</p><p>Return to <a href=\"" 
+                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"1;URL='" 
                                          + request.getHeader(HTTP_REFERRER)
-                                         + "\">the page</a>.</p></body></html>");
+                                         + "'\"></head><body><div style=\"text-align: center; font-family: sans-serif;\"><p>&#160;<br/>&#160;<br/>The action <strong style=\"background-color: #dff0d8;\">&#160;" 
+                                         + transition
+                                         + "&#160;</strong> has been performed.</p><p>Return to <a href=\"" 
+                                         + request.getHeader(HTTP_REFERRER)
+                                         + "\">the page</a>.</p></div></body></html>");
 
                 } else {
                     log.warn("No output format query string parameter '" + YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT + "' has been specified.");
