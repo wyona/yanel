@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2016 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
 import org.wyona.yanel.servlet.communication.HttpRequest;
-
 import org.wyona.yarep.core.Node;
 import org.wyona.yarep.core.Repository;
 import org.wyona.yarep.core.Revision;
@@ -42,13 +41,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 import org.apache.commons.fileupload.util.Streams;
+
 
 /**
  * Generic Node Resource
@@ -99,7 +102,42 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
         view.setMimeType(getMimeType(viewId));
         view.setEncoding(getResourceConfigProperty("encoding"));
 
+        // INFO: Support Google Recommendations as of 2016: 
+        // 1) Expires: https://developers.google.com/speed/docs/insights/LeverageBrowserCaching
+        // 2) If-Modified-Since: https://varvy.com/ifmodified.html (See YanelServlet checking ModifiableV2)
+        try {
+            if (getResourceConfigProperty("days-to-expiration") != null) {
+                Date expires = getDatePlusSomeDays(new Date(), new Integer(getResourceConfigProperty("days-to-expiration")).intValue());
+                String formattedExpiryDate = getHttpHeaderDate(expires);
+                getEnvironment().getResponse().setHeader("Expires", formattedExpiryDate);
+            }
+        } catch (Exception e) {
+            log.error(e,e);
+        }
+
         return view;
+    }
+
+    /**
+     * Get date in the future
+     * @param date Some date
+     * @param increment Additonal number of days
+     * @return date in the future
+     */
+    private Date getDatePlusSomeDays(Date date, int increment) {
+        Calendar cal = Calendar.getInstance(Locale.GERMANY);
+        cal.setTime(date);
+        cal.add(Calendar.DATE, increment);
+        return cal.getTime();
+    }
+
+    /**
+     * Get formatted date according to HTTP header definition
+     */
+    private String getHttpHeaderDate(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return sdf.format(date);
     }
 
     /**
@@ -167,7 +205,7 @@ public class NodeResource extends Resource implements ViewableV2, ModifiableV2, 
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.ModifiableV2#getLastModified()
      */
     public long getLastModified() throws Exception {
        Node node = getNode();

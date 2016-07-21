@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package org.wyona.yanel.impl.resources.node;
 
 import org.wyona.yanel.core.Resource;
@@ -577,7 +576,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
     }
 
     /**
-     *
+     * @see org.wyona.yanel.core.api.attributes.WorkflowableV1#getWorkflowIntrospection()
      */
     public String getWorkflowIntrospection() throws WorkflowException {
         return WorkflowHelper.getWorkflowIntrospection(this);
