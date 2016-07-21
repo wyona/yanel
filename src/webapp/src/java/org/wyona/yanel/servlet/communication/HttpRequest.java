@@ -128,15 +128,19 @@ public class HttpRequest extends HttpServletRequestWrapper {
      * @see javax.servlet.ServletRequestWrapper#getParameter(java.lang.String)
      */
     public String getParameter(String name) {
-        String value = super.getParameter(name);
+
         if(!isMultipartRequest()) {
+            String value = super.getParameter(name);
+            //log.debug("Original value of parameter '" + name + "': " + value);
             return fixEncoding(value);
         }
+
+        // INFO: This is a multipart request, hence TODO ...
         Iterator iter = this.items.iterator();
         while (iter.hasNext()) {
             FileItem item = (FileItem)iter.next();
             if (item.getFieldName().equals(name) && item.isFormField()) {
-                return item.getString(); // TODO: fix encoding ?
+                return fixEncoding(item.getString());
             }
         }
 
