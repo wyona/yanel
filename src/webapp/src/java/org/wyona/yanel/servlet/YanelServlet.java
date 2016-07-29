@@ -959,12 +959,17 @@ public class YanelServlet extends HttpServlet {
                 if (outputFormat != null && CONTENT_TYPE_XHTML.equals(outputFormat.toLowerCase())) {
                     Workflow workflow = WorkflowHelper.getWorkflow(resource);
                     Transition transition = workflow.getTransition(transitionID);
+                    String description = transitionID;
+                    try {
+                        description = transition.getDescription(getLanguage(request, "en"));
+                    } catch(Exception e) {
+                        log.error(e, e);
+                    }
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"5;URL='" 
+                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"3;URL='" 
                                          + request.getHeader(HTTP_REFERRER)
                                          + "'\"></head><body><div style=\"text-align: center; font-family: sans-serif;\"><p>&#160;<br/>&#160;<br/>The workflow transition <strong style=\"background-color: #dff0d8;\">&#160;" 
-                                         + transition.getDescription("en")
-                                         + " (" + transitionID + ")"
+                                         + description
                                          + "&#160;</strong> has been performed.</p><p>Return to <a href=\"" 
                                          + request.getHeader(HTTP_REFERRER)
                                          + "\">the page</a>.</p></div></body></html>");
