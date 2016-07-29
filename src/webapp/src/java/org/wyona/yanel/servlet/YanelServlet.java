@@ -83,6 +83,7 @@ import org.wyona.yanel.core.transformation.I18nTransformer2;
 import org.wyona.yanel.core.util.ConfigurationUtil;
 import org.wyona.yanel.core.util.DateUtil;
 import org.wyona.yanel.core.util.HttpServletRequestHelper;
+import org.wyona.yanel.core.workflow.Transition;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
@@ -933,14 +934,14 @@ public class YanelServlet extends HttpServlet {
      * @param request TODO
      * @param response TODO
      * @param revision TODO
-     * @param transition TODO
+     * @param transitionID Workflow transition ID
      * @throws ServletException
      * @throws IOException
      */
     private void executeWorkflowTransition(HttpServletRequest request,
                                            HttpServletResponse response,
                                            String revision,
-                                           String transition)
+                                           String transitionID)
             throws ServletException, IOException {
         Resource resource = getResource(request, response);
 
@@ -951,22 +952,25 @@ public class YanelServlet extends HttpServlet {
                 String outputFormat = request.getParameter(YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT);
                 StringBuilder sb = null;
 
-                workflowable.doTransition(transition, revision);
+                workflowable.doTransition(transitionID, revision);
 
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_OK);
 
                 if (outputFormat != null && CONTENT_TYPE_XHTML.equals(outputFormat.toLowerCase())) {
+                    Workflow workflow = WorkflowHelper.getWorkflow(resource);
+                    Transition transition = workflow.getTransition(transitionID);
                     response.setContentType("text/html; charset=" + DEFAULT_ENCODING);
-                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"1;URL='" 
+                    sb = new StringBuilder("<html xmlns=\"http://www.w3.org/1999/xhtml\"><head><meta http-equiv=\"refresh\" content=\"5;URL='" 
                                          + request.getHeader(HTTP_REFERRER)
-                                         + "'\"></head><body><div style=\"text-align: center; font-family: sans-serif;\"><p>&#160;<br/>&#160;<br/>The action <strong style=\"background-color: #dff0d8;\">&#160;" 
-                                         + transition
+                                         + "'\"></head><body><div style=\"text-align: center; font-family: sans-serif;\"><p>&#160;<br/>&#160;<br/>The workflow transition <strong style=\"background-color: #dff0d8;\">&#160;" 
+                                         + transition.getDescription("en")
+                                         + " (" + transitionID + ")"
                                          + "&#160;</strong> has been performed.</p><p>Return to <a href=\"" 
                                          + request.getHeader(HTTP_REFERRER)
                                          + "\">the page</a>.</p></div></body></html>");
 
                 } else {
-                    log.warn("No output format query string parameter '" + YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT + "' has been specified.");
+                    log.warn("DEBUG: No output format query string parameter '" + YANEL_RESOURCE_WORKFLOW_TRANSITION_OUTPUT + "' has been specified.");
                     response.setContentType("application/xml; charset=" + DEFAULT_ENCODING);
                     sb = new StringBuilder("<?xml version=\"1.0\"?>");
                     sb.append(workflowable.getWorkflowIntrospection());
