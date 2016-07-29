@@ -20,7 +20,15 @@ import java.util.ArrayList;
 import org.wyona.yanel.core.workflow.Transition;
 import org.wyona.yanel.core.workflow.Workflow;
 
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
+/**
+ *
+ */
 public class WorkflowImpl implements Workflow {
+
+    private static Logger log = LogManager.getLogger(WorkflowImpl.class);
     
     private String[] states;
     private String initialState;
@@ -44,7 +52,23 @@ public class WorkflowImpl implements Workflow {
     public void setStates(String[] states) {
         this.states = states;
     }
-    
+
+    /**
+     * @see org.wyona.yanel.core.workflow.Workflow#getTransition(String)
+     */
+    public Transition getTransition(String id) {
+        for (int i = 0; i < transitions.length; i++) {
+            if (transitions[i].getID().equals(id)) {
+                return this.transitions[i];
+            }
+        }
+        log.error("No such transition '" + id + "'!");
+        return null;
+    }
+
+    /**
+     * @see org.wyona.yanel.core.workflow.Workflow#getTransitions()
+     */
     public Transition[] getTransitions() {
         return this.transitions;
     }

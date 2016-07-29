@@ -23,6 +23,16 @@ public interface Workflow {
     
     String[] getStates();
     
+    /**
+     * Get a particular transition
+     * @param id Transition ID
+     * @return particular transition
+     */
+    Transition getTransition(String id);
+
+    /**
+     * Get all available transitions
+     */
     Transition[] getTransitions();
     
     Transition[] getLeavingTransitions(String state);
