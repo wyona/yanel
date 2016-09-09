@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public class AccessLog {
 
+    // INFO: Please note this logger is used by this class itself for internal logging, but not for the logging of requests. For logging of requests the category below is used and configured inside YanelServlet
     private static Logger log = LogManager.getLogger(AccessLog.class);
 
     private static String ANALYTICS_COOKIE_NAME = "_yanel-analytics";
