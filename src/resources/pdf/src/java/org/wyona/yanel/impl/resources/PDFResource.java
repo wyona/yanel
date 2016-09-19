@@ -25,7 +25,10 @@ import org.wyona.yanel.core.source.SourceResolver;
 
 import org.wyona.yarep.core.Repository;
 import org.wyona.yanel.core.util.WildcardReplacerHelper;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.MimeConstants;
@@ -45,7 +48,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class PDFResource extends Resource implements ViewableV2 {
 
-    private static Logger log = Logger.getLogger(PDFResource.class);
+    private static Logger log = LogManager.getLogger(PDFResource.class);
 
     /**
      *
