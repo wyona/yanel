@@ -2,7 +2,9 @@ package org.wyona.yanel.core.source;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.wyona.yanel.core.Constants;
 import org.wyona.yanel.core.Path;
 import org.wyona.yanel.core.Resource;
@@ -31,7 +33,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class ResourceResolver implements URIResolver {
 
-    private static Logger log = Logger.getLogger(ResourceResolver.class);
+    private static Logger log = LogManager.getLogger(ResourceResolver.class);
     
     private static final String SCHEME = "yanelresource";
 
