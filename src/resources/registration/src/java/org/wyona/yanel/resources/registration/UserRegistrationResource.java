@@ -1006,9 +1006,19 @@ public class UserRegistrationResource extends BasicXMLResource {
             int minPwdLength = getMinPwdLength();
             int maxPwdLength = getMaxPwdLength();
             if (!isPasswordValid(password) || password.length() < minPwdLength || password.length() > maxPwdLength) {
-                Element exception = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
-                log.error("Password not valid");
+                // INFO: Because of backwards compatibility we leave the generic exception "password-not-valid"
+                rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-not-valid"));
+                log.warn("Password not valid");
+
                 inputsValid = false;
+
+                if (password.length() < minPwdLength) {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-too-short"));
+                    log.warn("Password too short! Minimum password length is " + minPwdLength);
+                } else if (password.length() > maxPwdLength) {
+                    rootElement.appendChild(doc.createElementNS(NAMESPACE, "password-too-long"));
+                    log.warn("Password too long! Maximum password length is " + maxPwdLength);
+                }
             }
             // INFO: Check password confirmed
             String confirmedPassword = getEnvironment().getRequest().getParameter(PASSWORD_CONFIRMED);
