@@ -63,6 +63,7 @@ import org.wyona.yanel.core.source.SourceException;
 import org.wyona.yanel.core.source.SourceResolver;
 import org.wyona.yanel.core.source.YanelStreamSource;
 import org.wyona.yanel.core.util.ResourceAttributeHelper;
+import org.wyona.yanel.core.util.WildcardReplacerHelper;
 import org.wyona.yanel.core.workflow.Workflow;
 import org.wyona.yanel.core.workflow.WorkflowException;
 import org.wyona.yanel.core.workflow.WorkflowHelper;
@@ -326,9 +327,17 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
 
     /**
      * Get custom path
+     * @return custom path
      */
     protected String getCustomSourcePath() throws Exception {
-        return getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        String pattern = getResourceConfigProperty("yanel-path-matcher");
+        if (pattern != null) {
+            String path = new WildcardReplacerHelper(getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME), pattern).getReplacedString(getPath());
+            log.debug("Replaced path: " + path);
+            return path;
+        } else {
+            return getResourceConfigProperty(YANEL_PATH_PROPERTY_NAME);
+        }
     }
 
     /**
@@ -754,6 +763,9 @@ public class XMLResource extends BasicXMLResource implements ModifiableV2, Versi
         }
     }
 
+    /**
+     * @see org.wyona.yanel.core.api.attributes.WorkflowableV1#getWorkflowIntrospection()
+     */
     public String getWorkflowIntrospection() throws WorkflowException {
         return WorkflowHelper.getWorkflowIntrospection(this);
     }
