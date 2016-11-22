@@ -1018,7 +1018,7 @@ public class YanelServlet extends HttpServlet {
             // releaseLock();
             return;
         } else {
-            log.warn("No parameter " + YANEL_RESOURCE_USECASE + "!");
+            log.debug("No parameter " + YANEL_RESOURCE_USECASE + "!");
 
             String contentType = request.getContentType();
             if (contentType != null && contentType.indexOf("application/atom+xml") >= 0) {
@@ -1055,7 +1055,7 @@ public class YanelServlet extends HttpServlet {
                 }
             } else {
                 Resource resource = getResource(request, response);
-                log.warn("DEBUG: Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
+                log.debug("Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
                 save(request, response, false);
                 return;
             }
@@ -1159,6 +1159,7 @@ public class YanelServlet extends HttpServlet {
      * Save data
      * @param request TODO
      * @param response TODO
+     * @param doCheckin TODO
      */
     private void save(HttpServletRequest request, HttpServletResponse response, boolean doCheckin) throws ServletException, IOException {
         log.debug("Save data ...");
@@ -1219,7 +1220,7 @@ public class YanelServlet extends HttpServlet {
                 if (out != null) {
                     write(in, out, request, response);
                 } else {
-                    log.warn("getOutputStream() returned null, hence fallback to write()");
+                    log.warn("INFO: ModifiableV2.getOutputStream() returned null, hence fallback to ModifiableV2.write(InputStream)");
                     ((ModifiableV2) res).write(in);
                 }
             } catch (Exception e) {
@@ -2607,7 +2608,7 @@ public class YanelServlet extends HttpServlet {
             usecase = new Usecase("write");
         // TODO: METHOD_POST is not generally protected, but save, checkin, application/atom+xml are being protected. See doPost(.... 
         } else if (method.equals(METHOD_PUT)) {
-            log.warn("Upload data ...");
+            log.warn("INFO: Upload data using PUT, hence we set the usecase to 'write', which you might have to enable inside the corresponding access policy.");
             usecase = new Usecase("write");
         } else if (method.equals(METHOD_DELETE)) {
             log.warn("Delete resource (HTTP method delete)");
