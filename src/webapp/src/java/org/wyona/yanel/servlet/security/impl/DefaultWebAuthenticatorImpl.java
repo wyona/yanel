@@ -2,12 +2,15 @@ package org.wyona.yanel.servlet.security.impl;
 
 import org.wyona.commons.io.MimeTypeUtil;
 
+import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.security.WebAuthenticator;
 import org.wyona.yanel.core.map.Map;
 import org.wyona.yanel.core.map.Realm;
 import org.wyona.yanel.core.transformation.I18nTransformer3;
 import org.wyona.yanel.servlet.IdentityMap;
 import org.wyona.yanel.servlet.YanelServlet;
+import org.wyona.yanel.servlet.communication.HttpRequest;
+import org.wyona.yanel.servlet.communication.HttpResponse;
 
 import org.wyona.security.core.api.AccessManagementException;
 import org.wyona.security.core.ExpiredIdentityException;
@@ -377,10 +380,23 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 if (userAgent != null && userAgent.startsWith("Yanel") && userAgent.indexOf("HttpResolver") > 0) {
                     log.warn("DEBUG: In the case of the user agent '" + userAgent + "' an error 401 is returned instead a login form.");
                     response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\"");
+                    // INFO: Using sendError(...) means Tomcat will return some default HTML as body
                     response.sendError(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yanel authorization failed, whereas authentication handled by '" + this.getClass().getName() + "'");
                     //log.debug("Returned status code: " + response.getStatus());
                     return response;
                 }
+
+                log.debug("Check resource whether XHTML authentication form should be returned or just a 401 status code ...");
+                Resource res = getResource(request, response, map);
+                if ("true".equals(res.getResourceConfigProperty("yanel:401-only-when-access-denied"))) {
+                    // INFO: Use setStatus(...) instead sendError(...) in order to avoid that Tomcat is returning some default HTML as body (see for example http://stackoverflow.com/questions/794329/disable-all-default-http-error-response-content-in-tomcat)
+                    response.setStatus(javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setHeader("WWW-Authenticate", "BASIC realm=\"" + realm.getName() + "\""); // https://tools.ietf.org/html/rfc2616#section-14.47
+                    response.getWriter().println("{\"message\":\"Unauthorized\"}");
+                    //log.debug("Returned status code: " + response.getStatus());
+                    return response;
+                }
+
                 //log.debug("Generate authentication form to enter credentials...");
                 getXHTMLAuthenticationForm(request, response, realm, null, reservedPrefix, xsltLoginScreenDefault, servletContextRealPath, sslPort, map);
             }
@@ -389,6 +405,21 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
             if (log.isDebugEnabled()) log.debug("TODO: Was this authentication request really necessary!");
             return null;
 */
+    }
+
+    /**
+     * Get resource for request
+     */
+    private Resource getResource(HttpServletRequest request, HttpServletResponse response, Map map) throws Exception {
+        Realm realm = map.getRealm(request.getServletPath());
+        String path = map.getPath(realm, request.getServletPath());
+        HttpRequest httpRequest = (HttpRequest)request;
+        HttpResponse httpResponse = new HttpResponse(response);
+        org.wyona.yanel.core.Yanel yanelInstance = org.wyona.yanel.core.Yanel.getInstance();
+        yanelInstance.init();
+        Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(httpRequest, httpResponse, realm), realm, path);
+
+        return res;
     }
 
     /**
@@ -418,7 +449,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         org.wyona.yanel.core.Yanel yanelInstance = org.wyona.yanel.core.Yanel.getInstance();
         yanelInstance.init();
         String path = yanelInstance.getMap().getPath(realm, request.getServletPath());
-        org.wyona.yanel.core.Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(request, response, realm), realm, path, loginRC);
+        Resource res = yanelInstance.getResourceManager().getResource(getEnvironment(request, response, realm), realm, path, loginRC);
 
         java.util.Map resParams = new java.util.HashMap();
         if (message != null) {
