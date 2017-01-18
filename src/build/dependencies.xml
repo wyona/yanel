@@ -127,7 +127,7 @@
       <dependency groupId="commons-beanutils" artifactId="commons-beanutils" version="1.6"/>
       <dependency groupId="commons-fileupload" artifactId="commons-fileupload" version="1.2"/>
       <dependency groupId="commons-lang" artifactId="commons-lang" version="2.5"/>
-      <dependency groupId="dom4j" artifactId="dom4j" version="1.5.2"/>
+      <dependency groupId="dom4j" artifactId="dom4j" version="1.6.1"/>
 
       <!-- IMPORTANT: Please make sure to update pom-core.xml as well! -->
       <dependency groupId="org.quartz-scheduler" artifactId="quartz" version="2.1.5"/>
