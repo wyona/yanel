@@ -79,7 +79,7 @@ public class RevisionInformationMenuItem implements RevisionInformationMenuConte
                 if (ResourceAttributeHelper.hasAttributeImplemented(resource, "Workflowable", "1")) {
                     log.warn("Workflow interface 'WorkflowableV1' implemented, but does not seem to reference any workflow configuration!");
                 } else {
-                    log.warn("No workflow interface implemented!");
+                    log.debug("No workflow interface implemented!");
                 }
             }
         } catch (WorkflowException e) {
