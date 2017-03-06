@@ -31,5 +31,17 @@ whereas the filename <code>xslt/login-screen.xsl</code> is configurable globally
 <li>Copy <code>$YANEL_SRC/src/webapp/global-resource-configs/login_yanel-rc.xml</code> into <code>$REALM_DIR/src/webapp/global-resource-configs</code></li>
 <li>Start customizing <code>$REALM_DIR/src/webapp/global-resource-configs/login_yanel-rc.xml</code></li>
 </ul>
+
+<h2>Return 401 for REST interfaces instead login screen</h2>
+
+<p>
+One can configure a resource associated with a REST interface with the resource configuration parameter
+
+<pre>
+&lt;yanel:property name="yanel:401-only-when-access-denied" value="true"/>
+</pre>
+
+such that when access denied, a 401 response is being returned instead a 200 with a login screen as body.
+</p>
 </body>
 </html>
