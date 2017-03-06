@@ -17,7 +17,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+
 import org.w3c.dom.Document;
 import org.w3c.tidy.Tidy;
 import org.wyona.yanel.core.Environment;
@@ -49,7 +51,7 @@ import org.apache.xml.resolver.tools.CatalogResolver;
  */
 public class TinyMCEResource extends ExecutableUsecaseResource {
     
-    private static Logger log = Logger.getLogger(TinyMCEResource.class);
+    private static Logger log = LogManager.getLogger(TinyMCEResource.class);
     
     private static final String PARAMETER_EDIT_PATH = "edit-path";
     private static final String PARAMETER_CONTINUE_PATH = "continue-path";
