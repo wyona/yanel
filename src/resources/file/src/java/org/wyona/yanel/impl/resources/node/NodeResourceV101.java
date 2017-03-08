@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2017 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
 
         String range = getEnvironment().getRequest().getHeader("Range");
         if (range != null) { // INFO: Also see http://stackoverflow.com/questions/12768812/video-streaming-to-ipad-does-not-work-with-tapestry5, http://balusc.blogspot.ch/2009/02/fileservlet-supporting-resume-and.html
-            if(!range.equals("bytes=0-")) {
+            if(!range.equals("bytes=0-")) { // INFO: For example for movie files (.m4v) 'bytes=0-1' or 'bytes=655963-14436746'
                 log.warn("DEBUG: Specific range requested for node '" + getRepoPath() + "': " + range);
                 String[] ranges = range.split("=")[1].split("-");
                 int from = Integer.parseInt(ranges[0]);
@@ -120,16 +120,38 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
 
                 OutputStream os = response.getOutputStream();
                 InputStream is = new java.io.BufferedInputStream(getNode().getInputStream());
+                //java.io.DataInputStream is = new java.io.DataInputStream(getNode().getInputStream());
+
+                log.warn("DEBUG: File size: " + getSize());
 
                 try {
                     byte[] buf = new byte[4096];
                     is.skip(from);
-                    while( len != 0) {
+                    // TODO: If the bytes range is longer than the file contains bytes, then the loop will be never be closed!!!
+                    int numberOfMinusOne = 0;
+                    while(len != 0) {
+                        log.warn("DEBUG: Number of bytes still to be read from input stream: " + len);
+//
                         int read = is.read(buf, 0, len >= buf.length ? buf.length : len);
+                        log.warn("DEBUG: Number of bytes read into buffer: " + read);
                         if( read != -1) {
                             os.write(buf, 0, read);
                             len -= read;
+                        } else {
+                            numberOfMinusOne++;
                         }
+                        log.warn("DEBUG: Number of bytes still to be read from input stream after writing to output stream: " + len);
+                        if (numberOfMinusOne > 3) {
+                            log.warn("DEBUG: Break loop ...");
+                            len = 0;
+                            //break;
+                        }
+//
+/*
+                        is.readFully(buf, 0, len >= buf.length ? buf.length : len);
+                        //os.write(buf, 0, read);
+                        //len -= read;
+*/
                     }
                 } catch(Exception e) {
                     log.error("Exception '" + e.getMessage() + "' while handling request '" + getRepoPath() + "' (Range: " + range + "), whereas see stack trace for details...");
@@ -142,7 +164,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
                 }
                 return view;
             } else {
-                //log.debug("Range requested for node '" + getRepoPath()+ "': " + range);
+                //log.debug("Range requested for node '" + getRepoPath()+ "', but no limit set: " + range);
             }
         } else {
             //log.debug("No range requested for node: " + getRepoPath());
