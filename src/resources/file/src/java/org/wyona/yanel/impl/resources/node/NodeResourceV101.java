@@ -141,7 +141,7 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
                             numberOfMinusOne++;
                         }
                         log.warn("DEBUG: Number of bytes still to be read from input stream after writing to output stream: " + len);
-                        if (numberOfMinusOne > 3) {
+                        if (numberOfMinusOne > 3) { // TODO: Break loop more elengantly ...
                             log.warn("DEBUG: Break loop ...");
                             len = 0;
                             //break;
