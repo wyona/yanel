@@ -1056,6 +1056,7 @@ public class YanelServlet extends HttpServlet {
             } else {
                 Resource resource = getResource(request, response);
                 log.debug("Client (" + request.getHeader("User-Agent") + ") requests to save a resource: " + resource.getRealm() + ", " + resource.getPath());
+                // TODO: Check whether resource exists!
                 save(request, response, false);
                 return;
             }
@@ -1222,6 +1223,8 @@ public class YanelServlet extends HttpServlet {
                 } else {
                     log.warn("INFO: ModifiableV2.getOutputStream() returned null, hence fallback to ModifiableV2.write(InputStream)");
                     ((ModifiableV2) res).write(in);
+
+                    generateResponseFromResourceView(request, response, javax.servlet.http.HttpServletResponse.SC_OK, res);
                 }
             } catch (Exception e) {
                 throw new ServletException(e.getMessage(), e);
