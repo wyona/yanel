@@ -12,7 +12,7 @@
 <p>Example message catalogue (let's say it's stored in the default repository of your realm, with the path /i18n/foo.xml):</p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;<br />&lt;messages&gt;<br />  &lt;message key="foo.user"&gt;<br />    &lt;text language="de"&gt;Benutzer&lt;/text&gt;<br />    &lt;text language="en"&gt;User&lt;/text&gt;<br />  &lt;/message&gt;<br />  &lt;message key="foo.logout"&gt;<br />    &lt;text language="de"&gt;Abmelden&lt;/text&gt;<br />    &lt;text language="en"&gt;Log out&lt;/text&gt;<br />  &lt;/message&gt;<br />  &lt;message key="foo.registeredUsers"&gt;<br />    &lt;text language="de"&gt;Es sind {0} Benutzer registriert.&lt;/text&gt;<br />    &lt;text language="en"&gt;{0} users are registered.&lt;/text&gt;<br />  &lt;/message&gt;<br />&lt;/messages&gt;<br /></pre>
 <p>To translate text using this catalogue, use the following code in your xslt:<br /><tt><br />&lt;i18n:text xmlns:i18n="http://www.wyona.org/yanel/i18n/1.0" key="foo.user"/&gt;</tt><br /><br />To translate an attribute:<tt><br /><br />&lt;input type="submit" value="foo.logout" i18n:attr="value"/&gt;</tt></p>
-<p>Respectivle for multiple attribute translation:</p>
+<p>Or when there are multiple attributes using i18n:</p>
 <p>&lt;input type="button" name="Name" value="foo.button.value" title="foo.button.tooltip" i18n:attr="value title"/&gt;</p>
 <p>&#160;</p>
 <p>To translate a text with parameters:</p>
