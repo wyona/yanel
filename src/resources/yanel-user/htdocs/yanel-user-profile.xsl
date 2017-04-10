@@ -159,10 +159,19 @@
       </p>
 
     <h2>Groups</h2>
+    <xsl:choose>
+      <xsl:when test="not(groups/group)">
+      User belongs to no group
+      </xsl:when>
+      <xsl:otherwise>
     Groups which this user belongs to:<!-- <xsl:value-of select="$userGroupsString"/> -->
+    <ul>
     <xsl:for-each select="groups/group">
-      <xsl:value-of select="@id"/><xsl:if test="position() != last()">,&#160;</xsl:if>
+      <li><xsl:value-of select="@id"/></li><!--<xsl:if test="position() != last()">,&#160;</xsl:if>-->
     </xsl:for-each>
+    </ul>
+      </xsl:otherwise>
+    </xsl:choose>
 <!--
     <br/>
     All groups of this realm: <xsl:value-of select="$allGroupsString"/>
