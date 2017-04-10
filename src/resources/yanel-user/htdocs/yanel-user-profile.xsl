@@ -4,6 +4,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:l10n="http://www.wyona.org/yanel/l10n/1.0"
     xmlns:xalan="http://xml.apache.org/xalan">
 
   <xsl:output method="xhtml" encoding="UTF-8"/>
@@ -117,9 +118,9 @@
             <td>Language:</td>
             <td><!-- TODO: Display languages only which are supported by this realm! What about identity managers used by more than one realm with different languages?! -->
               <select name="user-profile-language">
-                <option value="de"><xsl:if test="@language = 'de'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>de</option>
-                <option value="en"><xsl:if test="@language = 'en'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>en</option>
-                <option value="fr"><xsl:if test="@language = 'fr'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>fr</option>
+                <xsl:for-each select="/user/realm/languages/language">
+                  <option value="{.}"><xsl:if test="/user/@language = ."><xsl:attribute name="selected">selected</xsl:attribute></xsl:if><xsl:value-of select="."/></option>
+                </xsl:for-each>
               </select>
             </td>
 <!--
