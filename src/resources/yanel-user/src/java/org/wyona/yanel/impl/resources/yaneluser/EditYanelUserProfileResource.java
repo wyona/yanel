@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Wyona
+ * Copyright 2010 - 2017 Wyona
  */
 package org.wyona.yanel.impl.resources.yaneluser;
 
@@ -102,6 +102,21 @@ public class EditYanelUserProfileResource extends BasicXMLResource {
             Element nameEl = doc.createElement("name");
             nameEl.setTextContent(user.getName());
             rootEl.appendChild(nameEl);
+
+            Element realmEl = doc.createElement("realm");
+            rootEl.appendChild(realmEl);
+            String[] languages = getRealm().getLanguages();
+            if (languages != null && languages.length > 0) {
+                Element supportedLanguagesEl = doc.createElement("languages");
+                // TODO: Set default language
+                String defaultLanguage = getRealm().getDefaultLanguage();
+                realmEl.appendChild(supportedLanguagesEl);
+                for (int i = 0; i < languages.length; i++) {
+                    Element languageEl = doc.createElement("language");
+                    languageEl.setTextContent(languages[i]);
+                    supportedLanguagesEl.appendChild(languageEl);
+                }
+            }
 
             Element expirationDateEl = doc.createElement("expiration-date");
             expirationDateEl.setTextContent("" + user.getExpirationDate());
