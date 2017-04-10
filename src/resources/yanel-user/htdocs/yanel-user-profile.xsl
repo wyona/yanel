@@ -47,7 +47,7 @@
               Edit user profile of <xsl:value-of select="/user/name"/>
             </td><td id="logo"><img src="{$yanel.back2realm}{$yanel.reservedPrefix}/yanel-img/yanel_header.png"/></td></tr><tr><td colspan="2" valign="top" width="100%"><div id="content">
             <h1> 
-              User Profile of '<xsl:value-of select="/user/name"/>' (ID: <xsl:value-of select="/user/@id"/>)
+              <l10n:text key="yanel.user-profile-of"/> '<xsl:value-of select="/user/name"/>' (ID: <xsl:value-of select="/user/@id"/>)
             </h1>
               <xsl:call-template name="show-message"/>     
 <!--
@@ -90,7 +90,7 @@
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" name="submitPassword" value="Apply"/>
+              <input type="submit" name="submitPassword" value="yanel.apply" l10n:attr="value"/>
             </td>
           </tr>
         </table>
@@ -115,7 +115,7 @@
             </td>
           </tr>
           <tr>
-            <td>Language:</td>
+            <td><l10n:text key="yanel.language"/>:</td>
             <td><!-- TODO: Display languages only which are supported by this realm! What about identity managers used by more than one realm with different languages?! -->
               <select name="user-profile-language">
                 <xsl:for-each select="/user/realm/languages/language">
@@ -131,7 +131,7 @@
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" name="submitProfile" value="Apply"/>
+              <input type="submit" name="submitProfile" value="yanel.apply" l10n:attr="value"/>
             </td>
           </tr>
         </table>
