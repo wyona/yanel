@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 - 2016 Wyona
+ * Copyright 2010 - 2017 Wyona
  */
 package org.wyona.yanel.resources.registration;
 
@@ -63,6 +63,7 @@ public class UserRegistrationResource extends BasicXMLResource {
     protected static final String CITY = "location";
     protected static final String ZIP = "zip";
     protected static final String GENDER = "gender";
+    protected static final String LANGUAGE = "language";
     protected static final String SALUTATION = "salutation";
     protected static final String PHONE = "phone";
     protected static final String COMPANY = "company";
@@ -214,6 +215,17 @@ public class UserRegistrationResource extends BasicXMLResource {
     }
 
     /**
+     * Check whether language is valid
+     * @return Either language or null
+     */
+    private String isLanguageValid(String language) {
+        if (language != null && language.length() == 2) {
+            return language;
+        }
+        return null;
+    }
+
+    /**
      * Check whether fax number is valid
      * @return Either fax number or null
      */
@@ -256,7 +268,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
                 }
 
-                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean)));
+                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean), userRegBean.getLanguage()));
 
                 element.setAttribute("sent-by-yanel", "true");
             }
@@ -307,10 +319,14 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Get body of confirmation email
      * @param url Email confirmation link
+     * @param language Language of text
      * @return body of confirmation email
      */
-    private String getConfirmationEmailBody(String url) throws Exception {
+    private String getConfirmationEmailBody(String url, String language) throws Exception {
         String body = null;
+
+        log.warn("TODO: Use language when provided ...");
+
         if (getResourceConfigProperty("email-body-template-path") != null) {
             Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
             InputStream in = templateNode.getInputStream();
@@ -403,7 +419,15 @@ public class UserRegistrationResource extends BasicXMLResource {
         // TODO: Use encrypted password
         User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
         // TODO: user.setProperty(GENDER, gender);
-        user.setLanguage(getContentLanguage());
+
+        if (userRegBean.getLanguage() != null && userRegBean.getLanguage().length() == 2) {
+            log.warn("DEBUG: Use language '" + userRegBean.getLanguage() + "' selected by user ...");
+            user.setLanguage(userRegBean.getLanguage());
+        } else {
+            log.warn("DEBUG: Use 'page content or browser' language '" + getContentLanguage() + "' ...");
+            user.setLanguage(getContentLanguage());
+        }
+
         user.save(); // INFO: User needs to be saved persistently before adding an alias, because otherwise one can add an alias though, but the 'link' from the user to the alias will not be created!
 
         org.wyona.security.core.UserHistory history = user.getHistory();
@@ -479,6 +503,12 @@ public class UserRegistrationResource extends BasicXMLResource {
         Element genderElem = doc.createElementNS(NAMESPACE, GENDER);
         genderElem.setTextContent(urb.getGender());
         rootElem.appendChild(genderElem);
+
+        if (urb.getLanguage() != null && urb.getLanguage().length() == 2) {
+            Element langElem = doc.createElementNS(NAMESPACE, LANGUAGE);
+            langElem.setTextContent(urb.getLanguage());
+            rootElem.appendChild(langElem);
+        }
 
         Element lastnameElem = doc.createElementNS(NAMESPACE, LASTNAME);
         lastnameElem.setTextContent(urb.getLastname());
@@ -786,6 +816,7 @@ public class UserRegistrationResource extends BasicXMLResource {
         // TODO: Get creation date to determine expire date!
         String uuid = (String) xpath.evaluate("/ur:registration-request/@uuid", doc, XPathConstants.STRING);
         String gender = (String) xpath.evaluate("/ur:registration-request/ur:" + GENDER, doc, XPathConstants.STRING);
+        String language = (String) xpath.evaluate("/ur:registration-request/ur:" + LANGUAGE, doc, XPathConstants.STRING);
         String firstname = (String) xpath.evaluate("/ur:registration-request/ur:" + FIRSTNAME, doc, XPathConstants.STRING);
         String lastname = (String) xpath.evaluate("/ur:registration-request/ur:" + LASTNAME, doc, XPathConstants.STRING);
         String email = (String) xpath.evaluate("/ur:registration-request/ur:" + EMAIL, doc, XPathConstants.STRING);
@@ -820,6 +851,9 @@ public class UserRegistrationResource extends BasicXMLResource {
 
         if (doc.getDocumentElement().hasAttribute(ADMIN_CONFIRMATION_KEY)) {
             urBean.setAdministratorConfirmationKey(doc.getDocumentElement().getAttribute(ADMIN_CONFIRMATION_KEY));
+        }
+        if (language != null && language.length() == 2) {
+            urBean.setLanguage(language);
         }
 
         return urBean;
@@ -932,12 +966,25 @@ public class UserRegistrationResource extends BasicXMLResource {
                         Element adminConfirmedEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "administrator-confirmed"));
                         adminConfirmedEl.setAttribute("user-email", urBean.getEmail());
 
-                        StringBuilder body = new StringBuilder("Administrator has confirmed your registration request.");
-                        body.append("\n\nTo activate your account, you need to click on the following link:");
-                        body.append("\n\n" + getActivationURL(urBean));
-                        // TODO: Calculate remaining time
-                        //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
-                        MailUtil.send(getFromEmail(), urBean.getEmail(), "[" + getRealm().getName() + "] Administrator has confirmed your registration request", body.toString());
+                        String subject = "[" + getRealm().getName() + "]";
+                        StringBuilder body = new StringBuilder();
+                        if (urBean.getLanguage() != null && urBean.getLanguage().equals("de")) {
+                            subject = subject + " Administrator hat Ihre Registrations Anfrage bestätigt";
+
+                            body.append("Der Administrator hat Ihre Registrations Anfrage bestätigt.");
+                            body.append("\n\nUm Ihr Konto zu aktivieren, klicken Sie bitte auf den folgenden Link:");
+                            body.append("\n\n" + getActivationURL(urBean));
+                        } else {
+                            subject = subject + " Administrator has confirmed your registration request";
+
+                            body.append("Administrator has confirmed your registration request.");
+                            body.append("\n\nTo activate your account, you need to click on the following link:");
+                            body.append("\n\n" + getActivationURL(urBean));
+                            // TODO: Calculate remaining time
+                            //body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
+                        }
+
+                        MailUtil.send(getFromEmail(), urBean.getEmail(), subject, body.toString());
                     }
                 } else {
                     log.warn("Administrator key did not match!");
@@ -1059,6 +1106,15 @@ public class UserRegistrationResource extends BasicXMLResource {
                 fnE.appendChild(doc.createTextNode("" + gender)); 
             }
 
+        // INFO: Language (optional)
+            String language = isLanguageValid(getEnvironment().getRequest().getParameter(LANGUAGE));
+            if (language != null) {
+                Element languageEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, LANGUAGE));
+                languageEl.appendChild(doc.createTextNode("" + language)); 
+            } else {
+                log.warn("DEBUG: Either no or no valid language provided.");
+            }
+
         // INFO: Check company (optional)
             String company = isCompanyValid(getEnvironment().getRequest().getParameter(COMPANY));
             if (company != null && company.length() > 0) {
@@ -1135,6 +1191,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             userRegBean.setZipCode(zip);
             userRegBean.setPreAuthenticated(preAuthenticated);
             userRegBean.setPreAuthenticatedUsername(preAuthUsername);
+            userRegBean.setLanguage(language);
             return userRegBean;
         } else {
             return null;
