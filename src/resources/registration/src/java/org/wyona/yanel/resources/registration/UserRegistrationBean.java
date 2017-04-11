@@ -18,6 +18,7 @@ public class UserRegistrationBean {
     private String zip;
     private String city;
     private String phone;
+    private String language; // INFO: For example 'de' or 'en'
 
     private boolean preAuthenticated = false;
     private String preAuthUsername = null;
@@ -36,6 +37,8 @@ public class UserRegistrationBean {
         this.password = password;
         this.city = city;
         this.phone = phone;
+
+        this.language = null;
     }
 
     /**
@@ -116,6 +119,22 @@ public class UserRegistrationBean {
      */
     public String getGender() {
         return gender;
+    }
+
+    /**
+     * Get language
+     * @return language
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     * Set language
+     * @param language Language
+     */
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     /**
