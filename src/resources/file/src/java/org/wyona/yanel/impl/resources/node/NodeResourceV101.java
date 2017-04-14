@@ -589,6 +589,8 @@ public class NodeResourceV101 extends Resource implements ViewableV2, Modifiable
             return "image/svg+xml";
         } else if (suffix.equals("ico")) {
             return "image/x-icon";
+        } else if (suffix.equals("woff")) {
+            return "font/woff"; // INFO: According to https://en.wikipedia.org/wiki/Web_Open_Font_Format proper is 'application/font-woff'
         } else if (suffix.equals("woff2")) {
             return "font/woff2";
         } else if (suffix.equals("json")) {
