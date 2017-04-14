@@ -313,8 +313,10 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
     }
 
     /**
+     * TODO
      * @param xmlInputStream XML as input stream
      * @param viewDescriptor View descriptor
+     * @return TODO
      */
     private InputStream getTransformedInputStream(InputStream xmlInputStream, ConfigurableViewDescriptor viewDescriptor, StringWriter errorWriter) throws Exception {
         //log.debug("View descriptor: " + viewDescriptor.getId());
@@ -383,7 +385,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             }
 
             // create i18n transformer:
-            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), getUserLanguage(identity, user), getRealm().getDefaultLanguage(), uriResolver);
+            String userLang = getUserLanguage(identity, user);
+            I18nTransformer3 i18nTransformer = new I18nTransformer3(getI18NCatalogueNames(), getRequestedLanguage(), userLang, getRealm().getDefaultLanguage(), uriResolver);
             i18nTransformer.setEntityResolver(catalogResolver);
 
             // create xinclude transformer:
@@ -409,7 +412,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             i18nTransformer.setResult(new SAXResult(serializer.asContentHandler()));
             serializer.setOutputStream(baos);
 
-            // execute pipeline:
+            // INFO: execute pipeline:
             xmlReader.parse(new InputSource(xmlInputStream));
 
             return new ByteArrayInputStream(baos.toByteArray());
@@ -507,6 +510,7 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
         transformer.setParameter("yarep.back2realm", backToRealm); // for backwards compatibility
 
         transformer.setParameter("language", getRequestedLanguage());
+        //log.debug("Requested language: " + getRequestedLanguage());
 
         // INFO: Set OS and client
         String userAgent = getUserAgent();
@@ -557,9 +561,15 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
 
         // localization
         transformer.setParameter("language", getRequestedLanguage());
+        //log.debug("Requested language: " + getRequestedLanguage());
 
         // language of this translation
         transformer.setParameter("content-language", getContentLanguage());
+        //log.debug("Content language: " + getContentLanguage());
+
+        String userLang = getUserLanguage(identity, user);
+        transformer.setParameter("user-language", userLang);
+        //log.debug("User profile language: " + userLang);
 
         // INFO: user ID, firstname, etc.
         addUserInfo(transformer, identity, user);
