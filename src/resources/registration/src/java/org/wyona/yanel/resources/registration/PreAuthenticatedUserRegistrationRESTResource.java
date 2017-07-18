@@ -116,11 +116,19 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
         } else {
             view.setMimeType("application/json");
         }
+
+
         String json;
-        if (contentTypeV2.equals(accept)) {
-            json = "{\"email\":\"" + "TODO" + "\",\"first-name\":\"" + "TODO" + "\"}";
+
+
+        if (!getEnvironment().getRequest().getMethod().equals("POST")) {
+            json = "{\"exception\":\"" + "Only POST supported!" + "\"}";
         } else {
-            json = "{\"email\":\"" + "TODO" + "\"}";
+            if (contentTypeV2.equals(accept)) {
+                json = "{\"email\":\"" + "TODO" + "\",\"first-name\":\"" + "TODO" + "\"}";
+            } else {
+                json = "{\"email\":\"" + "TODO" + "\"}";
+            }
         }
         view.setInputStream(new java.io.ByteArrayInputStream(json.getBytes()));
         return view;
