@@ -87,6 +87,17 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
     }
 
     /**
+     *
+     */
+    private void registerUser(InputStream in) throws Exception {
+        ObjectMapper jsonPojoMapper = new ObjectMapper();
+        java.util.Map<String, Object> map = jsonPojoMapper.readValue(in, java.util.Map.class);
+        in.close();
+        String email = map.get("email").toString();
+        log.warn("DEBUG: Reguister user with email address '" + email + "' ...");
+    }
+
+    /**
      * @see org.wyona.yanel.core.api.attributes.ViewableV2#exists()
      */
     public boolean exists() throws Exception {
@@ -124,6 +135,7 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
         if (!getEnvironment().getRequest().getMethod().equals("POST")) {
             json = "{\"exception\":\"" + "Only POST supported!" + "\"}";
         } else {
+            registerUser(getEnvironment().getRequest().getInputStream());
             if (contentTypeV2.equals(accept)) {
                 json = "{\"email\":\"" + "TODO" + "\",\"first-name\":\"" + "TODO" + "\"}";
             } else {
