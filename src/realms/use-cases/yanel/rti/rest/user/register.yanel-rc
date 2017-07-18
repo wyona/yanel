@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<yanel:resource-config xmlns:yanel="http://www.wyona.org/yanel/rti/1.0">
+  <yanel:rti name="pre-authenticated-user-registration-rest" namespace="http://www.yanel.org/resource/registration/1.0.0"/>
+
+  <!-- INFO: Independent of method, GET or PUT ... -->
+  <yanel:property name="yanel:401-only-when-access-denied" value="true"/>
+</yanel:resource-config>
