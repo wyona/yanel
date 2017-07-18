@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="pre-authenticated-user-registration-rest"
+  namespace="http://www.yanel.org/resource/registration/1.0.0"
+  class="org.wyona.yanel.resources.registration.PreAuthenticatedUserRegistrationRESTResource"
+  >
+<description>
+Pre-authenticated user registration using REST interface
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
