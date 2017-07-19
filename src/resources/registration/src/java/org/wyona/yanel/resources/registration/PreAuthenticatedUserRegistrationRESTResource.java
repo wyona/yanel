@@ -5,14 +5,18 @@ package org.wyona.yanel.resources.registration;
 
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ModifiableV2;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Date;
+
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+
+import org.wyona.security.core.api.User;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -87,14 +91,33 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
     }
 
     /**
-     *
+     * Register pre-authenticated user
+     * @param in JSON as InputStream containing user information, such as email address, first name and last name
      */
-    private void registerUser(InputStream in) throws Exception {
+    private User registerUser(InputStream in) throws Exception {
         ObjectMapper jsonPojoMapper = new ObjectMapper();
         java.util.Map<String, Object> map = jsonPojoMapper.readValue(in, java.util.Map.class);
         in.close();
         String email = map.get("email").toString();
-        log.warn("DEBUG: Reguister user with email address '" + email + "' ...");
+        String firstName = map.get("first_name").toString();
+        String lastName = map.get("last_name").toString();
+        log.warn("DEBUG: Try to register user with email address '" + email + "' ...");
+
+        if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+            String message = "Email '" + email + "' already used as alias";
+            log.warn(message);
+            throw new Exception(message);
+        }
+
+        String userID = "" + new java.util.Date().getTime();
+        User user = getRealm().getIdentityManager().getUserManager().createUser(userID, firstName + " " + lastName, email, null);
+        // TODO: user.setProperty(GENDER, gender);
+        getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
+        log.warn("DEBUG: User '" + user.getID() + "' created.");
+
+        // TODO: createUserProfileAccessPolicy(String id)
+
+        return user;
     }
 
     /**
@@ -128,20 +151,30 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
             view.setMimeType("application/json");
         }
 
+/* TBD/TODO
+        if (getYanel().isPreAuthenticationEnabled() && getYanel().getPreAuthenticationRequestHeaderName() != null && getEnvironment().getRequest().getHeader(getYanel().getPreAuthenticationRequestHeaderName()) != null) {
+            String preAuthReqHeaderName = getYanel().getPreAuthenticationRequestHeaderName();
+            preAuthUsername = getEnvironment().getRequest().getHeader(preAuthReqHeaderName);
+            preAuthenticated = true;
+            log.warn("DEBUG: Pre authenticated user: " + preAuthUsername);
+*/
 
         String json;
-
-
         if (!getEnvironment().getRequest().getMethod().equals("POST")) {
             json = "{\"exception\":\"" + "Only POST supported!" + "\"}";
         } else {
-            registerUser(getEnvironment().getRequest().getInputStream());
-            if (contentTypeV2.equals(accept)) {
-                json = "{\"email\":\"" + "TODO" + "\",\"first-name\":\"" + "TODO" + "\"}";
-            } else {
-                json = "{\"email\":\"" + "TODO" + "\"}";
+            try {
+                User user = registerUser(getEnvironment().getRequest().getInputStream());
+                if (contentTypeV2.equals(accept)) {
+                    json = "{\"email\":\"" + user.getEmail() + "\",\"first-name\":\"" + "TODO" + "\"}";
+                } else {
+                    json = "{\"email\":\"" + user.getEmail() + "\"}";
+                }
+            } catch(Exception e) {
+                json = "{\"exception\":\"" + e.getMessage() + "\",\"realm\":\"" + getRealm().getName() + "\"}";
             }
         }
+
         view.setInputStream(new java.io.ByteArrayInputStream(json.getBytes()));
         return view;
     }
