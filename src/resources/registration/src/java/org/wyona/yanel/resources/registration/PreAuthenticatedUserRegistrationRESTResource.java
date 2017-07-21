@@ -166,9 +166,9 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
             try {
                 User user = registerUser(getEnvironment().getRequest().getInputStream());
                 if (contentTypeV2.equals(accept)) {
-                    json = "{\"email\":\"" + user.getEmail() + "\",\"first-name\":\"" + "TODO" + "\"}";
+                    json = "{\"user-id\":\"" + user.getID() + "\",\"email\":\"" + user.getEmail() + "\",\"first-name\":\"" + "TODO" + "\"}";
                 } else {
-                    json = "{\"email\":\"" + user.getEmail() + "\"}";
+                    json = "{\"user-id\":\"" + user.getID() + "\",\"email\":\"" + user.getEmail() + "\"}";
                 }
             } catch(Exception e) {
                 json = "{\"exception\":\"" + e.getMessage() + "\",\"realm\":\"" + getRealm().getName() + "\"}";
