@@ -172,6 +172,13 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
                 }
             } catch(Exception e) {
                 json = "{\"exception\":\"" + e.getMessage() + "\",\"realm\":\"" + getRealm().getName() + "\"}";
+                view.setResponse(false);
+                javax.servlet.http.HttpServletResponse response = getEnvironment().getResponse();
+                response.setStatus(500);
+                response.setContentType("application/json" + "; charset=" + "UTF-8");
+                write(new java.io.ByteArrayInputStream(json.getBytes()), response);
+
+                return view;
             }
         }
 
@@ -179,6 +186,23 @@ public class PreAuthenticatedUserRegistrationRESTResource extends Resource imple
         return view;
     }
 
+    /**
+     *
+     */
+    private void write(InputStream in, javax.servlet.http.HttpServletResponse response) throws Exception {
+        OutputStream out = response.getOutputStream();
+        byte buffer[] = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+        }
+        in.close();
+        //out.close();
+    }
+
+    /**
+     *
+     */
     public ViewDescriptor[] getViewDescriptors() {
         // TODO Auto-generated method stub
         return null;
