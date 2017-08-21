@@ -1,5 +1,5 @@
 /*
- * Copyright 2007 - 2016 Wyona
+ * Copyright 2007 - 2017 Wyona
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
         if (identity != null) {
             currentUser = identity.getUsername();
         }
-        boolean isLoggedIn = currentUser != null;
+        boolean isLoggedIn = isSignedIn(currentUser);
 
         ResourceConfiguration rc = getConfiguration();
         Document customConfigDoc = rc.getCustomConfiguration();
@@ -185,8 +185,13 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
                         location = href;
 
                         String if_logged_in = languageRedirectConfigs[i].getAttribute("if-logged-in", "false");
-                        if("true".equals(if_logged_in) && !isLoggedIn) {
-                            continue;
+                        if("true".equals(if_logged_in)) {
+                            if(!isLoggedIn) {
+                                log.debug("Not logged in, hence check next language element ...");
+                                continue;
+                            } else {
+                                log.debug("Signed in, hence redirect to '" + href + "' ...");
+                            }
                         }
 
                         String device = languageRedirectConfigs[i].getAttribute("device", null);
@@ -230,6 +235,17 @@ public class RedirectResourceV102 extends Resource implements ViewableV2, Creata
             }
         }
         return location;
+    }
+
+    /**
+     * Check whether user is signed in
+     * @param currentUser User ID when signed in and null otherwise
+     * @return true when user is signed in and false otherwise
+     */
+    private boolean isSignedIn(String currentUser) throws Exception {
+        log.debug("Check whether user is signed in ...");
+        // INFO: The method YanelServlet.getIdentityFromRequest(...) is called ahead, and sets identity when user is pre-authenticated and user accounts exists, therefore we do not have to check pre-authentication here anymore
+        return currentUser != null;
     }
     
     /**
