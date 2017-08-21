@@ -43,6 +43,9 @@
   &lt;trust-store src="/foor/bar/truststore.jks" password="MY_PASSWORD"/&gt;
 --&gt;
 
+  &lt;!-- # Pre-authentication configuration --&gt;
+  &lt;pre-auth-request-header enabled="false"&gt;SM_USER&lt;/pre-auth-request-header&gt;
+
 &lt;/yanel&gt;</pre>
 <p><strong>Note 1:</strong> If one is using Yanel from source, then one should edit <code>conf/local/local.yanel.xml</code> rather than <code>conf/yanel.xml</code>.</p>
 <p><strong>Note 2:</strong> After editing either of these configuration files, Yanel needs to be rebuilt in order to overwrite <code>WEB-INF/classes/yanel.xml</code> (or alternatively one can edit this file directly and just restart Yanel instead, whereas one needs to be aware that the changes are overwritten during the next build).</p>
