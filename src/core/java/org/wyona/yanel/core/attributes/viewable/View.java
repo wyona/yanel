@@ -108,7 +108,9 @@ public class View {
     }
 
     /**
-     *
+     * Set HTTP header
+     * @param name Header name, e.g. 'Access-Control-Allow-Origin'
+     * @param value Header value, e.g. '*'
      */
     public void setHttpHeader(String name, String value) {
         this.httpHeaders.put(name, value);
