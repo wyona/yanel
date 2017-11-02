@@ -52,7 +52,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         try {
             String state = getEnvironment().getRequest().getParameter("state");
             log.warn("TODO: Check state '" + state + "' ...");
-            if (false) {
+            if (true) {
                 throw new Exception("Checking 'state' parameter failed!");
             }
 
