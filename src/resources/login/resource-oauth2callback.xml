@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<resource xmlns="http://www.wyona.org/yanel/1.0"
+  name="oauth2callback"
+  namespace="http://www.wyona.org/yanel/resource/1.0.0"
+  class="org.wyona.yanel.impl.resources.login.OAuth2CallbackResource"
+  >
+<description>
+Handle OAuth 2.0 callback
+</description>
+
+<rtd>
+<!--
+  <property name="foo" default-value="bar"/>
+-->
+</rtd>
+</resource>
