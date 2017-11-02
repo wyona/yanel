@@ -8,11 +8,15 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.servlet.YanelServlet;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.wyona.security.core.api.Identity;
+import org.wyona.security.core.api.User;
 
 /**
  * Handle OAuth 2.0 callback
@@ -55,9 +59,23 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             String token_endpoint = getDiscoveryDocument();
             String code = getEnvironment().getRequest().getParameter("code");
             String id_token = getAccessAndIdToken(token_endpoint, code);
-            String uniqueUserId = getPayload(id_token);
+            Payload userInfo = getPayload(id_token);
 
             // TODO: Check whether user with uniqueUserId exists or otherwise create account for this new user
+            // TBD: Maybe better use 'sub' instead 'email' ...?!
+            String email = userInfo.getEmail();
+            if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
+                String trueId = realm.getIdentityManager().getUserManager().getTrueId(userInfo.getEmail());
+                User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
+                // TODO: Get session
+                //YanelServlet.setIdentity(new Identity(user, email), session, realm);
+            } else {
+                log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
+
+                //User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
+                //getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
+                //YanelServlet.setIdentity(new Identity(user, email), session, realm);
+            }
 
             response.setHeader("Location", "en/projects/index.html"); // TODO: Make configurable
             response.setStatus(307);
@@ -88,10 +106,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     /**
      * Get user information
      */
-    private String getPayload(String id_token) {
+    private Payload getPayload(String id_token) {
         // TODO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
-        //return "michaelwechner@gmail.com"; // TODO: Return 'email'
-        return "10769150350006150715113082367"; // TODO: Return 'sub'
+        Payload payload = new Payload("10769150350006150715113082367", "michaelwechner@gmail.com");
+        return payload;
     }
 
     /**
@@ -100,5 +118,29 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     public ViewDescriptor[] getViewDescriptors() {
         log.warn("Not implemented!");
         return null;
+    }
+}
+
+/**
+ *
+ */
+class Payload {
+
+    private String sub;
+    private String email;
+
+    /**
+     *
+     */
+    public Payload(String sub, String email) {
+        this.sub = sub;
+        this.email = email;
+    }
+
+    /**
+     *
+     */
+    public String getEmail() {
+        return email;
     }
 }
