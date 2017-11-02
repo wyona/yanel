@@ -52,7 +52,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         try {
             String state = getEnvironment().getRequest().getParameter("state");
             log.warn("TODO: Check state '" + state + "' ...");
-            if (true) {
+            if (false) {
                 throw new Exception("Checking 'state' parameter failed!");
             }
 
@@ -61,21 +61,18 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             String id_token = getAccessAndIdToken(token_endpoint, code);
             Payload userInfo = getPayload(id_token);
 
-            // TODO: Check whether user with uniqueUserId exists or otherwise create account for this new user
-            // TBD: Maybe better use 'sub' instead 'email' ...?!
             String email = userInfo.getEmail();
+            User user = null;
             if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
                 String trueId = realm.getIdentityManager().getUserManager().getTrueId(userInfo.getEmail());
-                User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
-                // TODO: Get session
-                //YanelServlet.setIdentity(new Identity(user, email), session, realm);
+                user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
             } else {
                 log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
 
-                //User user = getRealm().getIdentityManager().getUserManager().createUser("" + customerID, getName(userRegBean.getFirstname(), userRegBean.getLastname()), userRegBean.getEmail(), userRegBean.getPassword());
-                //getRealm().getIdentityManager().getUserManager().createAlias(userRegBean.getEmail(), user.getID());
-                //YanelServlet.setIdentity(new Identity(user, email), session, realm);
+                user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:name", email, null);
+                getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
             }
+            YanelServlet.setIdentity(new Identity(user, email), getEnvironment().getRequest().getSession(true), realm);
 
             response.setHeader("Location", "en/projects/index.html"); // TODO: Make configurable
             response.setStatus(307);
@@ -142,5 +139,12 @@ class Payload {
      */
     public String getEmail() {
         return email;
+    }
+
+    /**
+     *
+     */
+    public String getId() {
+        return sub;
     }
 }
