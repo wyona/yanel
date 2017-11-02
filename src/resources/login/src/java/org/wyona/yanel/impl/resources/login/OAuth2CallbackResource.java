@@ -69,8 +69,9 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             } else {
                 log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
 
-                user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:name", email, null);
+                user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:gmail", email, null);
                 getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
+                addUserToGroups(user);
             }
             YanelServlet.setIdentity(new Identity(user, email), getEnvironment().getRequest().getSession(true), realm);
 
@@ -82,6 +83,32 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         }
 
         return view;
+    }
+
+    /**
+     * Add registered user to particular groups by default
+     * @param user User to be added to groups
+     */
+    private void addUserToGroups(User user) throws Exception {
+        // TODO: See src/resources/registration/src/java/org/wyona/yanel/resources/registration/UserRegistrationResource.java#addUserToGroups(User)
+        String groupsCSV = getResourceConfigProperty("groups");
+        if (groupsCSV != null) {
+                String[] groupIDs = null;
+                if (groupsCSV.indexOf(",") >= 0) {
+                    groupIDs = groupsCSV.split(",");
+                } else {
+                    groupIDs = new String[1];
+                    groupIDs[0] = groupsCSV;
+                }
+                for (int i = 0; i < groupIDs.length; i++) {
+                    if (getRealm().getIdentityManager().getGroupManager().existsGroup(groupIDs[i])) {
+                        log.debug("Add user '" + user.getEmail() + "' to group: " + groupIDs[i]);
+                        getRealm().getIdentityManager().getGroupManager().getGroup(groupIDs[i]).addMember(user);
+                    } else {
+                        log.warn("No such group: " + groupIDs[i]);
+                    }
+                }
+        }
     }
 
     /**
