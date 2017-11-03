@@ -34,6 +34,8 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.util.Date;
+
 /**
  * Handle OAuth 2.0 callback
  */
@@ -79,6 +81,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 throw new Exception("Getting 'id_token' failed!");
             }
             Payload userInfo = getPayload(id_token);
+            log.warn("DEBUG: Expiry date: " + userInfo.getExpiryDate());
 
             String email = userInfo.getEmail();
             User user = null;
@@ -257,12 +260,12 @@ auth.UsernamePasswordCredentials(username, password));
     /**
      * Get user information
      */
-    private Payload getPayload(String id_token) {
+    private Payload getPayload(String id_token) throws Exception {
         // INFO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
         //log.debug("Decode id_token '" + id_token + "' ....");
         String jwtBodyJSon = decodeJWT(id_token);
         log.warn("DEBUG: Decoded JWT: " + jwtBodyJSon);
-        Payload payload = new Payload("10769150350006150715113082367", "michaelwechner@gmail.com");
+        Payload payload = new Payload(jwtBodyJSon);
         return payload;
     }
 
@@ -298,13 +301,17 @@ class Payload {
 
     private String sub;
     private String email;
+    private Date expiryDate;
 
     /**
-     *
+     * @param decodedJWT Decoded JWT as JSON
      */
-    public Payload(String sub, String email) {
-        this.sub = sub;
-        this.email = email;
+    public Payload(String decodedJWT) throws Exception {
+        ObjectMapper jsonPojoMapper = new ObjectMapper();
+        JsonNode rootNode = jsonPojoMapper.readTree(decodedJWT);
+        this.sub = rootNode.path("sub").getTextValue();
+        this.email = rootNode.path("email").getTextValue();
+        this.expiryDate = new Date(rootNode.path("exp").getLongValue());
     }
 
     /**
@@ -319,5 +326,12 @@ class Payload {
      */
     public String getId() {
         return sub;
+    }
+
+    /**
+     *
+     */
+    public Date getExpiryDate() {
+        return expiryDate;
     }
 }
