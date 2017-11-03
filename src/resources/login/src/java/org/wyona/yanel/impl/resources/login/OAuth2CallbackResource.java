@@ -8,6 +8,7 @@ import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
 import org.wyona.yanel.core.attributes.viewable.ViewDescriptor;
+import org.wyona.yanel.core.util.MailUtil;
 import org.wyona.yanel.servlet.YanelServlet;
 
 import org.apache.logging.log4j.Logger;
@@ -94,6 +95,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:gmail", email, null);
                 getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
                 addUserToGroups(user);
+ 
+                if (getResourceConfigProperty("administrator-email") != null) {
+                    notifyAdmin(user);
+                }
             }
             YanelServlet.setIdentity(new Identity(user, email), getEnvironment().getRequest().getSession(true), realm);
 
@@ -105,6 +110,15 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         }
 
         return view;
+    }
+
+    /**
+     * Notify administrator, that user has been registered
+     */
+    private void notifyAdmin(User user) throws Exception {
+        String email = getResourceConfigProperty("administrator-email");
+        StringBuilder body = new StringBuilder("User account with email address '" + user.getEmail() + "' has been created.");
+        MailUtil.send(getYanel().getAdministratorEmail(), email, "[" + getRealm().getName() + "] User account has been created", body.toString());
     }
 
     /**
@@ -138,6 +152,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
      */
     private String getDiscoveryDocument() {
         // TODO: Make URL configurable and depending on provider, e.g. Google OpenID is using https://accounts.google.com/.well-known/openid-configuration
+        log.warn("TODO: Get token endpoint URL from discovery document!");
         return "https://www.googleapis.com/oauth2/v4/token"; // TODO: Get URL from discovery document
     }
 
