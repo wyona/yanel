@@ -258,8 +258,17 @@ auth.UsernamePasswordCredentials(username, password));
     private Payload getPayload(String id_token) {
         // TODO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
         log.warn("TODO: Decode id_token '" + id_token + "' ....");
+        String jwtBodyJSon = decodeJWT(id_token);
         Payload payload = new Payload("10769150350006150715113082367", "michaelwechner@gmail.com");
         return payload;
+    }
+
+    /**
+     * Decode JWT
+     * @return decoded JWT as JSON
+     */
+    private String decodeJWT(String jwt) {
+        return "{\"sub\":\"test\"}";
     }
 
     /**
