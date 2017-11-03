@@ -32,6 +32,8 @@ import org.apache.http.params.BasicHttpParams;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import org.apache.commons.codec.binary.Base64;
+
 /**
  * Handle OAuth 2.0 callback
  */
@@ -256,9 +258,10 @@ auth.UsernamePasswordCredentials(username, password));
      * Get user information
      */
     private Payload getPayload(String id_token) {
-        // TODO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
-        log.warn("TODO: Decode id_token '" + id_token + "' ....");
+        // INFO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
+        //log.debug("Decode id_token '" + id_token + "' ....");
         String jwtBodyJSon = decodeJWT(id_token);
+        log.warn("DEBUG: Decoded JWT: " + jwtBodyJSon);
         Payload payload = new Payload("10769150350006150715113082367", "michaelwechner@gmail.com");
         return payload;
     }
@@ -268,7 +271,15 @@ auth.UsernamePasswordCredentials(username, password));
      * @return decoded JWT as JSON
      */
     private String decodeJWT(String jwt) {
-        return "{\"sub\":\"test\"}";
+        String[] splittedJWT = jwt.split("\\.");
+
+        String base64EncodedHeader = splittedJWT[0];
+        String base64EncodedBody = splittedJWT[1];
+        String base64EncodedSignature = splittedJWT[2];
+
+        Base64 base64Url = new Base64(true);
+
+        return new String(base64Url.decode(base64EncodedBody));
     }
 
     /**
