@@ -10,6 +10,12 @@ Handle OAuth 2.0 callback
 </description>
 
 <rtd>
+  <!-- Required -->
+  <property name="client_id"/>
+  <property name="client_secret"/>
+  <property name="redirect_uri"/>
+
+  <!-- Optional -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->
 </rtd>
 </resource>
