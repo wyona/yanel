@@ -18,6 +18,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.params.BasicHttpParams;
+
 /**
  * Handle OAuth 2.0 callback
  */
@@ -52,13 +63,16 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         try {
             String state = getEnvironment().getRequest().getParameter("state");
             log.warn("TODO: Check state '" + state + "' ...");
-            if (true) {
+            if (false) {
                 throw new Exception("Checking 'state' parameter failed!");
             }
 
             String token_endpoint = getDiscoveryDocument();
             String code = getEnvironment().getRequest().getParameter("code");
             String id_token = getAccessAndIdToken(token_endpoint, code);
+            if (id_token == null) {
+                throw new Exception("Getting 'id_token' failed!");
+            }
             Payload userInfo = getPayload(id_token);
 
             String email = userInfo.getEmail();
@@ -120,11 +134,106 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     }
 
     /**
+     * Get Access and Id Token by sending a POST request to a token endpoint (see https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode)
+     * @param token_endpoint Token endpoint URL
+     * @param code TODO
      * @return id_token (JSON Web Token, containing user identity information
      */
     private String getAccessAndIdToken(String token_endpoint, String code) {
-        // TODO: Get access and Id token by sending a POST request to token_endpoint, see https://developers.google.com/identity/protocols/OpenIDConnect#server-flow or https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode
-        return "TODO";
+        int connectionTimeout = 2000;
+        int socketTimeout = 25000;
+        try {
+            StringBuilder qs = new StringBuilder("?");
+            qs.append("code=" + code);
+            qs.append("&");
+            qs.append("client_id=" + getResourceConfigProperty("client_id"));
+            qs.append("&");
+            qs.append("client_secret=" + getResourceConfigProperty("client_secret"));
+            qs.append("&");
+            qs.append("redirect_uri=" + getResourceConfigProperty("redirect_uri"));
+            qs.append("&");
+            qs.append("grant_type=authorization_code");
+
+            java.net.URL url = new java.net.URL(token_endpoint);
+            log.warn("DEBUG: Get Access and Id Token from '" + url + qs + "' ...");
+            DefaultHttpClient httpClient = getHttpClient(url, null, null, connectionTimeout, socketTimeout);
+            HttpPost httpPost = new HttpPost(url.toString() + qs);
+            //httpPost.setEntity(new StringEntity("{\"code\":\"" + code + "\",\"client_id\":\"" + getResourceConfigProperty("client_id") + "\"}", "utf-8"));
+            HttpResponse response = httpClient.execute(httpPost);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                java.io.InputStream in = response.getEntity().getContent();
+                in.close();
+                log.warn("DEBUG: Response code 200 ...");
+                return "TODO";
+            } else {
+                log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
+                return null;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            return null;
+        }
+    }
+
+    /**
+     * Get http client using SSL if necessary and basic authentication set
+     * @param username Username for basic authentication
+     * @param password Password for basic authentication
+     * @param connectionTimeout Value of CONNECTION_TIMEOUT
+     * @param socketTimeout Value of SO_TIMEOUT
+     * @return http client
+     * TODO: Re-use org.wyona.yanel.core.source.HttpResolver#getHttpClient(...)
+     */
+    private DefaultHttpClient getHttpClient(java.net.URL url, String username, String password, int connectionTimeout, int socketTimeout) throws Exception {
+        HttpParams httpParams = new BasicHttpParams();
+        if (connectionTimeout >= 0) {
+            HttpConnectionParams.setConnectionTimeout(httpParams, connectionTimeout);
+        } else {
+            log.warn("No connection timeout set, hence use default value: " + HttpConnectionParams.getConnectionTimeout(httpParams));
+        }
+        if (socketTimeout >= 0) {
+            HttpConnectionParams.setSoTimeout(httpParams, socketTimeout);
+        } else {
+            log.warn("No socket timeout set, hence use default value: " + HttpConnectionParams.getSoTimeout(httpParams));
+        }
+        String yanelVersion = org.wyona.yanel.core.Yanel.getInstance().getVersion();
+        HttpProtocolParams.setUserAgent(httpParams, "Yanel/" + yanelVersion + " HttpResolver");
+        DefaultHttpClient httpClient = new DefaultHttpClient(httpParams);
+
+        // INFO: http://stackoverflow.com/questions/7201154/httpclient-1-4-2-explanation-needed-for-custom-ssl-context-example
+        if (url.getProtocol().equals("https")) {
+            httpClient.getConnectionManager().getSchemeRegistry().register(new org.apache.http.conn.scheme.Scheme("https", 443, getSSLFactory()));
+        } else {
+            log.warn("Unsecure connection: " + url);        }
+
+        if (username != null && password != null) {
+            log.debug("Set BASIC AUTH for username '" + username + "'...");
+            httpClient.getCredentialsProvider().setCredentials(new org.apache.http.auth.AuthScope(url.getHost(), url.getPort()), new org.apache.http.
+auth.UsernamePasswordCredentials(username, password));
+        } else {
+            log.debug("No BASIC AUTH credentials set.");
+        }
+
+        return httpClient;
+    }
+
+    /**
+     * Get SSL factory
+     * TODO: Re-use org.wyona.yanel.core.source.HttpResolver#getSSLFactory()
+     */
+    private org.apache.http.conn.ssl.SSLSocketFactory getSSLFactory() throws Exception {
+        // TODO: Make SSLSocketFactory configurable...
+
+        // INFO: Just trust the certificate without checking/comparing a list of trusted certificates
+        org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(new org.apache.http.conn.ssl.TrustStrategy() {
+            public boolean isTrusted(final java.security.cert.X509Certificate[] chain, String authType) throws java.security.cert.CertificateException {
+                return true;
+            }
+        }, org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+        //org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(getSSLContext(), new org.apache.http.conn.ssl.StrictHostnameVerifier());
+
+        return factory;
     }
 
     /**
