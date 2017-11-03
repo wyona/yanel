@@ -29,6 +29,9 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.params.BasicHttpParams;
 
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+
 /**
  * Handle OAuth 2.0 callback
  */
@@ -155,16 +158,18 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             qs.append("grant_type=authorization_code");
 
             java.net.URL url = new java.net.URL(token_endpoint);
-            log.warn("DEBUG: Get Access and Id Token from '" + url + qs + "' ...");
+            //log.debug("Get Access and Id Token from '" + url + qs + "' ...");
             DefaultHttpClient httpClient = getHttpClient(url, null, null, connectionTimeout, socketTimeout);
             HttpPost httpPost = new HttpPost(url.toString() + qs);
             //httpPost.setEntity(new StringEntity("{\"code\":\"" + code + "\",\"client_id\":\"" + getResourceConfigProperty("client_id") + "\"}", "utf-8"));
             HttpResponse response = httpClient.execute(httpPost);
             if (response.getStatusLine().getStatusCode() == 200) {
+                ObjectMapper jsonPojoMapper = new ObjectMapper();
                 java.io.InputStream in = response.getEntity().getContent();
+                JsonNode rootNode = jsonPojoMapper.readTree(in);
                 in.close();
                 log.warn("DEBUG: Response code 200 ...");
-                return "TODO";
+                return getIdTokenFromJson(rootNode);
             } else {
                 log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
                 return null;
@@ -173,6 +178,17 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             log.error(e, e);
             return null;
         }
+    }
+
+    /**
+     * Get value of 'id_token' from JSON
+     */
+    private String getIdTokenFromJson(JsonNode rootNode) {
+        java.util.Iterator<String> it = rootNode.getFieldNames();
+        while (it.hasNext()) {
+            log.debug("Field name: " + it.next());
+        }
+        return rootNode.path("id_token").getTextValue();
     }
 
     /**
@@ -241,6 +257,7 @@ auth.UsernamePasswordCredentials(username, password));
      */
     private Payload getPayload(String id_token) {
         // TODO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
+        log.warn("TODO: Decode id_token '" + id_token + "' ....");
         Payload payload = new Payload("10769150350006150715113082367", "michaelwechner@gmail.com");
         return payload;
     }
