@@ -69,6 +69,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         HttpServletResponse response = getEnvironment().getResponse();
 
         try {
+            // INFO: See https://developers.google.com/identity/protocols/OpenIDConnect#createxsrftoken
             String state = getEnvironment().getRequest().getParameter("state");
             log.warn("TODO: Check state '" + state + "' ...");
             if (false) {
@@ -92,9 +93,11 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             } else {
                 log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
 
+                // TODO: Get first and last name of user from consent
                 user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:gmail", email, null);
-                getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
+                user = getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
                 addUserToGroups(user);
+                createUserProfileAccessPolicy(user.getID());
  
                 if (getResourceConfigProperty("administrator-email") != null) {
                     notifyAdmin(user);
@@ -105,11 +108,27 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             response.setHeader("Location", getResourceConfigProperty("redirect-landing-page-url"));
             response.setStatus(307);
         } catch(Exception e) {
-            log.error(e.getMessage());
+            log.error(e, e);
             response.setStatus(500);
         }
 
         return view;
+    }
+
+    /**
+     * Create user profile access policy
+     * @param id User ID
+     */
+    private void createUserProfileAccessPolicy(String id) throws Exception {
+        // TODO: Also see src/resources/user-mgmt/src/java/org/wyona/yanel/impl/resources/CreateUserResource.java or src/resources/registration/src/java/org/wyona/yanel/resources/registration/UserRegistrationResource.java
+
+        org.wyona.security.core.api.PolicyManager policyManager = getRealm().getPolicyManager();
+        org.wyona.security.core.api.Policy policy = policyManager.createEmptyPolicy();
+        org.wyona.security.core.UsecasePolicy usecasePolicy = new org.wyona.security.core.UsecasePolicy("view");
+        usecasePolicy.addIdentity(new org.wyona.security.core.api.Identity(id, id), true);
+        policy.addUsecasePolicy(usecasePolicy);
+        // TODO: Replace "/users" by org.wyona.yanel.servlet.YanelGlobalResourceTypeMatcher#usersPathPrefix
+        policyManager.setPolicy("/" + getYanel().getReservedPrefix() + "/users/" + id + ".html", policy);
     }
 
     /**
@@ -188,7 +207,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 java.io.InputStream in = response.getEntity().getContent();
                 JsonNode rootNode = jsonPojoMapper.readTree(in);
                 in.close();
-                log.warn("DEBUG: Response code 200 ...");
+                log.debug("Response code 200 ...");
                 return getIdTokenFromJson(rootNode);
             } else {
                 log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
@@ -279,7 +298,7 @@ auth.UsernamePasswordCredentials(username, password));
         // INFO: Analyze JWT, e.g. get unique user Id and user email and ... see https://developers.google.com/identity/protocols/OpenIDConnect#obtainuserinfo
         //log.debug("Decode id_token '" + id_token + "' ....");
         String jwtBodyJSon = decodeJWT(id_token);
-        log.warn("DEBUG: Decoded JWT: " + jwtBodyJSon);
+        //log.debug("Decoded JWT: " + jwtBodyJSon);
         Payload payload = new Payload(jwtBodyJSon);
         return payload;
     }
