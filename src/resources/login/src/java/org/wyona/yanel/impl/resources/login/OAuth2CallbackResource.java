@@ -102,7 +102,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             }
             YanelServlet.setIdentity(new Identity(user, email), getEnvironment().getRequest().getSession(true), realm);
 
-            response.setHeader("Location", "en/projects/index.html"); // TODO: Make configurable
+            response.setHeader("Location", getResourceConfigProperty("redirect-landing-page-url"));
             response.setStatus(307);
         } catch(Exception e) {
             log.error(e.getMessage());
