@@ -11,9 +11,11 @@ Handle OAuth 2.0 callback
 
 <rtd>
   <!-- Required -->
-  <property name="client_id"/>
-  <property name="client_secret"/>
-  <property name="redirect_uri"/>
+  <property name="client_id"/> <!-- INFO: see https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
+  <property name="client_secret"/> <!-- https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
+  <property name="redirect_uri"/> <!-- INFO: See https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
+
+  <property name="redirect-landing-page-url"/> <!-- INFO: For example 'my-landing-page.html' -->
 
   <!-- Optional -->
   <property name="groups"/> <!-- INFO: Comma separated list of group IDs, to which user shall be added automatically during registration -->
