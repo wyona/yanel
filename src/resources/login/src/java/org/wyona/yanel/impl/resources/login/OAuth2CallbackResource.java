@@ -93,10 +93,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             } else {
                 log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
 
-                // TODO: Get first and last name of user from consent
-                user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), "TODO:gmail", email, null);
+                user = getRealm().getIdentityManager().getUserManager().createUser(userInfo.getId(), userInfo.getName(), email, null);
                 user = getRealm().getIdentityManager().getUserManager().createAlias(email, user.getID());
                 addUserToGroups(user);
+                setLanguage(user, userInfo.getLanguage());
                 createUserProfileAccessPolicy(user.getID());
  
                 if (getResourceConfigProperty("administrator-email") != null) {
@@ -113,6 +113,28 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         }
 
         return view;
+    }
+
+    /**
+     * Set language of user
+     */
+    private void setLanguage(User user, String language) throws Exception {
+        String[] supportedLanguages = getRealm().getLanguages();
+        if (supportedLanguages != null && supportedLanguages.length > 0) {
+            for (int i = 0; i < supportedLanguages.length; i++) {
+                if (supportedLanguages[i].equals(language)) {
+                    user.setLanguage(language);
+                    log.warn("DEBUG: Set '" + language + "' as language of user '" + user.getID() + "'.");
+                    return;
+                }
+            }
+            if (getRealm().getDefaultLanguage() != null) {
+                user.setLanguage(getRealm().getDefaultLanguage());
+                log.warn("DEBUG: Set realm default language '" + language + "' as language of user '" + user.getID() + "', because remote profile language '" + language + "' is not supported by realm '" + getRealm().getName() + "'.");
+                return;
+            }
+        }
+        log.warn("Realm '" + getRealm().getName() + "' has no supported languages configured!");
     }
 
     /**
@@ -336,6 +358,11 @@ class Payload {
     private String sub;
     private String email;
     private Date expiryDate;
+    private String name;
+    private String firstName;
+    private String lastName;
+    private String language;
+    private String profilePictureURL;
 
     /**
      * @param decodedJWT Decoded JWT as JSON
@@ -346,6 +373,46 @@ class Payload {
         this.sub = rootNode.path("sub").getTextValue();
         this.email = rootNode.path("email").getTextValue();
         this.expiryDate = new Date(rootNode.path("exp").getLongValue());
+        this.name = rootNode.path("name").getTextValue();
+        this.firstName = rootNode.path("given_name").getTextValue();
+        this.lastName = rootNode.path("family_name").getTextValue();
+        this.language = rootNode.path("locale").getTextValue();
+        this.profilePictureURL = rootNode.path("picture").getTextValue();
+    }
+
+    /**
+     *
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    /**
+     *
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    /**
+     * @return language, e.g. 'en' or 'fr' or 'de'
+     */
+    public String getLanguage() {
+        return language;
+    }
+
+    /**
+     *
+     */
+    public String getProfilePictureURL() {
+        return profilePictureURL;
+    }
+
+    /**
+     *
+     */
+    public String getName() {
+        return name;
     }
 
     /**
