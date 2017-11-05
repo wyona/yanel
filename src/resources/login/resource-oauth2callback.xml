@@ -11,6 +11,7 @@ Handle OAuth 2.0 callback
 
 <rtd>
   <!-- Required -->
+  <property name="token_endpoint_url"/> <!-- INFO: For exmaple 'https://www.googleapis.com/oauth2/v4/token' or 'https://graph.facebook.com/v2.10/oauth/access_token' -->
   <property name="client_id"/> <!-- INFO: see https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
   <property name="client_secret"/> <!-- https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
   <property name="redirect_uri"/> <!-- INFO: See https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
