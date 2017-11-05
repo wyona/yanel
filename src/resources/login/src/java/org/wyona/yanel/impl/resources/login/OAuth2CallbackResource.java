@@ -230,7 +230,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 JsonNode rootNode = jsonPojoMapper.readTree(in);
                 in.close();
                 log.debug("Response code 200 ...");
-                return getIdTokenFromJson(rootNode);
+                String idToken = getTokenFromJson(rootNode, "id_token");
+                String accessToken = getTokenFromJson(rootNode, "access_token");
+                log.warn("DEBUG: Access token: " + accessToken);
+                return idToken;
             } else {
                 log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
                 return null;
@@ -242,14 +245,20 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     }
 
     /**
-     * Get value of 'id_token' from JSON
+     * Get token value from JSON
+     * @param name Token name, e.g. 'id_token' or 'access_token'
      */
-    private String getIdTokenFromJson(JsonNode rootNode) {
+    private String getTokenFromJson(JsonNode rootNode, String name) {
         java.util.Iterator<String> it = rootNode.getFieldNames();
         while (it.hasNext()) {
-            log.debug("Field name: " + it.next());
+            String fieldName = it.next();
+            log.warn("DEBUG: Field name: " + fieldName);
+            if (fieldName.equals(name)) {
+                return rootNode.path(name).getTextValue();
+            }
         }
-        return rootNode.path("id_token").getTextValue();
+        log.warn("No such field '" + name+ "'");
+        return null;
     }
 
     /**
