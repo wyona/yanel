@@ -76,7 +76,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 throw new Exception("Checking 'state' parameter failed!");
             }
 
-            String token_endpoint = getDiscoveryDocument();
+            String token_endpoint = getTokenEndpoint();
             String code = getEnvironment().getRequest().getParameter("code");
             String id_token = getAccessAndIdToken(token_endpoint, code);
             if (id_token == null) {
@@ -191,10 +191,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     /**
      * @return URL of token endpoint
      */
-    private String getDiscoveryDocument() {
+    private String getTokenEndpoint() throws Exception {
         // TODO: Make URL configurable and depending on provider, e.g. Google OpenID is using https://accounts.google.com/.well-known/openid-configuration
         log.warn("TODO: Get token endpoint URL from discovery document!");
-        return "https://www.googleapis.com/oauth2/v4/token"; // TODO: Get URL from discovery document
+        return getResourceConfigProperty("token_endpoint_url");
     }
 
     /**
