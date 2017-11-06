@@ -233,6 +233,14 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 String idToken = getTokenFromJson(rootNode, "id_token");
                 String accessToken = getTokenFromJson(rootNode, "access_token");
                 log.warn("DEBUG: Access token: " + accessToken);
+                // https://graph.facebook.com/me?fields=id,%20name,email&access_token=EAAMs1bAXoysBALmza...
+/*
+{
+   "id": "1015554111530622",
+   "name": "Michael Wechner",
+   "email": "michi\u0040wyona.com"
+}
+*/
                 return idToken;
             } else {
                 log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
