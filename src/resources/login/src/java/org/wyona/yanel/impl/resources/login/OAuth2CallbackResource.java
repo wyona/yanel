@@ -85,7 +85,11 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             User user = null;
             if (getRealm().getIdentityManager().getUserManager().existsAlias(email)) {
                 String trueId = realm.getIdentityManager().getUserManager().getTrueId(userInfo.getEmail());
-                user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
+                if (trueId.equals(userInfo.getId())) {
+                    user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
+                } else {
+                    throw new Exception("E-Mail '" + email + "' exists as alias, but user IDs do not match!");
+                }
             } else {
                 log.warn("User '" + email + "' does not exist yet, hence create account and login user ...");
 
