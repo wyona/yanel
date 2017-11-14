@@ -78,11 +78,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
 
             String token_endpoint = getTokenEndpoint();
             String code = getEnvironment().getRequest().getParameter("code");
-            String id_token = getAccessAndIdToken(token_endpoint, code);
-            if (id_token == null) {
-                throw new Exception("Getting 'id_token' failed!");
-            }
-            Payload userInfo = getPayload(id_token);
+            Payload userInfo = getAccessAndIdToken(token_endpoint, code);
             log.warn("DEBUG: Expiry date: " + userInfo.getExpiryDate());
 
             String email = userInfo.getEmail();
@@ -198,12 +194,12 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     }
 
     /**
-     * Get Access and Id Token by sending a POST request to a token endpoint (see https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode)
+     * Get user information by getting access and Id Token by sending a POST request to a token endpoint (see https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode)
      * @param token_endpoint Token endpoint URL
      * @param code TODO
-     * @return id_token (JSON Web Token, containing user identity information
+     * @return user information, like for example email address and user id
      */
-    private String getAccessAndIdToken(String token_endpoint, String code) {
+    private Payload getAccessAndIdToken(String token_endpoint, String code) {
         int connectionTimeout = 2000;
         int socketTimeout = 25000;
         try {
@@ -231,9 +227,38 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 in.close();
                 log.debug("Response code 200 ...");
                 String idToken = getTokenFromJson(rootNode, "id_token");
+                if (idToken != null) {
+                    return getPayload(idToken);
+                }
+                log.warn("No id_token received, hence try to get user info using access token ...");
                 String accessToken = getTokenFromJson(rootNode, "access_token");
                 log.warn("DEBUG: Access token: " + accessToken);
-                // https://graph.facebook.com/me?fields=id,%20name,email&access_token=EAAMs1bAXoysBALmza...
+                return getUserInfoUsingAccessToken(accessToken);
+            } else {
+                log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
+                return null;
+            }
+        } catch(Exception e) {
+            log.error(e, e);
+            return null;
+        }
+    }
+
+    /**
+     * Get user info using access token
+     * @param accessToken Access token
+     * @return user info
+     */
+    private Payload getUserInfoUsingAccessToken(String accessToken) throws Exception {
+        int connectionTimeout = 2000;
+        int socketTimeout = 25000;
+        java.net.URL url = new java.net.URL("https://graph.facebook.com/me");
+        DefaultHttpClient httpClient = getHttpClient(url, null, null, connectionTimeout, socketTimeout);
+        String qs = "?fields=id,%20name,email&access_token=" + accessToken;
+        HttpGet httpGet = new HttpGet(url.toString() + qs);
+        HttpResponse response = httpClient.execute(httpGet);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            log.warn("DEBUG: Response code 200 ...");
 /*
 {
    "id": "1015554111530622",
@@ -241,13 +266,16 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
    "email": "michi\u0040wyona.com"
 }
 */
-                return idToken;
-            } else {
-                log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
-                return null;
-            }
-        } catch(Exception e) {
-            log.error(e, e);
+/*
+                ObjectMapper jsonPojoMapper = new ObjectMapper();
+                java.io.InputStream in = response.getEntity().getContent();
+                JsonNode rootNode = jsonPojoMapper.readTree(in);
+                in.close();
+                String idToken = getTokenFromJson(rootNode, "id_token");
+*/
+            return null;
+        } else {
+            log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
             return null;
         }
     }
