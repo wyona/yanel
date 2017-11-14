@@ -16,6 +16,8 @@ Handle OAuth 2.0 callback
   <property name="client_secret"/> <!-- https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
   <property name="redirect_uri"/> <!-- INFO: See https://developers.google.com/identity/protocols/OpenIDConnect#exchangecode -->
 
+  <property name="profile_endpoint_url"/> <!-- INFO: For exmaple 'https://www.googleapis.com/plus/v1/people/me' or 'https://graph.facebook.com/me' -->
+
   <property name="redirect-landing-page-url"/> <!-- INFO: For example 'my-landing-page.html' -->
 
   <!-- Optional -->
