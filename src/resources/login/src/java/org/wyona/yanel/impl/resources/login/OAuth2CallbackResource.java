@@ -104,6 +104,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 }
             }
             YanelServlet.setIdentity(new Identity(user, email), getEnvironment().getRequest().getSession(true), realm);
+            
+            org.wyona.security.core.UserHistory history = user.getHistory();
+            history.addEntry(new org.wyona.security.core.UserHistory().new HistoryEntry(new Date(), "login", "successful"));
+            user.setHistory(history);
 
             response.setHeader("Location", getResourceConfigProperty("redirect-landing-page-url"));
             response.setStatus(307);
@@ -230,12 +234,12 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 JsonNode rootNode = jsonPojoMapper.readTree(in);
                 in.close();
                 log.debug("Response code 200 ...");
-                String idToken = getTokenFromJson(rootNode, "id_token");
+                String idToken = getFieldValueFromJson(rootNode, "id_token");
                 if (idToken != null) {
                     return getPayload(idToken);
                 }
                 log.warn("No id_token received, hence try to get user info using access token ...");
-                String accessToken = getTokenFromJson(rootNode, "access_token");
+                String accessToken = getFieldValueFromJson(rootNode, "access_token");
                 log.warn("DEBUG: Access token: " + accessToken);
                 return getUserInfoUsingAccessToken(accessToken);
             } else {
@@ -268,9 +272,9 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
             java.io.InputStream in = response.getEntity().getContent();
             JsonNode rootNode = jsonPojoMapper.readTree(in);
             in.close();
-            String userId = getTokenFromJson(rootNode, "id");
-            String userName = getTokenFromJson(rootNode, "name");
-            String email = getTokenFromJson(rootNode, "email");
+            String userId = getFieldValueFromJson(rootNode, "id");
+            String userName = getFieldValueFromJson(rootNode, "name");
+            String email = getFieldValueFromJson(rootNode, "email");
            
             return new Payload(userId, userName, email);
         } else {
@@ -280,10 +284,10 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     }
 
     /**
-     * Get token value from JSON
-     * @param name Token name, e.g. 'id_token' or 'access_token'
+     * Get field value from JSON
+     * @param name Field name, e.g. 'id_token' or 'access_token'
      */
-    private String getTokenFromJson(JsonNode rootNode, String name) {
+    private String getFieldValueFromJson(JsonNode rootNode, String name) {
         java.util.Iterator<String> it = rootNode.getFieldNames();
         while (it.hasNext()) {
             String fieldName = it.next();
