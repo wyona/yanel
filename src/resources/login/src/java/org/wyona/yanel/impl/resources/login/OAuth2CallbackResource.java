@@ -256,7 +256,8 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
     private Payload getUserInfoUsingAccessToken(String accessToken) throws Exception {
         int connectionTimeout = 2000;
         int socketTimeout = 25000;
-        java.net.URL url = new java.net.URL("https://graph.facebook.com/me");
+        // TODO: Google and Facebook do not have the same JSON as response!
+        java.net.URL url = new java.net.URL(getResourceConfigProperty("profile_endpoint_url"));
         DefaultHttpClient httpClient = getHttpClient(url, null, null, connectionTimeout, socketTimeout);
         String qs = "?fields=id,%20name,email&access_token=" + accessToken;
         HttpGet httpGet = new HttpGet(url.toString() + qs);
