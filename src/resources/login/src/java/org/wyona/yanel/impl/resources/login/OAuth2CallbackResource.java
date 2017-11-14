@@ -259,21 +259,15 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
         HttpResponse response = httpClient.execute(httpGet);
         if (response.getStatusLine().getStatusCode() == 200) {
             log.warn("DEBUG: Response code 200 ...");
-/*
-{
-   "id": "1015554111530622",
-   "name": "Michael Wechner",
-   "email": "michi\u0040wyona.com"
-}
-*/
-/*
-                ObjectMapper jsonPojoMapper = new ObjectMapper();
-                java.io.InputStream in = response.getEntity().getContent();
-                JsonNode rootNode = jsonPojoMapper.readTree(in);
-                in.close();
-                String idToken = getTokenFromJson(rootNode, "id_token");
-*/
-            return null;
+            ObjectMapper jsonPojoMapper = new ObjectMapper();
+            java.io.InputStream in = response.getEntity().getContent();
+            JsonNode rootNode = jsonPojoMapper.readTree(in);
+            in.close();
+            String userId = getTokenFromJson(rootNode, "id");
+            String userName = getTokenFromJson(rootNode, "name");
+            String email = getTokenFromJson(rootNode, "email");
+           
+            return new Payload(userId, userName, email);
         } else {
             log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
             return null;
@@ -408,6 +402,17 @@ class Payload {
     private String lastName;
     private String language;
     private String profilePictureURL;
+
+    /**
+     * @param id User Id
+     * @param name User name, e.g. 'Michael Wechner'
+     * @param email User email address
+     */
+    public Payload(String id, String name, String email) throws Exception {
+        this.sub = id;
+        this.name = name;
+        this.email = email;
+    }
 
     /**
      * @param decodedJWT Decoded JWT as JSON
