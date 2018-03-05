@@ -2007,7 +2007,7 @@ public class YanelServlet extends HttpServlet {
         }
 */
 
-        // HTTP BASIC Authentication (For clients such as for instance Sunbird, OpenOffice or cadaver)
+        // HTTP BASIC Authentication (For clients such as for instance Thunderbird Lightning, OpenOffice or cadaver)
         // IMPORT NOTE: BASIC Authentication needs to be checked on every request, because clients often do not support session handling
         String authorizationHeader = request.getHeader("Authorization");
         if (log.isDebugEnabled()) log.debug("No identity attached to session, hence check request authorization header: " + authorizationHeader);
@@ -2015,10 +2015,17 @@ public class YanelServlet extends HttpServlet {
             if (authorizationHeader.toUpperCase().startsWith("BASIC")) {
                 // Get encoded user and password, comes after "BASIC "
                 String userpassEncoded = authorizationHeader.substring(6);
-                // Decode it, using any base 64 decoder
-                sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
-                String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
-                log.debug("Username and Password Decoded: " + userpassDecoded);
+                // INFO: Decode it, using base 64 decoder
+   
+                // DEPRECATED
+                //sun.misc.BASE64Decoder dec = new sun.misc.BASE64Decoder();
+                //String userpassDecoded = new String(dec.decodeBuffer(userpassEncoded));
+
+                java.util.Base64.Decoder decoder = java.util.Base64.getMimeDecoder();
+                String userpassDecoded = new String(decoder.decode(userpassEncoded));
+
+                log.debug("Username and Password decoded: " + userpassDecoded);
+
                 String[] up = userpassDecoded.split(":");
                 String username = up[0];
                 String password = up[1];
