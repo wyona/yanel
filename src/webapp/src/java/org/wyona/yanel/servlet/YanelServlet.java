@@ -1068,6 +1068,7 @@ public class YanelServlet extends HttpServlet {
      */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // TODO: generateResponseFromResourceView(request, response, javax.servlet.http.HttpServletResponse.SC_OK, res);
         try {
             Resource res = getResource(request, response);
             if (ResourceAttributeHelper.hasAttributeImplemented(res, "Modifiable", "2")) {
@@ -1332,7 +1333,7 @@ public class YanelServlet extends HttpServlet {
             // INFO: If request is not via SSL and SSL is configured, then redirect to SSL connection.
             if(!request.isSecure()) {
                 if(sslPort != null) {
-                    log.info("Redirect to SSL ...");
+                    log.info("Redirect to SSL (Port: " + sslPort + ") ...");
                     try {
                         URL url = new URL(getRequestURLQS(request, null, false).toString());
                         url = new URL("https", url.getHost(), new Integer(sslPort).intValue(), url.getFile());
@@ -1348,7 +1349,7 @@ public class YanelServlet extends HttpServlet {
                         }
                         log.info("Redirect to SSL: " + url);
                         response.setHeader("Location", url.toString());
-                        // TODO: Yulup has a bug re TEMPORARY_REDIRECT
+                        // TODO: "Yulup Editor" has a bug re TEMPORARY_REDIRECT
                         //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT);
                         response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY);
                         return response;
@@ -1405,7 +1406,7 @@ public class YanelServlet extends HttpServlet {
                 log.warn("DEBUG: Redirect to original request: " + url);
 
                 //response.sendRedirect(url.toString()); // 302
-                // TODO: Yulup has a bug re TEMPORARY_REDIRECT (or is the problem that the load balancer is rewritting 302 reponses?!)
+                // TODO: "Yulup Editor" has a bug re TEMPORARY_REDIRECT (or is the problem that the load balancer is rewritting 302 reponses?!)
                 response.setHeader("Location", url.toString());
                 response.setStatus(javax.servlet.http.HttpServletResponse.SC_MOVED_PERMANENTLY); // 301
                 //response.setStatus(javax.servlet.http.HttpServletResponse.SC_TEMPORARY_REDIRECT); // 302
