@@ -112,7 +112,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
                 try {
                     String loginPassword = request.getParameter("yanel.login.password");
                     if (loginPassword != null && authenticateUser(loginUsername, loginPassword, realm, session)) {
-                        log.debug("Login of user '" + loginUsername + "' was successful");
+                        log.debug("Authentication of user '" + loginUsername + "' was successful");
                         doAutoLogin(request, response, loginUsername, openID, realm);
                         return null;
                     }
@@ -879,7 +879,7 @@ public class DefaultWebAuthenticatorImpl implements WebAuthenticator {
         String trueId = realm.getIdentityManager().getUserManager().getTrueId(username);
         User user = realm.getIdentityManager().getUserManager().getUser(trueId, true);
         if (user != null && user.authenticate(password)) {
-            log.debug("Realm: " + realm);
+            log.debug("Add user '" + username + "' to session and associate with realm '" + realm + "' ...");
             YanelServlet.setIdentity(new Identity(user, username), session, realm);
             log.warn("DEBUG: Authentication was successful for user: " + user.getID());
             log.warn("TODO: Add user to session listener!");
