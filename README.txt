@@ -25,7 +25,7 @@
     0) The build and start scripts described below will ask you about JAVA_HOME, but you might want to set it first
 
         Mac OS X          : export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
-        Mac OS X Yosemite : export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home
+        Mac OS X Yosemite : Run /System/Library/Frameworks/JavaVM.framework/Versions/Current/commands/java_home and set JAVA_HOME accordingly
         Windows           : See for example https://confluence.atlassian.com/display/DOC/Setting+the+JAVA_HOME+Variable+in+Windows
 
     1) Build/Compile Yanel by running
