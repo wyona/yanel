@@ -6,7 +6,7 @@
     Requirements and Prerequisites
     ------------------------------
 
-    Java Development Kit version 1.6 or higher (e.g. http://java.oracle.com).
+    Java Development Kit version 1.8 or higher (e.g. http://java.oracle.com).
 
     NOTES:
 
