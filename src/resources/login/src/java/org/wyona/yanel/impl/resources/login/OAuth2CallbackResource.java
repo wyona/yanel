@@ -243,7 +243,7 @@ public class OAuth2CallbackResource extends Resource implements ViewableV2  {
                 log.warn("DEBUG: Access token: " + accessToken);
                 return getUserInfoUsingAccessToken(accessToken);
             } else {
-                log.error("Response code '" + response.getStatusLine().getStatusCode() + "'");
+                log.error("Getting Access and Id token from '" + url + "' failed! Response code '" + response.getStatusLine().getStatusCode() + "'");
                 return null;
             }
         } catch(Exception e) {
