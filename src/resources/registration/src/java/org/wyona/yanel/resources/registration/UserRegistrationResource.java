@@ -268,7 +268,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                     Element adminConfirmationRequiredEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, "admin-confirmation-required"));
                 }
 
-                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(), getConfirmationEmailBody(getActivationURL(userRegBean), userRegBean.getLanguage()));
+                MailUtil.send(getFromEmail(), userRegBean.getEmail(), getSubject(userRegBean.getLanguage()), getConfirmationEmailBody(getActivationURL(userRegBean), userRegBean.getLanguage()));
 
                 element.setAttribute("sent-by-yanel", "true");
             }
@@ -308,7 +308,8 @@ public class UserRegistrationResource extends BasicXMLResource {
     /**
      * Get subject of confirmation email
      */
-    private String getSubject() throws Exception {
+    private String getSubject(String language) throws Exception {
+        // TODO: Use language
         String subject = "Activate User Registration (sent by Yanel)";
         if (getResourceConfigProperty("subject") != null) {
             subject = getResourceConfigProperty("subject");
@@ -328,7 +329,12 @@ public class UserRegistrationResource extends BasicXMLResource {
         log.warn("TODO: Use language when provided ...");
 
         if (getResourceConfigProperty("email-body-template-path") != null) {
-            Node templateNode = getRealm().getRepository().getNode(getResourceConfigProperty("email-body-template-path"));
+            String templatePath = getResourceConfigProperty("email-body-template-path");
+            if (language != null && language.length() > 0 && templatePath.indexOf("LANG") >= 0) {
+                templatePath = templatePath.replace("LANG", language);
+            }
+
+            Node templateNode = getRealm().getRepository().getNode(templatePath);
             InputStream in = templateNode.getInputStream();
             body = org.apache.commons.io.IOUtils.toString(in);
             in.close();
