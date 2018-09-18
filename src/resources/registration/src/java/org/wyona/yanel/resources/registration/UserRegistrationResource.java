@@ -309,10 +309,11 @@ public class UserRegistrationResource extends BasicXMLResource {
      * Get subject of confirmation email
      */
     private String getSubject(String language) throws Exception {
-        // TODO: Use language
         String subject = "Activate User Registration (sent by Yanel)";
         if (getResourceConfigProperty("subject") != null) {
             subject = getResourceConfigProperty("subject");
+        } else if (language != null && language.length() > 0 && getResourceConfigProperty("subject_" + language) != null) {
+            subject = getResourceConfigProperty("subject_" + language);
         }
         return subject;
     }
