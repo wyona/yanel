@@ -310,6 +310,10 @@ public class UserRegistrationResource extends BasicXMLResource {
      */
     private String getSubject(String language) throws Exception {
         String subject = "Activate User Registration (sent by Yanel)";
+        if (language != null && language.equals("de")) {
+            subject = "Benutzer Registrierung aktivieren (gesendet von Yanel)";
+        }
+
         if (getResourceConfigProperty("subject") != null) {
             subject = getResourceConfigProperty("subject");
         } else if (language != null && language.length() > 0 && getResourceConfigProperty("subject_" + language) != null) {
@@ -327,8 +331,6 @@ public class UserRegistrationResource extends BasicXMLResource {
     private String getConfirmationEmailBody(String url, String language) throws Exception {
         String body = null;
 
-        log.warn("TODO: Use language when provided ...");
-
         if (getResourceConfigProperty("email-body-template-path") != null) {
             String templatePath = getResourceConfigProperty("email-body-template-path");
             if (language != null && language.length() > 0 && templatePath.indexOf("LANG") >= 0) {
@@ -340,6 +342,7 @@ public class UserRegistrationResource extends BasicXMLResource {
             body = org.apache.commons.io.IOUtils.toString(in);
             in.close();
         } else {
+            log.warn("TODO: Use language when provided ...");
             String htdocsPath = "rthtdocs:/registration-confirmation-email-template.txt";
             org.wyona.yanel.core.source.SourceResolver resolver = new org.wyona.yanel.core.source.SourceResolver(this);
             javax.xml.transform.Source source = resolver.resolve(htdocsPath, null);
