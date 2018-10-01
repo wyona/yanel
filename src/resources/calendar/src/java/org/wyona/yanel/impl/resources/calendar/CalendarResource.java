@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Wyona
+ * Copyright 2006 - 2018 Wyona
  */
 
 package org.wyona.yanel.impl.resources.calendar;
@@ -235,6 +235,9 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * @see org.wyona.yanel.core.api.attributes.ModifiableV2#write(InputStream)
      */
     public void write(InputStream in) throws Exception {
+        writeICS(in);
+
+/* WARN: The splitting does not scale well!
         Repository dataRepo = getRealm().getRepository();
         java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(writeICS(in)));
         //java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(in));
@@ -274,6 +277,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
             }
         }
         br.close();
+*/
     }
 
     /**
@@ -281,7 +285,7 @@ public class CalendarResource extends Resource implements ViewableV2, Modifiable
      * @param in InputStream containing ICS
      */
     private InputStream writeICS(InputStream in) throws Exception {
-        log.debug("Write ICS as a whole to the repository: " + getPath());
+        log.warn("DEBUG: Write ICS as a whole to the repository: " + getPath());
 
         Node icsNode = getRealm().getRepository().getNode(getPath());
         org.wyona.yarep.core.Path path = new org.wyona.yarep.core.Path(getPath());
