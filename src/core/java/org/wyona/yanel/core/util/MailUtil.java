@@ -258,15 +258,21 @@ private static PGPPublicKey getEncryptionKey(PGPPublicKeyRing keyRing) {
 
         // Construct the message
         MimeMessage msg = new MimeMessage(session);
-        if (fromName != null && fromName. length() > 0) {
-            try {
-                msg.setFrom(new InternetAddress(fromEmailAddress, fromName));
-            } catch (java.io.UnsupportedEncodingException e) {
-                log.error(e, e);
+        if (fromEmailAddress != null) {
+            if (fromName != null && fromName. length() > 0) {
+                try {
+                    msg.setFrom(new InternetAddress(fromEmailAddress, fromName));
+                } catch (java.io.UnsupportedEncodingException e) {
+                    log.error(e, e);
+                    msg.setFrom(new InternetAddress(fromEmailAddress));
+                }
+            } else {
                 msg.setFrom(new InternetAddress(fromEmailAddress));
             }
         } else {
-            msg.setFrom(new InternetAddress(fromEmailAddress));
+            String errorMsg = "No 'from' email address configured! Check global yanel configuration http://www.yanel.org/en/documentation/configuration/yanel_xml.html (Element attribute 'administrator/@email') or custom realm resource configuration.";
+            log.error(errorMsg);
+            //msg.setFrom(new InternetAddress("no-reply@yanel.org"));
         }
         if (replyTo != null) {
             InternetAddress[] replyToAddresses = new InternetAddress[1];
