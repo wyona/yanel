@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 - 2017 Wyona
+ * Copyright 2010 - 2018 Wyona
  */
 package org.wyona.yanel.resources.registration;
 
@@ -261,7 +261,8 @@ public class UserRegistrationResource extends BasicXMLResource {
 
                     StringBuilder body = new StringBuilder();
                     body.append("A user with email address '" + userRegBean.getEmail() + "' has sent a registration request.");
-                    body.append("\n\nPlease confirm the request by clicking on the following link:");
+                    body.append("\n\nYou might want to check first whether this email address is blacklisted: https://cleantalk.org/blacklists/" + userRegBean.getEmail());
+                    body.append("\n\nIf not, then please confirm the request by clicking on the following link:");
                     body.append("\n\n" + getActivationURL(userRegBean) + "&" + ADMIN_CONFIRMATION_KEY + "=" + adminConfirmationKey);
                     body.append("\n\nNote that this confirmation link is valid only for the next " + getHoursValid() + " hours.");
                     MailUtil.send(getFromEmail(), getResourceConfigProperty("administrator-email"), "[" + getRealm().getName() + "] Confirm User Registration Request", body.toString());
