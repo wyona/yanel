@@ -37,7 +37,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
 /**
- * A resource to register new users
+ * A resource to (self-)register a new user
  */
 public class UserRegistrationResource extends BasicXMLResource {
     
