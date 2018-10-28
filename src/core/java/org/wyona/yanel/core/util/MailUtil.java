@@ -223,7 +223,7 @@ private static PGPPublicKey getEncryptionKey(PGPPublicKeyRing keyRing) {
      * @param replyTo email address (if null, then no reply-to will be set)
      * @param to To address
      * @param subject Subject of email
-     * @param mimeBodyPart When using S/MIME, then thhe mime body part is being encrypted instead just the content itself
+     * @param mimeBodyPart When using S/MIME, then the mime body part is being encrypted instead just the content itself
      * @param content Body of email
      * @param charset Charset, e.g. utf-8
      * @param mimeSubType Mime sub-type, e.g. "html" or "plain"
