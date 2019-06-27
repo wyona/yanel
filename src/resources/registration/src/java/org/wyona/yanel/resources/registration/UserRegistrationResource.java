@@ -308,18 +308,19 @@ public class UserRegistrationResource extends BasicXMLResource {
 
     /**
      * Get subject of confirmation email
+     * @param language Language of text
      */
     private String getSubject(String language) throws Exception {
-        String subject = "Activate User Registration (sent by Yanel)";
-        if (language != null && language.equals("de")) {
-            subject = "Benutzer Registrierung aktivieren (gesendet von Yanel)";
-        }
+        String subject = null;
 
         if (getResourceConfigProperty("subject") != null) {
             subject = getResourceConfigProperty("subject");
         } else if (language != null && language.length() > 0 && getResourceConfigProperty("subject_" + language) != null) {
             subject = getResourceConfigProperty("subject_" + language);
+        } else {
+            subject = "Activate User Registration (sent by Yanel)";
         }
+
         return subject;
     }
 
@@ -336,8 +337,11 @@ public class UserRegistrationResource extends BasicXMLResource {
             String templatePath = getResourceConfigProperty("email-body-template-path");
             if (language != null && language.length() > 0 && templatePath.indexOf("LANG") >= 0) {
                 templatePath = templatePath.replace("LANG", language);
+            } else {
+                log.error("Either no language '" + language + "' or no template name with LANG '" + templatePath + "' provided!");
             }
 
+            // TODO: Check whether template exists!
             Node templateNode = getRealm().getRepository().getNode(templatePath);
             InputStream in = templateNode.getInputStream();
             body = org.apache.commons.io.IOUtils.toString(in);
@@ -1123,7 +1127,7 @@ public class UserRegistrationResource extends BasicXMLResource {
                 Element languageEl = (Element) rootElement.appendChild(doc.createElementNS(NAMESPACE, LANGUAGE));
                 languageEl.appendChild(doc.createTextNode("" + language)); 
             } else {
-                log.warn("DEBUG: Either no or no valid language provided.");
+                log.warn("Either no or no valid language provided by registration form.");
             }
 
         // INFO: Check company (optional)
