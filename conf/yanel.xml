@@ -59,7 +59,7 @@
 -->
   
   <!-- # Pre-authentication request header name and flag whether pre-authentication is actually enabled -->
-  <!-- # If enabled, then the HTTP header will be checked accordingly. Also see http://stackoverflow.com/questions/10148666/how-can-i-trust-that-the-siteminder-http-headers-havent-been-tampered-with -->
+  <!-- # If enabled, then the HTTP headers will be checked for the value configured below, whereas the header should contain the username of the pre-authenticated user. Also see http://stackoverflow.com/questions/10148666/how-can-i-trust-that-the-siteminder-http-headers-havent-been-tampered-with -->
   <pre-auth-request-header enabled="false">SM_USER</pre-auth-request-header>
 
 </yanel>
