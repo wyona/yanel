@@ -437,7 +437,7 @@ public class YanelServlet extends HttpServlet {
             log.error(e, e);
             throw new IOException(e.getMessage());
         } finally {
-            ThreadContext.clear();
+            ThreadContext.clearAll();
         } // NOTE: This was our last chance to log an exception, hence do not add code outside the try-catch block
     }
 
