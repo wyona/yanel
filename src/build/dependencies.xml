@@ -23,7 +23,7 @@
             http://marcus-christie.blogspot.com/2006/08/using-ant-with-maven-1-and-maven-2.html
     -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
-<!-- WARN: The glassfish repository does not seem to be available sometimes, hence we have copied the moxy libraries to maven2.wyona.org
+<!-- WARN: The glassfish repository does not seem to be available sometimes, hence we have copied the moxy libraries to maven2.wyona.com
     <artifact:remoteRepository id="glassfish.repository" url="http://maven.glassfish.org/content/repositories/eclipselink/"/>
 -->
 <!-- INFO: mvnrepository seems to be rather slow
