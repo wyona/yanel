@@ -4,7 +4,7 @@
 
   <target name="dependencies" description="Dependencies">
 <!-- For standalone compilation!
-    <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.org/"/>
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.com/"/>
 -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 

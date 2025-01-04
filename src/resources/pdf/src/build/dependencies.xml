@@ -6,7 +6,7 @@
     <!-- INFO: http://maven.apache.org/ant-tasks.html -->
     <artifact:remoteRepository id="wyona.remote.repository" url="${maven.url}"/>
 <!--
-    <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.org/"/>
+    <artifact:remoteRepository id="wyona.remote.repository" url="http://maven2.wyona.com/"/>
 -->
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">

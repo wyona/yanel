@@ -189,7 +189,7 @@
   <target
    description="Place jar file for this resource (and its associated sources jar file) into remote maven repository"
    name="maven:deploy-jar" depends="init">
-    <property name="repository.url" value="scp://maven2.wyona.org/home/wyona/data1/data1/src/realms/maven2/data"/>
+    <property name="repository.url" value="scp://maven2.wyona.com/home/wyona/data1/data1/src/realms/maven2/data"/>
     <property name="wyona.maven.repository.url" value="${repository.url}"/>
     <property name="repository.username" value="wyona"/>
     <property name="wyona.maven.repository.username" value="${repository.username}"/>
