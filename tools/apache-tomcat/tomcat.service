@@ -9,8 +9,8 @@ Description=Tomcat Yanel
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/home/michi/src/yanel/local/apache-tomcat-7.0.25/bin/startup.sh
-ExecStop=/home/michi/src/yanel/local/apache-tomcat-7.0.25/bin/shutdown.sh
+ExecStart=/home/michi/src/yanel/local/apache-tomcat-9.0.75/bin/startup.sh
+ExecStop=/home/michi/src/yanel/local/apache-tomcat-9.0.75/bin/shutdown.sh
 
 [Install]
 WantedBy=multi-user.target
