@@ -34,6 +34,7 @@
     <!-- dependencies which are only needed at compile time, but won't be copied to WEB-INF/lib -->
     <artifact:dependencies pathId="maven2.compile.classpath" filesetId="maven2.compile.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven_org" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
 <!--
       <dependency groupId="javax.servlet" artifactId="javax.servlet-api" version="3.0.1" scope="provided"/>
@@ -42,6 +43,7 @@
     
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven_org" url="${maven.org.maven.repo.url}"/>
 <!--
       <remoteRepository refid="glassfish.repository"/>
 -->
@@ -185,6 +187,7 @@
     <!--     get ext by maven -->    
     <artifact:dependencies filesetId="maven2.ext.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven_org" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="ext" artifactId="gwtext" version="2.0.2" scope="provided" type="zip"/>
     </artifact:dependencies>
     <unzip dest="${build.dir}/webapps/${servlet.context.prefix}/htdocs/gwt-ext-2.0.2">
