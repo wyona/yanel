@@ -35,6 +35,7 @@
 
     <artifact:dependencies pathId="gwt.compile.classpath" filesetId="gwt.compile.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven.org.repo" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-user" version="${gwt.version}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt.version}"/>
     </artifact:dependencies>
@@ -45,6 +46,7 @@
 
     <artifact:dependencies pathId="gwt.compile.classpath" filesetId="gwt.compile.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven.org.repo" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-user" version="${gwt.version}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-dev" version="${gwt.version}" classifier="${platform}"/>
     </artifact:dependencies>
@@ -229,6 +231,7 @@ module.build.dir.includes: ${module.build.dir.includes}
     </copy-->
     <!--artifact:dependencies pathId="gwt.devmode.classpath" filesetId="gwt.devmode.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven.org.repo" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-servlet" version="${gwt.version}"/>
       <dependency groupId="com.google.gwt" artifactId="gwt-servlet" version="${gwt.version}"/>
     </artifact:dependencies>
