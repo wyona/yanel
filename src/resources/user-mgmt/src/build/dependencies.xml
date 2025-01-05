@@ -8,11 +8,13 @@
 
     <artifact:dependencies pathId="maven2.classpath" filesetId="maven2.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven.org.repo" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-core" version="${yanel.source.version}"/>
     </artifact:dependencies>
 
     <artifact:dependencies pathId="maven2.resource.classpath" filesetId="maven2.resource.fileset">
       <remoteRepository refid="wyona.remote.repository"/>
+      <remoteRepository id="maven.org.repo" url="${maven.org.maven.repo.url}"/>
       <dependency groupId="wyona-org-yanel" artifactId="yanel-impl" version="${yanel.source.version}"/>
       <dependency groupId="commons-jelly" artifactId="commons-jelly" version="1.0"/>
       <dependency groupId="commons-jexl" artifactId="commons-jexl" version="1.0"/>
