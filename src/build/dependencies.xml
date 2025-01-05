@@ -57,8 +57,8 @@
       <dependency groupId="org.bouncycastle" artifactId="bcpg-jdk16" version="1.46"/>
 
       <!-- INFO: log4j version 2 -->
-      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-api" version="2.17.0"/>
-      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-core" version="2.17.0"/>
+      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-api" version="2.17.2"/>
+      <dependency groupId="org.apache.logging.log4j" artifactId="log4j-core" version="2.17.2"/>
 
       <!-- INFO: log4j version 1 -->
       <dependency groupId="log4j" artifactId="log4j" version="1.2.16"/>
