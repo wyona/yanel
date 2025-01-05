@@ -3,13 +3,13 @@
 <name>Lenya</name>
 <email>lenya@wyona.org</email>
 <language>en</language>
-<password algorithm="MD5">8e07dafd13495561db9063ebe4db4b27</password>
+<password algorithm="bcrypt-MD5">$2a$12$o3FHGg/kHEL.h.iRFAP4SebingDf3AISq2QMy30nGEy0zrjtACRci</password>
 <description>Test User</description>
 <expire>2069-02-16T00:00:00</expire>
 <aliases>
 <alias id="yanel"/>
 </aliases>
 <groups>
-  <group id="admin"/>
+<group id="admin"/>
 </groups>
 </user>
