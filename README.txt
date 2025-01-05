@@ -63,7 +63,7 @@
 
     4) Browse to http://127.0.0.1:8080/yanel/ (or https://127.0.0.1:8443/yanel/ when Yanel has been setup with SSL)
 
-    5) Debug: tail -F logs/*, tail -F local/apache-tomcat-7.0.25/logs/*
+    5) Debug: tail -F logs/*, tail -F local/apache-tomcat-9.0.75/logs/*
 
     6) Run tests
     6.1) Run junit and html unit tests: "build test"
