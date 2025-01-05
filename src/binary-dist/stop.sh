@@ -12,7 +12,7 @@ if [ "$JAVA_HOME" = "" ];then
   exit 1
 fi
 
-sh apache-tomcat-7.0.25/bin/shutdown.sh
+sh apache-tomcat-9.0.75/bin/shutdown.sh
 
 echo "***************************************"
 echo "*"
