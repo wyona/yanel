@@ -35,7 +35,7 @@
       <p>
 
         <strong>Important note:</strong> Certain links below are protected for
-        security reasons. In order to login use the username <em>lenya</em> and
+        security reasons. In order to <a href="?yanel.toolbar=on">login</a> use the username <em>lenya</em> and
         the password <em>levi</em>.  If you are running Yanel within a publicly
         accessible environment, then please make sure to at least
         <a href="yanel/users/lenya.html">change the password of the user
