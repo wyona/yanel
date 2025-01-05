@@ -30,7 +30,7 @@
 
     1) Build/Compile Yanel by running
 
-        Linux/MacOSX/UNIX: ./build.sh quick-start
+        Linux/MacOSX/UNIX: ./build.sh quick-start (or without GWT: ./build.sh quick-start -Dgwt.compile.skip=true)
         Windows: build.bat quick-start (or when using the github shell: .\build.bat quick-start)
 
        whereas by default the build will be without SSL. Please use the script 'configure' described further down to setup Yanel with SSL.
