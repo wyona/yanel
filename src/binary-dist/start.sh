@@ -15,7 +15,7 @@ if [ "$JAVA_HOME" = "" ];then
   exit 1
 fi
 
-sh apache-tomcat-9.0.75/bin/startup.sh
+sh apache-tomcat-9.0.104/bin/startup.sh
 
 echo "***************************************"
 echo "*"
