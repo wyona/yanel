@@ -26,7 +26,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -35,19 +37,15 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationUtil;
-
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 import org.apache.xml.resolver.tools.CatalogResolver;
 import org.apache.xml.serializer.Serializer;
 import org.apache.xml.utils.ListingErrorHandler;
 import org.w3c.dom.Document;
 import org.wyona.commons.io.MimeTypeUtil;
-
 import org.wyona.security.core.api.Identity;
 import org.wyona.security.core.api.User;
-
 import org.wyona.yanel.core.Resource;
 import org.wyona.yanel.core.api.attributes.ViewableV2;
 import org.wyona.yanel.core.attributes.viewable.View;
@@ -365,7 +363,8 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
                 } else if (schemeEndIndex >= 0) {
                     String scheme = xsltPath.substring(0, schemeEndIndex);
                     log.info("Scheme: " + scheme + " (" + xsltPath + ")");
-                    xsltHandlers[i] = tf.newTransformerHandler(uriResolver.resolve(xsltPath, xsltPath));
+                    Source source = uriResolver.resolve(xsltPath, xsltPath);
+                    xsltHandlers[i] = getTransformerHandler(source, tf);
                     /*XXX BACKWARD-COMPATIBILITY from now on we
                         throw new SourceException("No resolver could be loaded for scheme: " + scheme);
                     instead of simply only doing
@@ -418,6 +417,18 @@ public class BasicXMLResource extends Resource implements ViewableV2 {
             return new ByteArrayInputStream(baos.toByteArray());
     }
 
+    /**
+     * Override this method for your needs, e.g. with cached XSL Templates
+     * @param source
+     * @param tf
+     * @return
+     * @throws TransformerConfigurationException
+     */
+    protected TransformerHandler getTransformerHandler(Source source, SAXTransformerFactory tf) throws TransformerConfigurationException {
+        return tf.newTransformerHandler(source);
+    }
+    
+    
     /**
      * Creates an html or xml serializer for the given view descriptor
      * @param viewDescriptor
