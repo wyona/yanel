@@ -291,6 +291,7 @@ private static PGPPublicKey getEncryptionKey(PGPPublicKeyRing keyRing) {
         } else {
             msg.setText(content, charset, mimeSubType);
         }
+        msg.setSentDate(new java.util.Date());
 
         // INFO: Send the message
         Transport.send(msg);
