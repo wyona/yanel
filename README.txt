@@ -97,6 +97,7 @@
    Docker
    ------
 
+   IMPORTANT: Make sure that paths inside log4j.properties, log4j2.xml, realms.xml and resource-types.xml are resolved correctly (see directory 'conf')
    docker build -t yanel-tomcat -f Dockerfile .
    docker run -p 7070:8080 -v /Users:/Users yanel-tomcat
    #docker run -p 7070:8080 -v $(pwd)/src/realms:/realms yanel-tomcat
