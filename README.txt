@@ -101,3 +101,6 @@
    docker build -t yanel-tomcat -f Dockerfile .
    docker run -p 7070:8080 -v /Users:/Users yanel-tomcat
    #docker run -p 7070:8080 -v $(pwd)/src/realms:/realms yanel-tomcat
+   docker run -p 7070:8080 -v /Users:/Users -v /Users/michaelwechner/src/wyona/public/yanel/logs:/yanel-logs -v /Users/michaelwechner/src/wyona/public/yanel/docker-configs:/yanel-configs yanel-tomcat
+   docker tag yanel-tomcat wyona/yanel-tomcat:3.0.0
+   docker login -u USERNAME -p PASSWORD docker.io && docker push wyona/yanel-tomcat:3.0.0
