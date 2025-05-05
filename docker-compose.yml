@@ -1,0 +1,12 @@
+version: "3.3"
+services:
+  katie:
+    image: wyona/yanel-tomcat:3.0.0
+    container_name: yanel
+    restart: always
+    volumes:
+      - /home/wyona/yanel/logs:/yanel-logs
+      - /home/wyona/yanel/configs:/yanel-configs
+      - /home/wyona/yanel/Users:/Users
+    ports:
+      - 9090:8080
