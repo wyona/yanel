@@ -97,7 +97,7 @@
    Docker
    ------
 
-   IMPORTANT: Make sure that paths inside log4j.properties, log4j2.xml, realms.xml and resource-types.xml are resolved correctly (see directory 'conf')
+   IMPORTANT: Make sure that paths inside log4j.properties (/yanel-logs/...), log4j2.xml (/yanel-logs/...), realms.xml (/realms/...) and resource-types.xml (/resources/...) are resolved correctly (see directory 'conf' and in particular conf/yanel.xml)
    docker build -t yanel-tomcat -f Dockerfile .
    docker run -p 7070:8080 -v $(pwd)/src/realms:/realms -v $(pwd)/src/resources:/resources -v $(pwd)/logs:/yanel-logs -v $(pwd)/yanel/docker-configs:/yanel-configs yanel-tomcat
    docker tag yanel-tomcat wyona/yanel-tomcat:3.1.1
