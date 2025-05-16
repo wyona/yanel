@@ -1,13 +1,18 @@
 version: "3.3"
 services:
-  katie:
-    image: wyona/yanel-tomcat:3.1.1
+  yanel:
+    image: yanel-tomcat:latest
+    #image: wyona/yanel-tomcat:3.1.1
     container_name: yanel
     restart: always
     volumes:
-      - /home/wyona/yanel/logs:/yanel-logs
-      - /home/wyona/yanel/configs:/yanel-configs
-      - /home/wyona/yanel/realms:/realms
-      - /home/wyona/yanel/resources:/resources
+      - /Users/michaelwechner/src/yanel/logs:/yanel-logs
+      - /Users/michaelwechner/src/yanel/conf:/yanel-configs
+      - /Users/michaelwechner/src/yanel/src/realms:/realms
+      - /Users/michaelwechner/src/yanel/src/resources:/resources
+      #- /home/wyona/yanel/logs:/yanel-logs
+      #- /home/wyona/yanel/configs:/yanel-configs
+      #- /home/wyona/yanel/realms:/realms
+      #- /home/wyona/yanel/resources:/resources
     ports:
       - 9090:8080
